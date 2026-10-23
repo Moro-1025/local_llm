@@ -1,0 +1,26 @@
+# llama.cpp のバイナリ一式(README のリンクからダウンロードする)
+llama-local/
+
+# アーカイブ・モデル・ログ
+*.zip
+*.gguf
+*.log
+logs/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# OS / エディタ
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+
+# init-repo.ps1 が退避した zip
+_archive/
