@@ -182,6 +182,30 @@ class ChatSession:
             )
         )
 
+    # ------------------------------------------------------------ 起動時チェック
+
+    async def _check_server(self) -> None:
+        """疎通と、指定モデルがサーバに存在するかを確認して警告を出す。"""
+        if not await self.client.health():
+            self.console.print(
+                f"[red]警告: llama-server({self.client.base_url})に接続できません。"
+                "`.\\scripts\\start-server.ps1` で起動してください。[/]",
+                highlight=False,
+            )
+            return
+        try:
+            models = await self.client.list_models()
+        except LlamaClientError:
+            return
+        if models and self.model not in models:
+            self.console.print(
+                f"[yellow]警告: モデル '{self.model}' はサーバにありません。"
+                "`/model <id>` で切り替えてください。[/]",
+                highlight=False,
+            )
+            for m in models:
+                self.console.print(f"  - {m}", highlight=False)
+
     # ------------------------------------------------------------ メインループ
 
     async def run(self) -> None:
@@ -190,12 +214,7 @@ class ChatSession:
             "  (/help でコマンド一覧)",
             highlight=False,
         )
-        if not await self.client.health():
-            self.console.print(
-                f"[red]警告: llama-server({self.client.base_url})に接続できません。"
-                "`.\\scripts\\start-server.ps1` で起動してください。[/]",
-                highlight=False,
-            )
+        await self._check_server()
 
         while True:
             try:

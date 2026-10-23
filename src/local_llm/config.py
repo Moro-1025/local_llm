@@ -13,7 +13,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 DEFAULT_BASE_URL = "http://127.0.0.1:8080"
-DEFAULT_MODEL = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M"
+# models.ini では UD-Q4_K_M だが、llama-server のルーターモードは id から "UD-" を落として公開する
+# (Hugging Face 上では両タグが同じファイルに解決される)。API に渡す id はこちら
+DEFAULT_MODEL = "unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M"
 DEFAULT_DB_PATH = "data/chat.db"
 DEFAULT_TIMEOUT = 600.0
 

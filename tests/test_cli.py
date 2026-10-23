@@ -88,3 +88,15 @@ def test_parse_args_defaults(monkeypatch):
     assert args.model == "env-model"
     assert args.base_url == "http://example.test:1234"
     assert args.no_think is True
+
+
+@respx.mock(base_url=BASE_URL)
+async def test_check_server_warns_when_model_missing(respx_mock, tmp_path: Path):
+    respx_mock.get("/health").respond(json={"status": "ok"})
+    respx_mock.get("/v1/models").respond(json={"data": [{"id": "model-x"}]})
+    async with LlamaClient(BASE_URL) as client:
+        session, console = make_session(tmp_path, client)
+        await session._check_server()
+    text = console.export_text()
+    assert "model-a" in text and "model-x" in text
+    assert session.model == "model-a"  # 勝手には切り替えない

@@ -56,7 +56,7 @@ Copy-Item .env.example .env   # 必要なら値を書き換える
 | 変数 | 既定値 | 内容 |
 | --- | --- | --- |
 | `LLAMA_BASE_URL` | `http://127.0.0.1:8080` | llama-server の URL |
-| `LLM_DEFAULT_MODEL` | `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M` | 既定モデル |
+| `LLM_DEFAULT_MODEL` | `unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M` | 既定モデル(`/v1/models` が返す id) |
 | `CHAT_DB_PATH` | `data/chat.db` | Web UI の会話 DB(Phase 2) |
 | `LLAMA_TIMEOUT` | `600` | HTTP タイムアウト(秒) |
 
@@ -66,7 +66,7 @@ llama-server を起動した状態で:
 
 ```powershell
 uv run llm-chat                       # 既定モデルで開始
-uv run llm-chat --model unsloth/Qwen3.8-27B-GGUF:UD-Q4_K_M
+uv run llm-chat --model unsloth/Qwen3.8-27B-GGUF:Q4_K_M
 uv run llm-chat --no-think --system "日本語で簡潔に答えて"
 ```
 
@@ -139,7 +139,7 @@ from local_llm import LlamaClient, Message
 async def main():
     async with LlamaClient("http://127.0.0.1:8080") as client:
         print(await client.list_models())
-        async for chunk in client.chat([Message("user", "こんにちは")], "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M"):
+        async for chunk in client.chat([Message("user", "こんにちは")], "unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M"):
             print(chunk.content, end="", flush=True)
 
 asyncio.run(main())
@@ -225,6 +225,7 @@ local_llm/
 ## 学んだこと
 
 - 27B dense の Q4_K_M は約 15 GB あり、12 GB VRAM には収まらない。llama-server は空き VRAM に合わせて GPU 層数を自動調整する(今回は 39/65 層)が、CPU 側に残った層がボトルネックになり生成は約 6 tok/s にとどまる
+- llama-server のルーターモード(`--models-preset`)は、`models.ini` の `unsloth/...:UD-Q4_K_M` を `unsloth/...:Q4_K_M` という id で公開する(`UD-` を落とす)。Hugging Face の manifest API では両タグが同じ GGUF に解決されるので実体は同じ。API に渡す id は `/v1/models` で確認する
 - llama-server は `--reasoning-format` の既定で Qwen3 の thinking を `reasoning_content` フィールドに分離して返す。ただし本文に `<think>` が混ざる場合もあるので、クライアント側でタグのフォールバック分離も持たせた(タグがチャンク境界で分断されることを考慮する必要がある)
 - SSE は「`data:` 行が空行で区切られる」だけの単純な形式で、`[DONE]` が終端。httpx の `aiter_lines()` で十分にパースできる
 - FastAPI の `StreamingResponse` に async generator を渡すと、ブラウザが切断したときに generator が閉じられる(`GeneratorExit` / `CancelledError`)。`finally` でそこまでの本文を保存すれば「途中まで」を失わない
