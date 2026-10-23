@@ -4,7 +4,7 @@ llama.cpp を使って自宅 PC(RTX 5070 / 12 GB)でローカル LLM を動か�
 API クライアント → チャット UI → RAG → エージェント → ファインチューニングと
 段階的に積み上げていく学習・ポートフォリオ用プロジェクト。
 
-> 現在のフェーズ: **Phase 1 完了**(API クライアントと CLI チャット)。Phase 0 のベンチ計測は別途進める
+> 現在のフェーズ: **Phase 2 完了**(Web チャット UI)。次は Phase 3 の RAG。Phase 0 のベンチ計測は別途進める
 
 ## ハードウェア
 
@@ -85,9 +85,46 @@ uv run llm-chat --no-think --system "日本語で簡潔に答えて"
 | `/think on\|off` | thinking の有無を切り替える |
 | `/quit` | 終了(Ctrl+D / Ctrl+Z でも終了) |
 
+### Web チャット UI(Phase 2)
+
+llama-server を起動した状態で:
+
+```powershell
+uv run llm-web                 # http://127.0.0.1:8000
+uv run llm-web --port 8001     # ポート変更
+uv run llm-web --reload        # 開発用(コード変更で自動再起動)
+```
+
+ブラウザで http://127.0.0.1:8000 を開く。
+
+- 左のサイドバーに会話一覧。「+ 新規」で新しい会話、各行の「×」で削除
+- 上部のドロップダウンでモデルを選ぶ(llama-server の `/v1/models` から取得)。thinking のチェックで推論過程の有無を切り替える
+- 応答はストリーミングで逐次描画される。thinking は折りたたみ(本文が始まると自動で閉じる)
+- 会話は SQLite(`data/chat.db`)に保存されるので、ブラウザをリロードしても残る
+- llama-server が止まっていると、左下の表示が「停止中」になり上部にバナーが出る(15 秒ごとに再確認)
+- Enter で送信、Shift+Enter で改行。Markdown は [marked](https://github.com/markedjs/marked)(CDN)で表示
+
+スクリーンショットを撮るときは、サイドバーに 2〜3 件の会話があり、
+右側で thinking を開いた応答が 1 つ見えている状態がわかりやすい。
+
+API(すべて `/api` 配下、認証なし・127.0.0.1 前提):
+
+| メソッド | パス | 内容 |
+| --- | --- | --- |
+| GET | `/api/models` | llama-server の `/v1/models` を中継 |
+| GET | `/api/health` | llama-server の疎通(`{"ok": bool}`) |
+| GET | `/api/conversations` | 会話一覧(新しい順) |
+| POST | `/api/conversations` | 新規作成 `{"model": "..."}` |
+| GET | `/api/conversations/{id}` | メッセージ込みで取得 |
+| DELETE | `/api/conversations/{id}` | 削除 |
+| POST | `/api/conversations/{id}/messages` | `{"content", "enable_thinking", "model"?}` を受け、SSE で応答を流す |
+
+SSE のイベントは `data: {"type": "reasoning"|"content"|"done"|"error", ...}`。
+`done` に usage と tok/s が入る。FastAPI の自動ドキュメントは http://127.0.0.1:8000/docs で見られる。
+
 ### テスト
 
-llama-server は respx でモックするので GPU なしで通る:
+llama-server は respx でモックするので GPU なしで通る(Web API は FastAPI の TestClient):
 
 ```powershell
 uv run pytest
@@ -161,8 +198,15 @@ local_llm/
 │   ├─ types.py          Message / ChatChunk / Usage
 │   ├─ client.py         LlamaClient(httpx、SSE 自前パース、thinking 分離)
 │   ├─ history.py        CLI の JSONL ログ
-│   └─ cli.py            CLI チャット(llm-chat)
+│   ├─ cli.py            CLI チャット(llm-chat)
+│   └─ web/              Web チャット UI(llm-web)
+│       ├─ app.py            FastAPI アプリ
+│       ├─ db.py             SQLite のスキーマとクエリ
+│       ├─ service.py        DB ↔ LlamaClient のオーケストレーション(Phase 3 で RAG を挟む場所)
+│       ├─ routes_chat.py    /api/* のエンドポイント
+│       └─ static/           index.html / app.js / style.css(ビルドなし)
 ├─ tests/            pytest + respx
+├─ data/             会話 DB(git 管理外)
 └─ logs/             サーバログ・チャットログ(git 管理外)
 ```
 
@@ -172,7 +216,7 @@ local_llm/
 | --- | --- | --- |
 | 0 | 土台づくり(git 化、起動スクリプト、ベンチでモデル選定) | 進行中(ベンチ計測待ち) |
 | 1 | API クライアントと CLI チャット | 完了 |
-| 2 | Web チャット UI(FastAPI + フロント) | |
+| 2 | Web チャット UI(FastAPI + フロント) | 完了 |
 | 3 | RAG(文書を根拠付きで答える) | |
 | 4 | ツール呼び出しとエージェント | |
 | 5 | LoRA ファインチューニング | |
@@ -183,4 +227,6 @@ local_llm/
 - 27B dense の Q4_K_M は約 15 GB あり、12 GB VRAM には収まらない。llama-server は空き VRAM に合わせて GPU 層数を自動調整する(今回は 39/65 層)が、CPU 側に残った層がボトルネックになり生成は約 6 tok/s にとどまる
 - llama-server は `--reasoning-format` の既定で Qwen3 の thinking を `reasoning_content` フィールドに分離して返す。ただし本文に `<think>` が混ざる場合もあるので、クライアント側でタグのフォールバック分離も持たせた(タグがチャンク境界で分断されることを考慮する必要がある)
 - SSE は「`data:` 行が空行で区切られる」だけの単純な形式で、`[DONE]` が終端。httpx の `aiter_lines()` で十分にパースできる
+- FastAPI の `StreamingResponse` に async generator を渡すと、ブラウザが切断したときに generator が閉じられる(`GeneratorExit` / `CancelledError`)。`finally` でそこまでの本文を保存すれば「途中まで」を失わない
+- 過去ターンの thinking は llama-server に送らない(Qwen3 の推奨)。DB には残すので UI では見返せる
 - (ベンチ後に追記)

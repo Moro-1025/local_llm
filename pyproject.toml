@@ -8,10 +8,13 @@ dependencies = [
     "httpx>=0.27",
     "python-dotenv>=1.0",
     "rich>=13.7",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
 ]
 
 [project.scripts]
 llm-chat = "local_llm.cli:main"
+llm-web = "local_llm.web.app:main"
 
 [dependency-groups]
 dev = [
@@ -30,3 +33,7 @@ packages = ["src/local_llm"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+filterwarnings = [
+    # starlette が httpx2 を推奨する警告。respx が httpx 1 系なので当面は httpx で続ける
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated",
+]
