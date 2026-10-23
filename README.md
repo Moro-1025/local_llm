@@ -4,7 +4,7 @@ llama.cpp を使って自宅 PC(RTX 5070 / 12 GB)でローカル LLM を動か�
 API クライアント → チャット UI → RAG → エージェント → ファインチューニングと
 段階的に積み上げていく学習・ポートフォリオ用プロジェクト。
 
-> 現在のフェーズ: **Phase 0 土台づくり**(環境の再現性とモデル選定)
+> 現在のフェーズ: **Phase 1 完了**(API クライアントと CLI チャット)。Phase 0 のベンチ計測は別途進める
 
 ## ハードウェア
 
@@ -39,6 +39,77 @@ API は OpenAI 互換:
 curl http://127.0.0.1:8080/v1/models
 curl http://127.0.0.1:8080/v1/chat/completions -H "Content-Type: application/json" -d '{"model":"unsloth/Qwen3-8B-GGUF:Q4_K_M","messages":[{"role":"user","content":"こんにちは"}]}'
 ```
+
+## 使い方
+
+### Python 環境
+
+Python 3.12 と [uv](https://docs.astral.sh/uv/) を使う。初回だけ依存を入れる:
+
+```powershell
+uv sync
+Copy-Item .env.example .env   # 必要なら値を書き換える
+```
+
+設定は環境変数または `.env` で行う(`src/local_llm/config.py`):
+
+| 変数 | 既定値 | 内容 |
+| --- | --- | --- |
+| `LLAMA_BASE_URL` | `http://127.0.0.1:8080` | llama-server の URL |
+| `LLM_DEFAULT_MODEL` | `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M` | 既定モデル |
+| `CHAT_DB_PATH` | `data/chat.db` | Web UI の会話 DB(Phase 2) |
+| `LLAMA_TIMEOUT` | `600` | HTTP タイムアウト(秒) |
+
+### CLI チャット(Phase 1)
+
+llama-server を起動した状態で:
+
+```powershell
+uv run llm-chat                       # 既定モデルで開始
+uv run llm-chat --model unsloth/Qwen3.8-27B-GGUF:UD-Q4_K_M
+uv run llm-chat --no-think --system "日本語で簡潔に答えて"
+```
+
+- 応答はストリーミングで表示される。Qwen3 の thinking(推論過程)は薄い色で本文と区別して出る
+- 応答のあとにトークン数と生成速度(tok/s)を 1 行で表示する
+- 会話は `logs/chat-<日時>.jsonl` に 1 メッセージ 1 行で保存される
+
+スラッシュコマンド:
+
+| コマンド | 内容 |
+| --- | --- |
+| `/model` | モデル一覧を表示(`*` が現在のモデル) |
+| `/model <id>` | モデルを切り替える |
+| `/clear` | 会話履歴を消す |
+| `/system <text>` | system prompt を差し替える |
+| `/think on\|off` | thinking の有無を切り替える |
+| `/quit` | 終了(Ctrl+D / Ctrl+Z でも終了) |
+
+### テスト
+
+llama-server は respx でモックするので GPU なしで通る:
+
+```powershell
+uv run pytest
+```
+
+### API クライアントを自分のコードから使う
+
+```python
+import asyncio
+from local_llm import LlamaClient, Message
+
+async def main():
+    async with LlamaClient("http://127.0.0.1:8080") as client:
+        print(await client.list_models())
+        async for chunk in client.chat([Message("user", "こんにちは")], "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M"):
+            print(chunk.content, end="", flush=True)
+
+asyncio.run(main())
+```
+
+`chunk.reasoning` に thinking、`chunk.usage` に最終チャンクのトークン数が入る。
+`enable_thinking=False` を渡すと `chat_template_kwargs` で thinking を無効にする。
 
 ## モデル
 
@@ -84,15 +155,23 @@ local_llm/
 │   ├─ bench.ps1          llama-bench で速度計測
 │   └─ ctx-vram.ps1       ctx-size ごとの VRAM 使用量計測
 ├─ bench/            計測結果(Markdown)
-└─ logs/             サーバログ(git 管理外)
+├─ docs/             仕様書(spec-phase1-2.md など)
+├─ src/local_llm/    Python パッケージ
+│   ├─ config.py         設定(環境変数 / .env)
+│   ├─ types.py          Message / ChatChunk / Usage
+│   ├─ client.py         LlamaClient(httpx、SSE 自前パース、thinking 分離)
+│   ├─ history.py        CLI の JSONL ログ
+│   └─ cli.py            CLI チャット(llm-chat)
+├─ tests/            pytest + respx
+└─ logs/             サーバログ・チャットログ(git 管理外)
 ```
 
 ## ロードマップ
 
 | Phase | 内容 | 状態 |
 | --- | --- | --- |
-| 0 | 土台づくり(git 化、起動スクリプト、ベンチでモデル選定) | 進行中 |
-| 1 | API クライアントと CLI チャット | |
+| 0 | 土台づくり(git 化、起動スクリプト、ベンチでモデル選定) | 進行中(ベンチ計測待ち) |
+| 1 | API クライアントと CLI チャット | 完了 |
 | 2 | Web チャット UI(FastAPI + フロント) | |
 | 3 | RAG(文書を根拠付きで答える) | |
 | 4 | ツール呼び出しとエージェント | |
@@ -102,4 +181,6 @@ local_llm/
 ## 学んだこと
 
 - 27B dense の Q4_K_M は約 15 GB あり、12 GB VRAM には収まらない。llama-server は空き VRAM に合わせて GPU 層数を自動調整する(今回は 39/65 層)が、CPU 側に残った層がボトルネックになり生成は約 6 tok/s にとどまる
+- llama-server は `--reasoning-format` の既定で Qwen3 の thinking を `reasoning_content` フィールドに分離して返す。ただし本文に `<think>` が混ざる場合もあるので、クライアント側でタグのフォールバック分離も持たせた(タグがチャンク境界で分断されることを考慮する必要がある)
+- SSE は「`data:` 行が空行で区切られる」だけの単純な形式で、`[DONE]` が終端。httpx の `aiter_lines()` で十分にパースできる
 - (ベンチ後に追記)

@@ -24,3 +24,9 @@ Thumbs.db
 
 # init-repo.ps1 が退避した zip
 _archive/
+
+# Python パッケージ関連(Phase 1 以降)
+.env
+data/
+*.egg-info/
+.pytest_cache/
