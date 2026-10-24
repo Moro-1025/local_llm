@@ -10,12 +10,23 @@
 llama.cpp の `llama-server`(OpenAI 互換 API)で動くローカル LLM に対して、
 ターミナルとブラウザの 2 通りで会話できる。
 
-```
-利用者 ─┬─ CLI チャット (llm-chat) ───────┐
-        │                                   ├──→ llama-server (127.0.0.1:8080) ──→ GPU/CPU
-        └─ ブラウザ ──→ Web UI (llm-web) ──┘
-                        127.0.0.1:8000
-                        └── SQLite (data/chat.db)
+```mermaid
+flowchart LR
+    user([利用者])
+    cli["CLI チャット<br>llm-chat"]
+    browser["ブラウザ"]
+    web["Web UI<br>llm-web<br>127.0.0.1:8000"]
+    db[("SQLite<br>data/chat.db")]
+    llama["llama-server<br>127.0.0.1:8080"]
+    gpu["GPU / CPU"]
+
+    user --> cli
+    user --> browser
+    browser -->|HTTP / SSE| web
+    web --> db
+    cli -->|OpenAI 互換 API| llama
+    web -->|OpenAI 互換 API| llama
+    llama --> gpu
 ```
 
 | 構成要素 | 役割 |
@@ -128,20 +139,22 @@ uv run llm-web [--host HOST] [--port PORT] [--reload]
 
 ### 5.2 画面構成
 
-```
-┌──────────────┬────────────────────────────────────────────┐
-│ local_llm    │ モデル [▼ select]  [x] thinking   会話タイトル │
-│ [+ 新規]     ├────────────────────────────────────────────┤
-│──────────────│ (バナー: llama-server 停止中など)            │
-│ 会話 A    ×  │                                            │
-│ 会話 B    ×  │  あなた: ...                                │
-│ 会話 C    ×  │  assistant: ▸ thinking (折りたたみ)         │
-│              │             本文 (Markdown)                 │
-│              │             prompt 12 / completion 80 tok · 25.3 tok/s · 3.2s · model │
-│──────────────├────────────────────────────────────────────┤
-│ llama-server:│ [メッセージを入力…               ] [送信]   │
-│ 接続中       │                                            │
-└──────────────┴────────────────────────────────────────────┘
+```mermaid
+block-beta
+    columns 4
+    block:sidebar:1
+        columns 1
+        brand["local_llm　[+ 新規]"]
+        list["会話一覧<br>会話 A ×<br>会話 B ×<br>会話 C ×"]
+        health["llama-server: 接続中"]
+    end
+    block:main:3
+        columns 1
+        toolbar["モデル [▼]　[x] thinking　会話タイトル"]
+        banner["バナー(停止中などの案内)"]
+        messages["あなた: ...<br>assistant: ▸ thinking(折りたたみ)<br>　本文(Markdown)<br>　prompt 12 / completion 80 tok · 25.3 tok/s · 3.2s · model"]
+        composer["[メッセージを入力…]　[送信]"]
+    end
 ```
 
 | 領域 | 内容 |

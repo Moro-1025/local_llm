@@ -43,14 +43,38 @@ tests/
 
 ## 3. モジュール間の依存
 
-```
-cli.py ──────────┐
-                 ├──→ client.py ──→ types.py
-web/service.py ──┤         ↑
-       ↑         └──→ config.py
-web/routes_chat.py          ↑
-       ↑              history.py (cli のみ)
-web/app.py ──→ web/db.py
+```mermaid
+flowchart TD
+    subgraph common["共通層(単独で使える)"]
+        client["client.py"]
+        types["types.py"]
+        config["config.py"]
+    end
+    subgraph cli_layer["CLI 層"]
+        cli["cli.py"]
+        history["history.py"]
+    end
+    subgraph web_layer["Web 層"]
+        app["web/app.py"]
+        routes["web/routes_chat.py"]
+        service["web/service.py"]
+        db["web/db.py"]
+        static["web/static/*"]
+    end
+
+    client --> types
+    cli --> client
+    cli --> config
+    cli --> history
+    app --> routes
+    app --> db
+    app --> config
+    app --> client
+    routes --> service
+    routes --> db
+    service --> client
+    service --> db
+    static -. HTTP / SSE .-> routes
 ```
 
 原則:
@@ -193,13 +217,27 @@ def main(argv=None)  # argparse → uvicorn.run()
 
 スキーマ:
 
-```sql
-conversations(id PK AUTOINCREMENT, title TEXT NULL, model TEXT NOT NULL,
-              created_at TEXT NOT NULL, updated_at TEXT NOT NULL)
-messages(id PK AUTOINCREMENT, conversation_id FK → conversations ON DELETE CASCADE,
-         role TEXT NOT NULL, content TEXT NOT NULL, reasoning TEXT NULL, created_at TEXT NOT NULL)
-INDEX idx_messages_conversation ON messages(conversation_id, id)
+```mermaid
+erDiagram
+    conversations ||--o{ messages : "ON DELETE CASCADE"
+    conversations {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT title "NULL 可。最初の user 発言から自動設定"
+        TEXT model "NOT NULL"
+        TEXT created_at "NOT NULL, UTC ISO8601"
+        TEXT updated_at "NOT NULL, 並び順に使う"
+    }
+    messages {
+        INTEGER id PK "AUTOINCREMENT"
+        INTEGER conversation_id FK "NOT NULL"
+        TEXT role "NOT NULL: user | assistant"
+        TEXT content "NOT NULL"
+        TEXT reasoning "NULL 可。assistant の thinking"
+        TEXT created_at "NOT NULL"
+    }
 ```
+
+インデックス: `idx_messages_conversation ON messages(conversation_id, id)`。
 
 接続方針:
 
@@ -301,28 +339,88 @@ IIFE で閉じた 1 ファイル。モジュールバンドラなし。
 
 ### 7.1 Web UI で 1 往復
 
+```mermaid
+sequenceDiagram
+    autonumber
+    participant B as ブラウザ (app.js)
+    participant R as routes_chat
+    participant S as ChatService
+    participant D as Database
+    participant C as LlamaClient
+    participant L as llama-server
+
+    B->>R: POST /api/conversations/{id}/messages
+    R->>D: get_conversation(id)
+    D-->>R: 会話(無ければ 404)
+    R->>S: stream_reply(id, content, enable_thinking, model)
+    opt model が会話と異なる
+        S->>D: update_conversation(model)
+    end
+    S->>D: add_message(user)
+    S->>D: list_messages(id)
+    D-->>S: 履歴
+    S->>S: build_prompt(履歴)  ※reasoning は除く
+    S->>C: chat(prompt, model, enable_thinking)
+    C->>L: POST /v1/chat/completions (stream)
+    loop SSE delta ごと
+        L-->>C: data: {delta}
+        C-->>S: ChatChunk(content / reasoning)
+        S-->>R: {"type": "reasoning" | "content", "text"}
+        R-->>B: data: {...}
+    end
+    L-->>C: data: [DONE]
+    S->>D: add_message(assistant, content, reasoning)
+    S-->>R: {"type": "done", usage, tokens_per_second, ...}
+    R-->>B: data: {"type": "done", ...}
 ```
-ブラウザ          routes_chat        service              db          client       llama-server
-  │ POST /messages ──→│                  │                  │            │               │
-  │                   │ get_conversation ┼─────────────────→│            │               │
-  │                   │ stream_reply ───→│ add_message(user)→│            │               │
-  │                   │                  │ list_messages → build_prompt   │               │
-  │                   │                  │ chat(prompt) ──────────────────→│ POST /v1/chat/completions
-  │ data:{reasoning} ←│←─ yield ←────────│←─ ChatChunk ←──────────────────│←─ SSE delta  │
-  │ data:{content}   ←│←─ yield ←────────│←─ ChatChunk ←──────────────────│←─ SSE delta  │
-  │                   │                  │                                │←─ [DONE]     │
-  │                   │                  │ add_message(assistant, reasoning)→│            │
-  │ data:{done}      ←│←─ yield ←────────│
+
+失敗・切断時:
+
+```mermaid
+sequenceDiagram
+    participant S as ChatService
+    participant D as Database
+    participant C as LlamaClient
+
+    alt LlamaClientError
+        C-->>S: raise LlamaClientError
+        S->>D: add_message(assistant, 途中までの本文)  ※空なら保存しない
+        S-->>S: yield {"type": "error", "text"}  (done は出さない)
+    else ブラウザ切断
+        Note over S: GeneratorExit / CancelledError
+        S->>D: finally で save_partial()
+    end
 ```
 
 ### 7.2 CLI で 1 往復
 
-```
-you> ─→ ChatSession.ask ─→ history.append(user), logger.append
-                        ─→ client.chat(build_messages()) ─→ llama-server
-                        ←─ ChatChunk ×N (逐次表示)
-                        ─→ history.append(assistant), logger.append(reasoning=...)
-                        ─→ _print_stats
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 利用者
+    participant CS as ChatSession
+    participant LG as ChatLogger
+    participant C as LlamaClient
+    participant L as llama-server
+
+    U->>CS: you> 入力
+    CS->>CS: history.append(user)
+    CS->>LG: append("user", ...)
+    CS->>C: chat(build_messages(), model, enable_thinking)
+    C->>L: POST /v1/chat/completions (stream)
+    loop ChatChunk ごと
+        L-->>C: SSE delta
+        C-->>CS: ChatChunk
+        CS-->>U: reasoning は dim、content は通常色で逐次表示
+    end
+    alt 正常終了 / Ctrl+C 中断
+        CS->>CS: history.append(assistant)
+        CS->>LG: append("assistant", ..., reasoning=...)
+        CS-->>U: 統計行 (prompt / completion tok, tok/s, 秒)
+    else LlamaClientError
+        CS->>CS: history.pop()  ※user 発言を外す
+        CS-->>U: 赤字でエラー表示
+    end
 ```
 
 ## 8. エラー処理の設計
