@@ -192,7 +192,8 @@ local_llm/
 │   ├─ bench.ps1          llama-bench で速度計測
 │   └─ ctx-vram.ps1       ctx-size ごとの VRAM 使用量計測
 ├─ bench/            計測結果(Markdown)
-├─ docs/             仕様書
+├─ docs/             仕様書(初めての人は docs/README.md から)
+│   ├─ README.md         読み方ガイドと用語の最低限
 │   ├─ external-spec.md   外部仕様(利用者から見た振る舞い、CLI / UI / API)
 │   ├─ internal-spec.md   内部仕様(モジュール構成、データフロー、拡張ポイント)
 │   └─ spec-phase1-2.md   Phase 1/2 の決定事項と完了条件

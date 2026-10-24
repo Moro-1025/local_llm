@@ -5,6 +5,80 @@
 
 対象バージョン: local-llm 0.1.0(Phase 2 完了時点)
 
+## 0. 前提知識と用語
+
+この章は、ローカル LLM や llama.cpp を触ったことがない人向けの説明。知っている人は 1 章へ。
+
+### 0.1 登場するソフトウェア
+
+| 名前 | 何か | このプロジェクトでの扱い |
+| --- | --- | --- |
+| LLM(大規模言語モデル) | テキストを入力すると続きを生成するニューラルネット。ChatGPT の中身と同種 | Qwen3 系のモデルを使う |
+| GGUF | llama.cpp 用のモデルファイル形式。量子化(重みを 4bit などに圧縮)してあり、家庭用 GPU でも動く | Hugging Face から自動ダウンロードされる |
+| llama.cpp | C++ 製の LLM 推論エンジン。CPU と GPU の両方を使える | `llama-local/` にビルド済みバイナリを置く |
+| llama-server | llama.cpp に含まれる HTTP サーバ。モデルを読み込み、API で推論を受け付ける | 本プロジェクトの「相手」。`scripts/start-server.ps1` で起動する |
+| ルーターモード | llama-server の機能。設定ファイル(`models.ini`)に複数モデルを登録し、リクエストの `model` で切り替える | モデル切替 UI はこれに頼っている |
+| OpenAI 互換 API | OpenAI 社の API(`/v1/chat/completions` など)と同じ形式の HTTP API。llama-server が提供する | 自作クライアントが叩く |
+| uv | Python のパッケージ管理ツール。仮想環境と依存の解決をまとめて行う | `uv sync` と `uv run` で使う |
+| FastAPI | Python の Web フレームワーク | Web UI のバックエンド |
+| SQLite | ファイル 1 つで動く組み込みデータベース | 会話の保存先 |
+
+### 0.2 会話 API の基本形
+
+LLM との「会話」は、過去のやり取りを全部まとめて毎回送り直すことで成り立つ。
+サーバは状態を持たない。
+
+```mermaid
+sequenceDiagram
+    participant C as クライアント
+    participant L as llama-server
+    C->>L: POST /v1/chat/completions<br>messages=[system, user1, assistant1, user2]
+    L-->>C: assistant2 の本文
+    Note over C: 次回は user3 を足して<br>[system, user1, assistant1, user2, assistant2, user3] を送る
+```
+
+`messages` の各要素は `{"role": "system" | "user" | "assistant", "content": "..."}`。
+
+| role | 意味 |
+| --- | --- |
+| system | モデルへの指示(口調や制約)。先頭に 1 つ置く。省略可 |
+| user | 利用者の発言 |
+| assistant | モデルの過去の応答 |
+
+### 0.3 ストリーミングと SSE
+
+応答を全部生成してから返すと、長文では何十秒も待つことになる。そこで `stream: true` を付けると、
+サーバは HTTP レスポンスを閉じずに、生成した数文字ずつを **SSE(Server-Sent Events)** の形式で送る。
+
+```
+data: {"choices":[{"delta":{"content":"こん"}}]}
+
+data: {"choices":[{"delta":{"content":"にちは"}}]}
+
+data: [DONE]
+```
+
+- 1 イベントは `data: ` で始まる行と、それに続く空行。
+- `[DONE]` が終端。
+- 本プロジェクトは、llama-server からの SSE をクライアントで読み、Web UI ではさらにブラウザ向けの SSE に詰め直して流す(二段構え)。
+
+### 0.4 thinking(推論過程)
+
+Qwen3 系のモデルは、本文の前に「考え中」のテキストを出す機能を持つ。これを thinking と呼ぶ。
+
+- API では本文と別のフィールド `reasoning_content` で届く(llama-server の既定設定)。
+- 古い設定では本文中に `<think>...</think>` として混ざることがある。両方に対応している。
+- 利用者は thinking を見るかどうかを切り替えられる。無効にするときはリクエストに `chat_template_kwargs: {"enable_thinking": false}` を付ける。
+- 次の発言を送るとき、過去の thinking は `messages` に含めない(モデルの推奨)。
+
+### 0.5 モデル id
+
+llama-server が `/v1/models` で返す名前。例: `unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M`。
+読み方は「Hugging Face の `組織/リポジトリ` : 量子化の種類」。
+
+注意: `models.ini` では `UD-Q4_K_M` と書いてあるが、llama-server は公開時に `UD-` を落とす。
+API に渡すのは `UD-` なしの id。
+
 ## 1. システム概要
 
 llama.cpp の `llama-server`(OpenAI 互換 API)で動くローカル LLM に対して、
@@ -47,6 +121,33 @@ flowchart LR
 | ブラウザ | `fetch` の `ReadableStream`、`<details>`、`<template>` に対応したモダンブラウザ |
 
 利用者は `uv sync` で依存を入れ、llama-server を起動してから各コマンドを使う。
+
+### 2.1 典型的な利用の流れ
+
+```mermaid
+flowchart TD
+    setup["初回: uv sync"] --> start["llama-server を起動<br>scripts/start-server.ps1"]
+    start --> wait["モデル読み込み(数分)<br>/health が ok になるまで待つ"]
+    wait --> choose{どちらで会話する?}
+    choose -->|ターミナル| cli["uv run llm-chat"]
+    choose -->|ブラウザ| web["uv run llm-web<br>→ http://127.0.0.1:8000"]
+    cli --> talk1["you> に入力 → 応答がストリーミング表示<br>/model で切替、/quit で終了"]
+    web --> talk2["入力欄に書いて Enter → 応答が逐次描画<br>会話は左の一覧に残る"]
+    talk1 --> log["logs/chat-*.jsonl に記録"]
+    talk2 --> db["data/chat.db に保存"]
+```
+
+### 2.2 プロセスとポートの関係
+
+同時に動くプロセスは最大 3 つ。すべて同じ PC 上で、ループバック(127.0.0.1)だけで通信する。
+
+| プロセス | 起動コマンド | ポート | 待ち受け相手 |
+| --- | --- | --- | --- |
+| llama-server | `scripts/start-server.ps1` | 8080 | `llm-chat`、`llm-web`、llama.cpp 内蔵 Web UI(ブラウザ) |
+| `llm-web`(uvicorn) | `uv run llm-web` | 8000 | ブラウザ |
+| `llm-chat` | `uv run llm-chat` | なし | なし(クライアントのみ) |
+
+llama-server は 1 つで、CLI と Web UI の両方から同時に使える。
 
 ## 3. 設定
 

@@ -1,7 +1,100 @@
 # 内部仕様書(Phase 1 / Phase 2)
 
 実装の構造、モジュールの責務、データの流れを定義する。利用者から見た振る舞いは
-[external-spec.md](external-spec.md) を参照。
+[external-spec.md](external-spec.md) を参照。用語(llama-server、SSE、thinking など)は
+external-spec の 0 章にある。
+
+## 0. 全体像(最初に読む)
+
+### 0.1 何が動いているか
+
+このリポジトリのコードは 3 つの形で動く。どれも同じ `local_llm` パッケージの中にあり、
+llama-server との通信はすべて `LlamaClient` という 1 つのクラスを通る。
+
+```mermaid
+flowchart TB
+    subgraph proc_cli["プロセス: llm-chat(ターミナル)"]
+        cli["cli.py<br>ChatSession"]
+        hist["history.py<br>JSONL ログ"]
+        c1["client.py<br>LlamaClient"]
+    end
+    subgraph proc_web["プロセス: llm-web(uvicorn、port 8000)"]
+        static["static/<br>index.html, app.js"]
+        routes["routes_chat.py<br>/api/*"]
+        service["service.py<br>ChatService"]
+        db["db.py<br>Database"]
+        c2["client.py<br>LlamaClient"]
+    end
+    subgraph proc_llama["プロセス: llama-server(port 8080、外部ソフト)"]
+        llama["OpenAI 互換 API<br>/v1/models, /v1/chat/completions, /health"]
+    end
+    browser(["ブラウザ"]) -->|GET /| static
+    browser -->|fetch + SSE| routes
+    routes --> service --> db
+    service --> c2
+    cli --> hist
+    cli --> c1
+    c1 -->|HTTP + SSE| llama
+    c2 -->|HTTP + SSE| llama
+    sqlite[("data/chat.db")] --- db
+    jsonl[["logs/chat-*.jsonl"]] --- hist
+```
+
+### 0.2 層の分け方
+
+| 層 | ファイル | 責務 | 知っていること / 知らないこと |
+| --- | --- | --- | --- |
+| 共通層 | `config.py` `types.py` `client.py` | 設定、データ型、llama-server との HTTP 通信 | HTTP と SSE の形式を知っている。CLI も Web も知らない |
+| CLI 層 | `cli.py` `history.py` | ターミナルの入出力、履歴の保持、JSONL 記録 | 共通層を使う。Web を知らない |
+| Web 層 | `web/app.py` `routes_chat.py` `service.py` `db.py` | HTTP API、会話の永続化、SSE 配信 | 共通層を使う。CLI を知らない |
+| フロント | `web/static/*` | 画面描画、ユーザー操作、SSE の受信 | `/api/*` の形だけ知っている。Python を知らない |
+
+依存は上から下への一方向。共通層は単独で `pip install` して使えるライブラリとして成り立つ。
+
+### 0.3 1 リクエストの一生(Web UI の場合)
+
+利用者が「こんにちは」と送ってから、画面に応答が出るまで。番号は下の図と対応する。
+
+```mermaid
+flowchart TD
+    a1["1. app.js: 入力欄で Enter"] --> a2["2. 会話が無ければ POST /api/conversations で作る"]
+    a2 --> a3["3. POST /api/conversations/{id}/messages<br>{content, enable_thinking, model}"]
+    a3 --> b1["4. routes_chat: 会話の存在確認 → ChatService へ"]
+    b1 --> b2["5. service: user 発言を DB に保存"]
+    b2 --> b3["6. service: DB の履歴から messages 配列を組み立てる<br>(過去の thinking は除く)"]
+    b3 --> c1["7. LlamaClient: POST /v1/chat/completions stream=true"]
+    c1 --> c2["8. llama-server が SSE で delta を返す"]
+    c2 --> c3["9. LlamaClient: SSE をパースし ChatChunk(content / reasoning) に変換"]
+    c3 --> b4["10. service: ChatChunk をイベント辞書 {type, text} に変換して yield"]
+    b4 --> b5["11. routes_chat: data: {json} の SSE 行にしてブラウザへ"]
+    b5 --> a4["12. app.js: readSse() で受信。reasoning は折りたたみ、content は Markdown 描画"]
+    c2 -->|"[DONE]"| b6["13. service: assistant 発言を DB に保存 → done イベント"]
+    b6 --> a5["14. app.js: メタ行に tok/s を表示、会話一覧を更新"]
+```
+
+ポイント:
+
+- **保存は 2 回**。user は受信直後(5)、assistant は完了時(13)。途中で失敗しても、そこまでの本文を保存する。
+- **SSE は二段構え**。llama-server → `LlamaClient`(OpenAI 形式)、`routes_chat` → ブラウザ(自前の `{type, text}` 形式)。形式を変えているのは、ブラウザに llama-server の生の形を知らせないため。
+- **モデルは会話に紐づく**。ドロップダウンで変えると、次の送信時に会話の `model` が更新される。
+
+### 0.4 CLI の場合との違い
+
+| 観点 | Web UI | CLI |
+| --- | --- | --- |
+| 履歴の置き場 | SQLite(`db.py`) | メモリ上の `list[Message]`(`ChatSession.history`) |
+| 記録 | DB がそのまま記録 | `history.py` が JSONL に追記(読み戻しは再開用で、起動時には読まない) |
+| 表示 | ブラウザが SSE を受けて描画 | `rich` でターミナルに逐次出力 |
+| 失敗時 | 途中までを DB に保存し `error` イベント | user 発言を履歴から外し、赤字表示 |
+| 共通部分 | `LlamaClient`、`Message`、`ChatChunk`、設定の読み込み | 同じ |
+
+### 0.5 コードを読む順番
+
+1. `types.py`(50 行): `Message` と `ChatChunk` の形を押さえる。
+2. `client.py`: `chat()` と `_parse_stream_event()`。SSE が `ChatChunk` になるまで。
+3. `web/service.py`: `stream_reply()`。DB と `LlamaClient` をどうつなぐか。
+4. `web/routes_chat.py` → `web/static/app.js` の `sendMessage()` と `readSse()`。
+5. `cli.py` の `ask()`。service.py と同じ構造を CLI でやっている。
 
 ## 1. 技術スタックと依存
 
@@ -148,6 +241,30 @@ def load_settings(env_file=None) -> Settings
 
 `stream=False` のときは `_chat_once()` が 1 回の POST で `ChatChunk` を 1 個作る(呼び出し側の形を揃えるため、ジェネレータとして 1 回 yield する)。
 
+`chat()` のストリーミング処理をフローで示す:
+
+```mermaid
+flowchart TD
+    start([chat 呼び出し]) --> payload["_build_payload()<br>model, messages, stream, stream_options,<br>temperature?, chat_template_kwargs?"]
+    payload --> open["httpx stream POST /v1/chat/completions"]
+    open --> status{"status >= 400?"}
+    status -->|yes| err1["本文を読んで<br>LlamaClientError(status_code)"]
+    status -->|no| lines["aiter_lines() → iter_sse_data()<br>1 イベントの data 文字列を得る"]
+    lines --> done{"data == [DONE]?"}
+    done -->|yes| flush["splitter.flush()<br>保留分があれば最後の ChatChunk"]
+    done -->|no| parse["_parse_stream_event(data)"]
+    parse --> json{"JSON として読める?"}
+    json -->|no| lines
+    json -->|yes| iserr{"error があり<br>choices が無い?"}
+    iserr -->|yes| err2["LlamaClientError"]
+    iserr -->|no| build["delta.reasoning_content → reasoning<br>delta.content → splitter.feed() → content, reasoning<br>usage → Usage"]
+    build --> empty{"is_empty?"}
+    empty -->|yes| lines
+    empty -->|no| yield_["yield ChatChunk"] --> lines
+    flush --> fin([終了])
+    open -.->|httpx.HTTPError| err3["LlamaClientError(接続できません)"]
+```
+
 **ThinkTagSplitter**
 
 状態機械。`_in_think` フラグと保留バッファ `_buf` を持つ。
@@ -155,6 +272,21 @@ def load_settings(env_file=None) -> Settings
 - `feed(text)`: バッファに足し、`<think>` / `</think>` を探して content と reasoning に振り分ける。
   タグがチャンク境界で切れる場合に備え、末尾がタグの先頭部分と一致する分だけ保留する。
 - `flush()`: 保留分を吐き出す。`<think>` が閉じていなければ reasoning 扱い。
+
+```mermaid
+stateDiagram-v2
+    [*] --> Content
+    Content --> Think : "&lt;think&gt;" を見つけた<br>(手前は content として出力)
+    Think --> Content : "&lt;/think&gt;" を見つけた<br>(手前は reasoning として出力)
+    Content --> Content : タグ無し → 末尾がタグの先頭と一致する分だけ保留、残りを content に
+    Think --> Think : タグ無し → 同様に保留、残りを reasoning に
+    Content --> [*] : flush() → 保留分を content に
+    Think --> [*] : flush() → 保留分を reasoning に(閉じタグ無し)
+```
+
+例: `"<thi"` → `"nk>考え"` → `"中</think>答え"` の 3 チャンクが来た場合、
+1 回目は全部保留、2 回目でタグが揃って Think に入り `考え` を reasoning に、
+3 回目で `中` を reasoning、Content に戻って `答え` を content に出す。
 
 **iter_sse_data**
 
@@ -179,6 +311,28 @@ SSE 仕様のサブセット。`data:` 行を集めて空行で 1 イベント�
 | `_print_stats(usage, elapsed, ttft)` | 統計行 |
 | `_check_server()` | 起動時の疎通とモデル存在確認 |
 | `run()` | 入力ループ |
+
+`run()` のメインループ:
+
+```mermaid
+flowchart TD
+    start([llm-chat 起動]) --> args["parse_args()<br>既定値は load_settings() から"]
+    args --> client["LlamaClient を開く"]
+    client --> banner["モデル名と thinking 状態を表示"]
+    banner --> check["_check_server()<br>health → 警告 / list_models → モデル存在確認"]
+    check --> input["console.input('you> ')"]
+    input --> eof{"EOF / Ctrl+C?"}
+    eof -->|yes| quit([ログパスを表示して終了])
+    eof -->|no| empty{"空行?"}
+    empty -->|yes| input
+    empty -->|no| slash{"'/' で始まる?"}
+    slash -->|yes| cmd["handle_command()"]
+    cmd --> cont{"続行?"}
+    cont -->|False: /quit| quit
+    cont -->|True| input
+    slash -->|no| ask["ask(line)"]
+    ask --> input
+```
 
 `ask()` の流れ:
 
@@ -212,6 +366,41 @@ def main(argv=None)  # argparse → uvicorn.run()
 - lifespan で `app.state.settings / db / client` を設定し、`db.init_schema()` を呼ぶ。
 - `client` を外から渡さなかった場合だけ終了時に `aclose()` する(テストでは差し替える)。
 - `/` は `static/index.html` を `FileResponse` で返す。`/static` は `StaticFiles`。
+
+起動から画面表示までの流れ:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as 利用者
+    participant UV as uvicorn
+    participant A as app.py
+    participant D as Database
+    participant B as ブラウザ (app.js)
+    participant R as routes_chat
+    participant L as llama-server
+
+    U->>UV: uv run llm-web
+    UV->>A: import "local_llm.web.app:app"(create_app() 実行)
+    UV->>A: lifespan 開始
+    A->>A: load_settings()(.env 読み込み)
+    A->>D: init_schema()(data/ 作成、CREATE TABLE IF NOT EXISTS)
+    A->>A: LlamaClient 生成を app.state に保持
+    UV-->>U: http://127.0.0.1:8000 で待ち受け
+    U->>B: ブラウザで開く
+    B->>A: GET / → index.html、GET /static/app.js, style.css
+    B->>R: GET /api/health
+    R->>L: GET /health
+    L-->>R: {"status":"ok"}
+    R-->>B: {"ok": true}
+    B->>R: GET /api/models
+    R->>L: GET /v1/models
+    L-->>R: {"data":[{"id":...}]}
+    R-->>B: {"models":[...], "default":...}
+    B->>R: GET /api/conversations
+    R-->>B: 一覧
+    Note over B: 以後 15 秒ごとに /api/health
+```
 
 ### 6.2 db.py
 
@@ -260,6 +449,21 @@ erDiagram
 | `list_messages(id)` | id 順 |
 
 `make_title(text)`: 空白と改行を 1 つの空白に潰し、先頭 40 文字。空なら `(無題)`。
+
+会話レコードのライフサイクル:
+
+```mermaid
+stateDiagram-v2
+    [*] --> 空の会話 : POST /api/conversations<br>(title=NULL, model=既定 or 指定)
+    空の会話 --> 会話中 : 最初の user 発言を add_message<br>→ title を自動設定
+    会話中 --> 会話中 : add_message(user / assistant)<br>→ updated_at 更新
+    会話中 --> 会話中 : model 指定付きの送信<br>→ update_conversation(model)
+    空の会話 --> [*] : DELETE
+    会話中 --> [*] : DELETE<br>(messages も CASCADE で削除)
+```
+
+「+ 新規」ボタンは会話を作らない。最初の送信時に `POST /api/conversations` が呼ばれて初めて行ができる。
+そのため、何も送らずに別の会話へ移っても空の行は残らない。
 
 ### 6.3 service.py
 
@@ -332,6 +536,54 @@ IIFE で閉じた 1 ファイル。モジュールバンドラなし。
 - `error`: メタ行に赤字。
 
 送信中は `setStreaming(true)` で入力欄・送信・新規を無効化し、一覧クリックと削除も `state.streaming` で弾く。
+
+`sendMessage()` の処理フロー:
+
+```mermaid
+flowchart TD
+    enter([Enter / 送信ボタン]) --> check{"空文字 or 送信中?"}
+    check -->|yes| stop([何もしない])
+    check -->|no| lock["setStreaming(true)<br>入力欄を空にする"]
+    lock --> hasconv{"currentId がある?"}
+    hasconv -->|no| create["POST /api/conversations<br>{model: ドロップダウンの値}"]
+    create --> setid["currentId = 返ってきた id"]
+    hasconv -->|yes| draw
+    setid --> draw["user の吹き出しと、空の assistant 吹き出しを描画"]
+    draw --> post["POST /api/conversations/{id}/messages<br>{content, enable_thinking, model}"]
+    post --> ok{"res.ok?"}
+    ok -->|no| fail["バナーに '送信に失敗しました'"]
+    ok -->|yes| read["readSse(): body を ReadableStream で読み<br>\\n\\n 区切りで data: を JSON に"]
+    read --> ev{"type?"}
+    ev -->|reasoning| r["thinking を表示、本文が無い間は open"]
+    ev -->|content| c["thinking を閉じ、累積本文を Markdown 再描画"]
+    ev -->|done| d["メタ行に usage · tok/s · 秒 · model"]
+    ev -->|error| e["メタ行に赤字でエラー"]
+    r --> read
+    c --> read
+    d --> endstream
+    e --> endstream
+    read -->|ストリーム終端| endstream["loadConversations()<br>タイトルを更新"]
+    endstream --> unlock["setStreaming(false)<br>入力欄にフォーカス"]
+    fail --> unlock
+```
+
+`checkHealth()` の 15 秒ポーリング:
+
+```mermaid
+flowchart TD
+    tick([15 秒ごと / 初期化時]) --> get["GET /api/health"]
+    get --> reach{"API に届いた?"}
+    reach -->|no| apidown["左下: 'API に接続できません'"]
+    reach -->|yes| ok{"ok == true?"}
+    ok -->|no| down["左下: '停止中'<br>バナー: 起動手順を案内"]
+    ok -->|yes| up["左下: '接続中'<br>バナーを消す"]
+    up --> recovered{"前回は停止中だった?<br>or モデル一覧が空?"}
+    recovered -->|yes| models["loadModels()<br>ドロップダウンを再構築"]
+    recovered -->|no| wait([次の tick まで待つ])
+    models --> wait
+    down --> wait
+    apidown --> wait
+```
 
 セキュリティ上の注意: assistant 本文は `innerHTML` に入れる(marked の出力)。ローカル専用のため sanitizer は入れていない。公開する場合は DOMPurify 等が必要。
 
