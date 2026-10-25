@@ -1,0 +1,23 @@
+﻿OK docs\harness\contracts\phase-3.json (task-contract)
+OK docs\harness\contracts\phase-4.json (task-contract)
+OK docs\harness\contracts\phase-5.json (task-contract)
+OK docs\harness\contracts\phase-6.json (task-contract)
+OK agent\contracts\summarize-docs.json (task-contract)
+OK docs\harness\reports\phase-3.decision.json (completion-decision)
+OK docs\harness\reports\phase-3.RAG-001.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-002.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-003.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-004.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-005.verification.json (verification-result)
+........................................................................ [ 82%]
+...............                                                          [100%]
+87 passed in 4.83s
+
+ RUN  v5.0.5 C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/agent/harness
+
+
+ Test Files  4 passed (4)
+      Tests  35 passed (35)
+   Start at  12:37:16
+   Duration  540ms (import 73%, tests 14%, transform 9%, worker 4%)
+

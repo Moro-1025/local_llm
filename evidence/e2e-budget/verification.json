@@ -1,0 +1,242 @@
+[
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:FINISH_CALLED:e2e-budget",
+    "criterion_id": "FINISH_CALLED",
+    "assertion": "finish ツールが呼ばれ、evidence/<run_id>/result.json が存在する",
+    "status": "fail",
+    "verifier": {
+      "type": "integration-test",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [
+      "C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/evidence/e2e-budget/events.jsonl"
+    ],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  },
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:SUMMARY_NONEMPTY:e2e-budget",
+    "criterion_id": "SUMMARY_NONEMPTY",
+    "assertion": "result.summary が空でない",
+    "status": "fail",
+    "verifier": {
+      "type": "integration-test",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [
+      "C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/evidence/e2e-budget/result.json"
+    ],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  },
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:SOURCES_IN_SCOPE:e2e-budget",
+    "criterion_id": "SOURCES_IN_SCOPE",
+    "assertion": "result.sources が 1 件以上あり、すべて scope.read 内に実在するファイル(workspace または data/corpus/ からの相対)",
+    "status": "fail",
+    "verifier": {
+      "type": "integration-test",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [
+      "C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/evidence/e2e-budget/result.json"
+    ],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  },
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:ONLY_ALLOWED_TOOLS:e2e-budget",
+    "criterion_id": "ONLY_ALLOWED_TOOLS",
+    "assertion": "実行されたツールはすべて capability_profile.allowed_tools 内(許可外は block される)",
+    "status": "pass",
+    "verifier": {
+      "type": "integration-test",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [
+      "C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/evidence/e2e-budget/events.jsonl"
+    ],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  },
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:NO_SCOPE_VIOLATION:e2e-budget",
+    "criterion_id": "NO_SCOPE_VIOLATION",
+    "assertion": "scope.read 外・forbidden のパスへのアクセスが無い(block scope_boundary_exceeded が 0 件)",
+    "status": "pass",
+    "verifier": {
+      "type": "integration-test",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [
+      "C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/evidence/e2e-budget/events.jsonl"
+    ],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  },
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:WITHIN_BUDGET:e2e-budget",
+    "criterion_id": "WITHIN_BUDGET",
+    "assertion": "execution_budget 内で終了し、stop_reason が無い",
+    "status": "fail",
+    "verifier": {
+      "type": "integration-test",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [
+      "C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/evidence/e2e-budget/events.jsonl"
+    ],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  },
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:RUN_SETTLED:e2e-budget",
+    "criterion_id": "RUN_SETTLED",
+    "assertion": "pi から agent_settled を受信し、runner にエラーが無い",
+    "status": "pass",
+    "verifier": {
+      "type": "integration-test",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [
+      "C:/dev/local_llm/.claude/worktrees/phase3-4-rag-agent-4c2343/evidence/e2e-budget/pi_events.jsonl"
+    ],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  },
+  {
+    "schema_version": "1.0",
+    "core_version": "1.0",
+    "task_id": "AGENT-SUMMARIZE-DOCS",
+    "contract_id": "contract:local-llm:agent:summarize-docs",
+    "contract_version": 1,
+    "contract_hash": "sha256:6519657f7e58b9bcfcff4effcb54cd5b73e56b01f6408ce27a40a3dc516f1371",
+    "result_id": "vr:AGENT-SUMMARIZE-DOCS:SUMMARY_QUALITY:e2e-budget",
+    "criterion_id": "SUMMARY_QUALITY",
+    "assertion": "summary が指定テーマに沿っていて、sources の内容と矛盾しない",
+    "status": "not_run",
+    "verifier": {
+      "type": "other",
+      "name": "local_llm.agent.verify",
+      "version": null,
+      "independent_from_writer": true
+    },
+    "subject": {
+      "type": "artifact",
+      "artifact_ref": "evidence/e2e-budget/events.jsonl",
+      "artifact_hash": "sha256:baf9d102f05a5f9f29980ec380eb35c1686186c620c425856941bf8ffc1e0da9"
+    },
+    "evidence_refs": [],
+    "policy_decision_refs": [],
+    "approval_refs": [],
+    "limitations": [
+      "人のレビューが必要"
+    ],
+    "verified_at": "2026-10-25T03:36:21+00:00"
+  }
+]

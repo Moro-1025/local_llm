@@ -30,3 +30,9 @@ _archive/
 data/
 *.egg-info/
 .pytest_cache/
+
+# Phase 4: Pi が PI_CODING_AGENT_DIR=agent/pi に作る実行時ファイル(models.json だけを管理する)
+agent/pi/auth.json
+agent/pi/models-store.json
+agent/pi/sessions/
+agent/pi/bin/
