@@ -1,0 +1,7 @@
+# .\scripts\agent\verify.ps1  (2026-10-25, worktree phase3-4-rag-agent-4c2343, HEAD e864855)
+OK docs\harness\contracts\phase-3.json (task-contract)
+OK docs\harness\contracts\phase-4.json (task-contract)
+OK docs\harness\contracts\phase-5.json (task-contract)
+OK docs\harness\contracts\phase-6.json (task-contract)
+......................................................................   [100%]
+70 passed in 3.75s

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-3",
+  "contract_id": "contract:local-llm:phase-3",
+  "contract_version": 1,
+  "contract_hash": "sha256:281acc7df27b16bbd694104b4df1a3af02b3a1c33c362123e3f7a858f30da4d8",
+  "result_id": "vr:phase-3:RAG-001:e864855",
+  "criterion_id": "RAG-001",
+  "assertion": "uv run llm-index docs README.md で documents/chunks が DB に入り、再実行で未変更ファイルがスキップされる",
+  "status": "pass",
+  "verifier": {
+    "type": "integration-test",
+    "name": "pytest tests/rag/test_store_retriever.py::test_index_and_search + 実機 uv run llm-index",
+    "version": "pytest 9.x / llama.cpp b11146",
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "e864855"
+  },
+  "evidence_refs": [
+    "docs/harness/reports/evidence/phase-3.verify.txt",
+    "docs/harness/reports/evidence/phase-3.eval_retrieval.json#index_status",
+    "docs/journal/phase-3.md#どう確かめたか証拠"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "実機の llm-index 出力(19 文書 / 433 チャンク、2 回目は変更なし)は実装セッションの観測で、別の人が再現したものではない"
+  ],
+  "verified_at": "2026-10-25T03:05:00+00:00"
+}

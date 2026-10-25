@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-3",
+  "contract_id": "contract:local-llm:phase-3",
+  "contract_version": 1,
+  "contract_hash": "sha256:281acc7df27b16bbd694104b4df1a3af02b3a1c33c362123e3f7a858f30da4d8",
+  "decision_id": "cd:phase-3:e864855",
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "e864855"
+  },
+  "status": "needs_human",
+  "criterion_results": [
+    {
+      "criterion_id": "RAG-001",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-3.RAG-001.verification.json"
+      ],
+      "notes": "pytest(モック)で差分スキップを検証、実機で 19 文書 433 チャンク"
+    },
+    {
+      "criterion_id": "RAG-002",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-3.RAG-002.verification.json"
+      ],
+      "notes": "10/10 hit@3(閾値 8)。reports/evidence/phase-3.eval_retrieval.json"
+    },
+    {
+      "criterion_id": "RAG-003",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-3.RAG-003.verification.json"
+      ],
+      "notes": "最初の SSE イベントが sources、本文に [1][2][3] の引用。reports/evidence/phase-3.e2e_rag.json"
+    },
+    {
+      "criterion_id": "RAG-004",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-3.RAG-004.verification.json"
+      ],
+      "notes": "70 passed(Phase 1/2 の 40 + RAG 30)。reports/evidence/phase-3.verify.txt"
+    },
+    {
+      "criterion_id": "RAG-005",
+      "required": true,
+      "status": "not_run",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-3.RAG-005.verification.json"
+      ],
+      "notes": "文書は作成済み。human-review が未実施のため not_run(pass にしない)"
+    }
+  ],
+  "required_criteria_complete": false,
+  "evidence_binding_check": "pass",
+  "scope_check": "pass",
+  "policy_check": "pass",
+  "critical_unresolved_errors": 0,
+  "unresolved_errors": [
+    {
+      "severity": "low",
+      "code": "MODELS_INI_8B_NO_HF_REPO",
+      "description": "既存セクション [unsloth/Qwen3-8B-GGUF:Q4_K_M] は hf-repo が無く未ダウンロードのため、ルーターが読み込めないと推測される(Phase 3 で判明した同種の不具合)。既存セクションの変更は GATE_MODELS_INI なので未修正",
+      "evidence_refs": [
+        "docs/journal/phase-3.md#うまくいかなかったことやり直したこと"
+      ]
+    },
+    {
+      "severity": "low",
+      "code": "STRAY_LLAMA_SERVER_PROCESSES",
+      "description": "検証用に起動した llama-server ルーター(:8081 モデル未読み込み、:8082 埋め込みモデルのみ)の停止操作が実行環境のポリシーで拒否され、セッション終了時点で残っている。人の手で停止が必要",
+      "evidence_refs": [
+        "docs/journal/phase-3.md#うまくいかなかったことやり直したこと"
+      ]
+    }
+  ],
+  "uncertain_actions": [],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "residual_risks": [
+    {
+      "risk": "評価セット(10 問)は実装者が作成しており独立性が無い。別の人が質問を追加して再評価するまで精度の数値は参考値",
+      "severity": "medium",
+      "accepted_by": null
+    },
+    {
+      "risk": "[n] 引用の付与はモデルの挙動に依存し、機械的に検証していない",
+      "severity": "low",
+      "accepted_by": null
+    },
+    {
+      "risk": "Markdown 以外(core/schemas/*.json)は索引していないため、Schema の中身に関する質問には答えられない",
+      "severity": "low",
+      "accepted_by": null
+    },
+    {
+      "risk": "GATE_NEW_DEPENDENCY: numpy を追加した(仕様 2 章で許可済みの唯一の追加ライブラリ)",
+      "severity": "low",
+      "accepted_by": null
+    }
+  ],
+  "decided_by": {
+    "type": "runtime",
+    "identifier": "claude-code session phase3-4-rag-agent-4c2343 (writer self-check)",
+    "version": "Claude Fable 5.1"
+  },
+  "decided_at": "2026-10-25T03:05:00+00:00",
+  "reasons": [
+    "RAG-001〜004 は pass(pytest 70 件、実機 eval 10/10、実機 e2e 3 問)。",
+    "RAG-005 は human-review が未実施のため not_run。required なので required_criteria_complete=false となり accepted にできない。",
+    "scope: 変更ファイルはすべて contract.scope.write 内(src/**, tests/**, scripts/fetch-corpus.ps1, scripts/agent/**, models.ini, pyproject.toml, uv.lock, README.md, docs/**)。models.ini は追記のみ。",
+    "policy: push・公開・外部送信なし。接続先は 127.0.0.1、raw.githubusercontent.com(Markdown 取得)、huggingface.co(llama-server によるモデル取得)のみ。秘密情報の記載なし。",
+    "owner が docs をレビューし RAG-005 を pass にすれば accepted に更新できる。"
+  ]
+}

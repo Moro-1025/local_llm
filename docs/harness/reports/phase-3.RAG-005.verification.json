@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-3",
+  "contract_id": "contract:local-llm:phase-3",
+  "contract_version": 1,
+  "contract_hash": "sha256:281acc7df27b16bbd694104b4df1a3af02b3a1c33c362123e3f7a858f30da4d8",
+  "result_id": "vr:phase-3:RAG-005:e864855",
+  "criterion_id": "RAG-005",
+  "assertion": "docs/journal/phase-3.md がテンプレートの全節を満たし、external-spec / internal-spec に RAG の節が追加されている",
+  "status": "not_run",
+  "verifier": {
+    "type": "human-review",
+    "name": "owner による docs/journal/phase-3.md と external-spec 10 章 / internal-spec 11 章の diff レビュー",
+    "version": null,
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "e864855"
+  },
+  "evidence_refs": [
+    "docs/journal/phase-3.md",
+    "docs/external-spec.md#10-rag-資料を根拠に答えるphase-3",
+    "docs/internal-spec.md#11-rag-層ragphase-3"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "人のレビューはまだ行われていない。実装セッションによる自己確認(テンプレートの全節が存在すること)のみ",
+    "diff-review は writer 自身が行ったため独立性が無い"
+  ],
+  "verified_at": "2026-10-25T03:05:00+00:00"
+}
