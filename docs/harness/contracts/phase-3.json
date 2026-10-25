@@ -1,0 +1,262 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "contract_id": "contract:local-llm:phase-3",
+  "task_id": "PHASE-3",
+  "contract_version": 1,
+  "status": "active",
+  "contract_hash": "sha256:281acc7df27b16bbd694104b4df1a3af02b3a1c33c362123e3f7a858f30da4d8",
+  "objective": "docs/ と ai_harness の Markdown を根拠に答える RAG を実装し、Web UI と CLI から「資料を使う」モードで根拠付き回答が得られる状態にする(docs/spec-phase3-6.md 2 章)",
+  "expected_outcomes": [
+    "uv run llm-index で文書がチャンク化・ベクトル化され SQLite に入る(差分更新)",
+    "use_rag=true の応答に sources イベントと [n] 引用が含まれる",
+    "既知の質問 10 件で正解文書が top-3 に 8/10 以上入る",
+    "Phase 1/2 のテストがすべて通る",
+    "docs/journal/phase-3.md と Completion Report がある"
+  ],
+  "scope": {
+    "read": [
+      "**"
+    ],
+    "write": [
+      "src/local_llm/**",
+      "tests/**",
+      "scripts/fetch-corpus.ps1",
+      "scripts/agent/**",
+      "models.ini",
+      "pyproject.toml",
+      "uv.lock",
+      "README.md",
+      "docs/**",
+      "data/corpus/**",
+      ".gitignore"
+    ],
+    "forbidden": [
+      ".env",
+      "llama-local/**",
+      "**/*.gguf",
+      "data/chat.db",
+      ".git/**"
+    ],
+    "destinations": [
+      "127.0.0.1",
+      "raw.githubusercontent.com (ai_harness の Markdown 取得のみ)",
+      "huggingface.co (llama-server によるモデル取得のみ)"
+    ]
+  },
+  "non_goals": [
+    "ベクトル DB(Chroma, Qdrant など)の導入",
+    "PDF の取り込み",
+    "Web UI からの文書アップロード",
+    "リランカーモデルの導入(簡易な再スコアリングは可)",
+    "Phase 4 以降の機能"
+  ],
+  "constraints": [
+    {
+      "constraint_id": "NO_PUSH",
+      "statement": "git push、GitHub の公開設定変更、Hugging Face へのアップロードなど外部送信を行わない(Human Gate)",
+      "required": true
+    },
+    {
+      "constraint_id": "NO_SECRETS",
+      "statement": "API キーや個人情報をコード・ログ・ドキュメントに書かない",
+      "required": true
+    },
+    {
+      "constraint_id": "JOURNAL",
+      "statement": "docs/journal/phase-N.md を実装と同時に書き、判断の理由と確かめ方を残す",
+      "required": true
+    },
+    {
+      "constraint_id": "REPORT",
+      "statement": "完了時に docs/harness/reports/phase-N.md と phase-N.decision.json を書き、criterion ごとに証拠(コマンド出力の要点とコミット hash)を付ける",
+      "required": true
+    },
+    {
+      "constraint_id": "AMEND_NOT_EXPAND",
+      "statement": "scope 外の変更が必要になったら作業を止め、Report に Amendment 案を書く。黙って範囲を広げない",
+      "required": true
+    },
+    {
+      "constraint_id": "CLIENT_ONLY_HTTP",
+      "statement": "llama-server への HTTP は LlamaClient 経由のみ(internal-spec 3 章の原則を維持)",
+      "required": true
+    },
+    {
+      "constraint_id": "EMBED_IN_INI",
+      "statement": "埋め込みモデルは models.ini に追加する。既存セクションは変更しない",
+      "required": true
+    }
+  ],
+  "completion_criteria": [
+    {
+      "criterion_id": "RAG-001",
+      "assertion": "uv run llm-index docs README.md で documents/chunks が DB に入り、再実行で未変更ファイルがスキップされる",
+      "required": true,
+      "verification_methods": [
+        "integration-test"
+      ]
+    },
+    {
+      "criterion_id": "RAG-002",
+      "assertion": "tests/rag/eval_retrieval.jsonl の質問 10 件で正解文書が top-3 に 8 件以上入る(実サーバ、結果を Report に記録)",
+      "required": true,
+      "verification_methods": [
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "RAG-003",
+      "assertion": "use_rag=true の応答で sources イベントが本文の前に届き、本文に [n] 引用が含まれる",
+      "required": true,
+      "verification_methods": [
+        "integration-test",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "RAG-004",
+      "assertion": "既存テスト(Phase 1/2)を含め uv run pytest がすべて通る",
+      "required": true,
+      "verification_methods": [
+        "unit-test"
+      ]
+    },
+    {
+      "criterion_id": "RAG-005",
+      "assertion": "docs/journal/phase-3.md がテンプレートの全節を満たし、external-spec / internal-spec に RAG の節が追加されている",
+      "required": true,
+      "verification_methods": [
+        "diff-review",
+        "human-review"
+      ]
+    }
+  ],
+  "required_evidence": [
+    {
+      "requirement_id": "EV-RAG-TESTS",
+      "criterion_ids": [
+        "RAG-001",
+        "RAG-003",
+        "RAG-004"
+      ],
+      "evidence_type": "pytest 出力(verify.ps1)",
+      "minimum_independence": "deterministic-process",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-RAG-E2E",
+      "criterion_ids": [
+        "RAG-002",
+        "RAG-003"
+      ],
+      "evidence_type": "実サーバでの実行ログ(コマンドと出力の要点)",
+      "minimum_independence": "writer-self-check",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-RAG-DOCS",
+      "criterion_ids": [
+        "RAG-005"
+      ],
+      "evidence_type": "git diff",
+      "minimum_independence": "human",
+      "tamper_resistance": "version-controlled"
+    }
+  ],
+  "risk_assessment": {
+    "confidentiality": "low",
+    "integrity": "low",
+    "availability": "low",
+    "external_side_effect": "low",
+    "reversibility": "low",
+    "financial_legal_impact": "low",
+    "credential_access": "low",
+    "tenant_boundary": "low",
+    "detection_difficulty": "low",
+    "recovery_time": "low",
+    "data_classifications": [
+      "public",
+      "internal"
+    ],
+    "rationale": [
+      "個人開発の学習用リポジトリ。機密データと本番環境は存在しない",
+      "外部送信は Human Gate で人間が行う"
+    ]
+  },
+  "risk_band": "low",
+  "capability_profile": {
+    "profile_id": "dev-phase-3",
+    "filesystem": "scoped-write",
+    "network": {
+      "mode": "allowlisted",
+      "allowed_destinations": [
+        "127.0.0.1",
+        "raw.githubusercontent.com (ai_harness の Markdown 取得のみ)",
+        "huggingface.co (llama-server によるモデル取得のみ)"
+      ]
+    },
+    "external_side_effects": "denied",
+    "credential_access": "none",
+    "allowed_tools": [
+      "read",
+      "edit",
+      "write",
+      "bash(uv, pytest, git add/commit/diff/status/log, curl 127.0.0.1, powershell scripts/*)"
+    ],
+    "denied_tools": [
+      "git push",
+      "gh repo edit",
+      "huggingface-cli upload"
+    ],
+    "allowed_data_classifications": [
+      "public",
+      "internal"
+    ],
+    "purpose": "Phase 3 の実装"
+  },
+  "human_gates": [
+    {
+      "gate_id": "GATE_EXTERNAL_PUBLISH",
+      "trigger": "git push、リポジトリ公開設定の変更、Hugging Face へのアップロード、外部サービスへの送信",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    },
+    {
+      "gate_id": "GATE_NEW_DEPENDENCY",
+      "trigger": "pyproject.toml / package.json / training の依存に、仕様書に書かれていないライブラリを追加する",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    },
+    {
+      "gate_id": "GATE_MODELS_INI",
+      "trigger": "models.ini の既存セクションを変更または削除する(追加は不要)",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    }
+  ],
+  "execution_budget": {
+    "max_steps": null,
+    "max_tool_calls": null,
+    "max_wall_time_seconds": null,
+    "same_error_limit": 2,
+    "no_progress_limit": 3,
+    "max_files_changed": 80,
+    "on_exceed": "stop"
+  },
+  "stop_conditions": [
+    "scope_violation",
+    "same_error_repeated_twice",
+    "budget_exceeded",
+    "baseline_failure_unexplained",
+    "human_gate_required"
+  ],
+  "created_at": "2026-10-25T00:00:00Z",
+  "created_by": "human:daiki (spec: docs/spec-phase3-6.md)"
+}

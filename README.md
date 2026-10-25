@@ -191,12 +191,16 @@ local_llm/
 │   ├─ start-server.ps1   サーバ起動
 │   ├─ bench.ps1          llama-bench で速度計測
 │   └─ ctx-vram.ps1       ctx-size ごとの VRAM 使用量計測
+│   └─ agent/             verify.ps1(検証の単一入口)、check_contracts.py
 ├─ bench/            計測結果(Markdown)
 ├─ docs/             仕様書(初めての人は docs/README.md から)
 │   ├─ README.md         読み方ガイドと用語の最低限
 │   ├─ external-spec.md   外部仕様(利用者から見た振る舞い、CLI / UI / API)
 │   ├─ internal-spec.md   内部仕様(モジュール構成、データフロー、拡張ポイント)
-│   └─ spec-phase1-2.md   Phase 1/2 の決定事項と完了条件
+│   ├─ spec-phase1-2.md   Phase 1/2 の決定事項と完了条件
+│   ├─ spec-phase3-6.md   Phase 3〜6 の決定事項と完了条件
+│   ├─ harness/           開発ハーネス(Task Contract、Completion Report、ai_harness の Schema)
+│   └─ journal/           学習ジャーナル(Phase ごとに何をしたか・なぜか・どう確かめるか)
 ├─ src/local_llm/    Python パッケージ
 │   ├─ config.py         設定(環境変数 / .env)
 │   ├─ types.py          Message / ChatChunk / Usage
@@ -221,9 +225,9 @@ local_llm/
 | 0 | 土台づくり(git 化、起動スクリプト、ベンチでモデル選定) | 進行中(ベンチ計測待ち) |
 | 1 | API クライアントと CLI チャット | 完了 |
 | 2 | Web チャット UI(FastAPI + フロント) | 完了 |
-| 3 | RAG(文書を根拠付きで答える) | |
+| 3 | RAG(文書を根拠付きで答える) | 進行中 |
 | 4 | ツール呼び出しとエージェント | |
-| 5 | LoRA ファインチューニング | |
+| 5 | LoRA ファインチューニング | 進行中 |
 | 6 | 評価・計測・公開 | |
 
 ## 学んだこと

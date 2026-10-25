@@ -1,0 +1,270 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "contract_id": "contract:local-llm:phase-5",
+  "task_id": "PHASE-5",
+  "contract_version": 1,
+  "status": "active",
+  "contract_hash": "sha256:99cc64d9665c89bc3eac0b68d129b31d656997a94247a9a984fdff27b3d283e9",
+  "objective": "WSL Ubuntu + unsloth で Qwen3 小型モデルに QLoRA を行い、docs/ と ai_harness から合成した Q&A で学習し、GGUF に変換して models.ini に登録、llama-server から会話できる状態にする(docs/spec-phase3-6.md 4 章)",
+  "expected_outcomes": [
+    "training/setup-wsl.sh で WSL に環境が作れ torch.cuda.is_available() が True",
+    "training/data/qa.jsonl が 300 組以上、qa.meta.json に合成条件がある",
+    "学習が完走し eval loss が下がっている(ログ保存)",
+    "GGUF が models.ini に登録され CLI から 1 往復できる",
+    "docs/journal/phase-5.md と Completion Report がある"
+  ],
+  "scope": {
+    "read": [
+      "**"
+    ],
+    "write": [
+      "training/**",
+      "models.ini",
+      "eval/datasets/**",
+      "README.md",
+      "docs/**",
+      ".gitignore",
+      "scripts/agent/**"
+    ],
+    "forbidden": [
+      ".env",
+      "llama-local/**",
+      "**/*.gguf",
+      "data/chat.db",
+      ".git/**"
+    ],
+    "destinations": [
+      "127.0.0.1",
+      "huggingface.co (ベースモデルのダウンロードのみ)",
+      "pypi.org / download.pytorch.org (WSL 環境の構築のみ)"
+    ]
+  },
+  "non_goals": [
+    "フルファインチューニング",
+    "4B より大きいモデルの学習",
+    "Hugging Face へのアップロード(人間が行う)",
+    "src/local_llm/ の変更(Phase 3/4 のブランチと衝突するため)"
+  ],
+  "constraints": [
+    {
+      "constraint_id": "NO_PUSH",
+      "statement": "git push、GitHub の公開設定変更、Hugging Face へのアップロードなど外部送信を行わない(Human Gate)",
+      "required": true
+    },
+    {
+      "constraint_id": "NO_SECRETS",
+      "statement": "API キーや個人情報をコード・ログ・ドキュメントに書かない",
+      "required": true
+    },
+    {
+      "constraint_id": "JOURNAL",
+      "statement": "docs/journal/phase-N.md を実装と同時に書き、判断の理由と確かめ方を残す",
+      "required": true
+    },
+    {
+      "constraint_id": "REPORT",
+      "statement": "完了時に docs/harness/reports/phase-N.md と phase-N.decision.json を書き、criterion ごとに証拠(コマンド出力の要点とコミット hash)を付ける",
+      "required": true
+    },
+    {
+      "constraint_id": "AMEND_NOT_EXPAND",
+      "statement": "scope 外の変更が必要になったら作業を止め、Report に Amendment 案を書く。黙って範囲を広げない",
+      "required": true
+    },
+    {
+      "constraint_id": "SEPARATE_ENV",
+      "statement": "学習環境は training/ 配下の WSL 用 venv に閉じ、Windows 側の uv 環境(pyproject.toml)に torch 等を足さない",
+      "required": true
+    },
+    {
+      "constraint_id": "EVAL_SPLIT",
+      "statement": "eval 用の質問は学習に使わず eval/datasets/qa-v1.jsonl に版番号付きで保存する(評価汚染の防止)",
+      "required": true
+    },
+    {
+      "constraint_id": "VRAM_GUARD",
+      "statement": "学習前に VRAM を見積もり、12 GB を超える構成は試さない。OOM が 2 回出たら小さいモデルか短い系列長に切り替える",
+      "required": true
+    }
+  ],
+  "completion_criteria": [
+    {
+      "criterion_id": "LORA-001",
+      "assertion": "WSL で training/setup-wsl.sh 実行後、python -c 'import torch;print(torch.cuda.is_available())' が True を出す",
+      "required": true,
+      "verification_methods": [
+        "other"
+      ]
+    },
+    {
+      "criterion_id": "LORA-002",
+      "assertion": "training/data/qa.jsonl が 300 組以上で、各行が question/answer/source を持ち、qa.meta.json にプロンプト・モデル id・日時がある",
+      "required": true,
+      "verification_methods": [
+        "unit-test"
+      ]
+    },
+    {
+      "criterion_id": "LORA-003",
+      "assertion": "学習ログ training/runs/<日時>/ に loss 推移があり、最終 eval loss が最初の eval loss より低い",
+      "required": true,
+      "verification_methods": [
+        "other"
+      ]
+    },
+    {
+      "criterion_id": "LORA-004",
+      "assertion": "変換した GGUF が models.ini に登録され、llama-server 経由で CLI から 1 往復できる",
+      "required": true,
+      "verification_methods": [
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "LORA-005",
+      "assertion": "eval 質問 20 件で LoRA モデルの簡易正答率(キーワード一致)が素の同サイズモデルを上回る(暫定。Phase 6 で再評価)",
+      "required": false,
+      "verification_methods": [
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "LORA-006",
+      "assertion": "docs/journal/phase-5.md がテンプレートの全節を満たし、VRAM 実測と選んだモデルの理由がある",
+      "required": true,
+      "verification_methods": [
+        "diff-review",
+        "human-review"
+      ]
+    }
+  ],
+  "required_evidence": [
+    {
+      "requirement_id": "EV-LORA-ENV",
+      "criterion_ids": [
+        "LORA-001"
+      ],
+      "evidence_type": "コマンド出力",
+      "minimum_independence": "writer-self-check",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-LORA-DATA",
+      "criterion_ids": [
+        "LORA-002"
+      ],
+      "evidence_type": "pytest 出力(training/run_tests.sh)",
+      "minimum_independence": "deterministic-process",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-LORA-TRAIN",
+      "criterion_ids": [
+        "LORA-003",
+        "LORA-004",
+        "LORA-005"
+      ],
+      "evidence_type": "学習ログと実行ログ",
+      "minimum_independence": "writer-self-check",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-LORA-DOCS",
+      "criterion_ids": [
+        "LORA-006"
+      ],
+      "evidence_type": "git diff",
+      "minimum_independence": "human",
+      "tamper_resistance": "version-controlled"
+    }
+  ],
+  "risk_assessment": {
+    "confidentiality": "low",
+    "integrity": "low",
+    "availability": "medium",
+    "external_side_effect": "low",
+    "reversibility": "low",
+    "financial_legal_impact": "low",
+    "credential_access": "low",
+    "tenant_boundary": "low",
+    "detection_difficulty": "low",
+    "recovery_time": "medium",
+    "data_classifications": [
+      "public",
+      "internal"
+    ],
+    "rationale": [
+      "個人開発の学習用リポジトリ。機密データと本番環境は存在しない",
+      "外部送信は Human Gate で人間が行う"
+    ]
+  },
+  "risk_band": "low",
+  "capability_profile": {
+    "profile_id": "dev-phase-5",
+    "filesystem": "scoped-write",
+    "network": {
+      "mode": "allowlisted",
+      "allowed_destinations": [
+        "127.0.0.1",
+        "huggingface.co (ベースモデルのダウンロードのみ)",
+        "pypi.org / download.pytorch.org (WSL 環境の構築のみ)"
+      ]
+    },
+    "external_side_effects": "denied",
+    "credential_access": "none",
+    "allowed_tools": [
+      "read",
+      "edit",
+      "write",
+      "bash(uv, pytest, git add/commit/diff/status/log, curl 127.0.0.1, powershell scripts/*)",
+      "bash(wsl -d Ubuntu -- ...)"
+    ],
+    "denied_tools": [
+      "git push",
+      "gh repo edit",
+      "huggingface-cli upload"
+    ],
+    "allowed_data_classifications": [
+      "public",
+      "internal"
+    ],
+    "purpose": "Phase 5 の実装"
+  },
+  "human_gates": [
+    {
+      "gate_id": "GATE_EXTERNAL_PUBLISH",
+      "trigger": "git push、リポジトリ公開設定の変更、Hugging Face へのアップロード、外部サービスへの送信",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    },
+    {
+      "gate_id": "GATE_MODELS_INI",
+      "trigger": "models.ini の既存セクションを変更または削除する(追加は不要)",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    }
+  ],
+  "execution_budget": {
+    "max_steps": null,
+    "max_tool_calls": null,
+    "max_wall_time_seconds": null,
+    "same_error_limit": 2,
+    "no_progress_limit": 3,
+    "max_files_changed": 80,
+    "on_exceed": "stop"
+  },
+  "stop_conditions": [
+    "scope_violation",
+    "same_error_repeated_twice",
+    "budget_exceeded",
+    "baseline_failure_unexplained",
+    "human_gate_required"
+  ],
+  "created_at": "2026-10-25T00:00:00Z",
+  "created_by": "human:daiki (spec: docs/spec-phase3-6.md)"
+}

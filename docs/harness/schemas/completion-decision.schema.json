@@ -1,0 +1,482 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:moro1025:ai-harness:schema:completion-decision:1.0",
+  "title": "AI Harness Completion Decision",
+  "description": "Final acceptance decision integrating criterion verification, evidence binding, policy, approvals, scope, unresolved errors, and residual risks.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "core_version",
+    "decision_id",
+    "task_id",
+    "contract_id",
+    "contract_version",
+    "contract_hash",
+    "subject",
+    "status",
+    "criterion_results",
+    "required_criteria_complete",
+    "evidence_binding_check",
+    "scope_check",
+    "policy_check",
+    "critical_unresolved_errors",
+    "unresolved_errors",
+    "uncertain_actions",
+    "policy_decision_refs",
+    "approval_refs",
+    "residual_risks",
+    "decided_by",
+    "decided_at",
+    "reasons"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "core_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$"
+    },
+    "decision_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "contract_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "contract_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "contract_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "repository",
+            "artifact",
+            "resource",
+            "action",
+            "response",
+            "dataset"
+          ]
+        },
+        "repository": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Fa-f0-9]{7,64}$"
+        },
+        "artifact_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2048
+        },
+        "artifact_hash": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resource_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1024
+        },
+        "resource_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        },
+        "action_hash": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "commit"
+          ],
+          "properties": {
+            "commit": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "required": [
+            "artifact_hash"
+          ],
+          "properties": {
+            "artifact_hash": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "required": [
+            "resource_version"
+          ],
+          "properties": {
+            "resource_version": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "required": [
+            "action_hash"
+          ],
+          "properties": {
+            "action_hash": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          }
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "accepted",
+        "rejected",
+        "blocked",
+        "needs_human"
+      ]
+    },
+    "criterion_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "criterion_id",
+          "required",
+          "status",
+          "verification_result_refs"
+        ],
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_-]{1,63}$"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail",
+              "not_run",
+              "blocked",
+              "waived"
+            ]
+          },
+          "verification_result_refs": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 4000
+          }
+        }
+      }
+    },
+    "required_criteria_complete": {
+      "type": "boolean"
+    },
+    "evidence_binding_check": {
+      "enum": [
+        "pass",
+        "fail",
+        "not_run"
+      ]
+    },
+    "scope_check": {
+      "enum": [
+        "pass",
+        "fail",
+        "not_run"
+      ]
+    },
+    "policy_check": {
+      "enum": [
+        "pass",
+        "fail",
+        "not_run"
+      ]
+    },
+    "critical_unresolved_errors": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unresolved_errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "severity",
+          "code",
+          "description"
+        ],
+        "properties": {
+          "severity": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "evidence_refs": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            }
+          }
+        }
+      }
+    },
+    "uncertain_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action_hash",
+          "external_request_id",
+          "reconciliation_status"
+        ],
+        "properties": {
+          "action_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "external_request_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "reconciliation_status": {
+            "enum": [
+              "pending",
+              "resolved_success",
+              "resolved_failure",
+              "needs_human"
+            ]
+          },
+          "reconciliation_ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2048
+          }
+        }
+      }
+    },
+    "policy_decision_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "approval_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      }
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "risk",
+          "severity",
+          "accepted_by"
+        ],
+        "properties": {
+          "risk": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "severity": {
+            "enum": [
+              "critical",
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "accepted_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 256
+          },
+          "approval_ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2048
+          }
+        }
+      }
+    },
+    "decided_by": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "identifier"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "runtime",
+            "trusted-ci",
+            "human",
+            "committee"
+          ]
+        },
+        "identifier": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 128
+        }
+      }
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "accepted"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "required_criteria_complete": {
+            "const": true
+          },
+          "evidence_binding_check": {
+            "const": "pass"
+          },
+          "scope_check": {
+            "const": "pass"
+          },
+          "policy_check": {
+            "const": "pass"
+          },
+          "critical_unresolved_errors": {
+            "const": 0
+          },
+          "uncertain_actions": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

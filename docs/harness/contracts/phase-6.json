@@ -1,0 +1,260 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "contract_id": "contract:local-llm:phase-6",
+  "task_id": "PHASE-6",
+  "contract_version": 1,
+  "status": "active",
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "objective": "評価ハーネスを作り、5 構成(素の大型 / +RAG / 素の小型 / +LoRA / +LoRA+RAG)を同じデータセットで比較し、bench と ctx-vram を計測し、README を公開用に整える(docs/spec-phase3-6.md 5 章)。公開操作そのものは人間が行う",
+  "expected_outcomes": [
+    "uv run llm-eval --suite qa --config X で結果 JSON と Markdown が出る",
+    "5 構成の結果が eval/results/ にあり README の比較表に転記されている",
+    "採点モデルと回答モデルが別で、結果 JSON に記録されている",
+    "bench / ctx-vram の表が README で埋まっている",
+    "README に構成図・再現手順・各 Phase の成果・LICENSE がある",
+    "docs/journal/phase-6.md と Completion Report がある"
+  ],
+  "scope": {
+    "read": [
+      "**"
+    ],
+    "write": [
+      "src/local_llm/**",
+      "tests/**",
+      "eval/**",
+      "bench/**",
+      "scripts/**",
+      "pyproject.toml",
+      "uv.lock",
+      "README.md",
+      "LICENSE",
+      "docs/**",
+      "training/export/**",
+      ".gitignore"
+    ],
+    "forbidden": [
+      ".env",
+      "llama-local/**",
+      "**/*.gguf",
+      "data/chat.db",
+      ".git/**"
+    ],
+    "destinations": [
+      "127.0.0.1"
+    ]
+  },
+  "non_goals": [
+    "新しいモデルの学習",
+    "GitHub / Hugging Face への公開操作(人間が行う)",
+    "評価データセットの事後的な差し替え(版を上げずに中身を変えること)"
+  ],
+  "constraints": [
+    {
+      "constraint_id": "NO_PUSH",
+      "statement": "git push、GitHub の公開設定変更、Hugging Face へのアップロードなど外部送信を行わない(Human Gate)",
+      "required": true
+    },
+    {
+      "constraint_id": "NO_SECRETS",
+      "statement": "API キーや個人情報をコード・ログ・ドキュメントに書かない",
+      "required": true
+    },
+    {
+      "constraint_id": "JOURNAL",
+      "statement": "docs/journal/phase-N.md を実装と同時に書き、判断の理由と確かめ方を残す",
+      "required": true
+    },
+    {
+      "constraint_id": "REPORT",
+      "statement": "完了時に docs/harness/reports/phase-N.md と phase-N.decision.json を書き、criterion ごとに証拠(コマンド出力の要点とコミット hash)を付ける",
+      "required": true
+    },
+    {
+      "constraint_id": "AMEND_NOT_EXPAND",
+      "statement": "scope 外の変更が必要になったら作業を止め、Report に Amendment 案を書く。黙って範囲を広げない",
+      "required": true
+    },
+    {
+      "constraint_id": "GRADER_SEPARATION",
+      "statement": "LLM 採点のモデルは回答モデルと別にする(同じモデルが自分を採点しない)",
+      "required": true
+    },
+    {
+      "constraint_id": "DATASET_VERSIONED",
+      "statement": "評価データは eval/datasets/<name>-v<N>.jsonl とし、中身を変えるときは版を上げる",
+      "required": true
+    }
+  ],
+  "completion_criteria": [
+    {
+      "criterion_id": "EVAL-001",
+      "assertion": "uv run llm-eval --suite qa --config A が eval/results/ に JSON と Markdown を生成する",
+      "required": true,
+      "verification_methods": [
+        "integration-test",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "EVAL-002",
+      "assertion": "5 構成の結果ファイルがそろい、README の比較表の数値が結果 JSON と一致する",
+      "required": true,
+      "verification_methods": [
+        "diff-review",
+        "human-review"
+      ]
+    },
+    {
+      "criterion_id": "EVAL-003",
+      "assertion": "結果 JSON の grader.model と answer.model が異なる(schema で検証)",
+      "required": true,
+      "verification_methods": [
+        "schema"
+      ]
+    },
+    {
+      "criterion_id": "EVAL-004",
+      "assertion": "README のベンチマーク表と ctx-size 表が bench/ の結果で埋まっている",
+      "required": true,
+      "verification_methods": [
+        "diff-review"
+      ]
+    },
+    {
+      "criterion_id": "EVAL-005",
+      "assertion": "README に構成図、再現手順、各 Phase の成果、LICENSE(MIT)がある",
+      "required": true,
+      "verification_methods": [
+        "human-review"
+      ]
+    },
+    {
+      "criterion_id": "EVAL-006",
+      "assertion": "docs/journal/phase-6.md がテンプレートの全節を満たし、評価の限界(件数、採点の主観性)が書かれている",
+      "required": true,
+      "verification_methods": [
+        "diff-review",
+        "human-review"
+      ]
+    }
+  ],
+  "required_evidence": [
+    {
+      "requirement_id": "EV-EVAL-TESTS",
+      "criterion_ids": [
+        "EVAL-001",
+        "EVAL-003"
+      ],
+      "evidence_type": "pytest 出力",
+      "minimum_independence": "deterministic-process",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-EVAL-RESULTS",
+      "criterion_ids": [
+        "EVAL-002",
+        "EVAL-004"
+      ],
+      "evidence_type": "eval/results/*.json と bench/*.md",
+      "minimum_independence": "deterministic-process",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-EVAL-DOCS",
+      "criterion_ids": [
+        "EVAL-005",
+        "EVAL-006"
+      ],
+      "evidence_type": "git diff",
+      "minimum_independence": "human",
+      "tamper_resistance": "version-controlled"
+    }
+  ],
+  "risk_assessment": {
+    "confidentiality": "low",
+    "integrity": "low",
+    "availability": "low",
+    "external_side_effect": "low",
+    "reversibility": "low",
+    "financial_legal_impact": "low",
+    "credential_access": "low",
+    "tenant_boundary": "low",
+    "detection_difficulty": "low",
+    "recovery_time": "low",
+    "data_classifications": [
+      "public",
+      "internal"
+    ],
+    "rationale": [
+      "個人開発の学習用リポジトリ。機密データと本番環境は存在しない",
+      "外部送信は Human Gate で人間が行う"
+    ]
+  },
+  "risk_band": "low",
+  "capability_profile": {
+    "profile_id": "dev-phase-6",
+    "filesystem": "scoped-write",
+    "network": {
+      "mode": "allowlisted",
+      "allowed_destinations": [
+        "127.0.0.1"
+      ]
+    },
+    "external_side_effects": "denied",
+    "credential_access": "none",
+    "allowed_tools": [
+      "read",
+      "edit",
+      "write",
+      "bash(uv, pytest, git add/commit/diff/status/log, curl 127.0.0.1, powershell scripts/*)",
+      "bash(wsl -d Ubuntu -- ... LoRA 推論の確認のみ)"
+    ],
+    "denied_tools": [
+      "git push",
+      "gh repo edit",
+      "huggingface-cli upload"
+    ],
+    "allowed_data_classifications": [
+      "public",
+      "internal"
+    ],
+    "purpose": "Phase 6 の実装"
+  },
+  "human_gates": [
+    {
+      "gate_id": "GATE_EXTERNAL_PUBLISH",
+      "trigger": "git push、リポジトリ公開設定の変更、Hugging Face へのアップロード、外部サービスへの送信",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    },
+    {
+      "gate_id": "GATE_NEW_DEPENDENCY",
+      "trigger": "pyproject.toml / package.json / training の依存に、仕様書に書かれていないライブラリを追加する",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    }
+  ],
+  "execution_budget": {
+    "max_steps": null,
+    "max_tool_calls": null,
+    "max_wall_time_seconds": null,
+    "same_error_limit": 2,
+    "no_progress_limit": 3,
+    "max_files_changed": 80,
+    "on_exceed": "stop"
+  },
+  "stop_conditions": [
+    "scope_violation",
+    "same_error_repeated_twice",
+    "budget_exceeded",
+    "baseline_failure_unexplained",
+    "human_gate_required"
+  ],
+  "created_at": "2026-10-25T00:00:00Z",
+  "created_by": "human:daiki (spec: docs/spec-phase3-6.md)"
+}

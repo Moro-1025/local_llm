@@ -1,0 +1,264 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "contract_id": "contract:local-llm:phase-4",
+  "task_id": "PHASE-4",
+  "contract_version": 1,
+  "status": "active",
+  "contract_hash": "sha256:9f5a505429bba208cc05668d1c15ab059ffc677a3e2713a224f542c19cc5e9af",
+  "objective": "Pi(pi-coding-agent)を llama-server に接続し、ai_harness の原則(許可ツール、パス境界、予算、証拠、完了判定)を Pi extension と Python runner で実装した読み取り専用エージェントを動かす(docs/spec-phase3-6.md 3 章)",
+  "expected_outcomes": [
+    "agent/harness/ の extension が allowed_tools 外と scope 外の tool_call を block し、events.jsonl に記録する",
+    "max_steps 超過で停止し stop_reason=budget_exceeded が残る",
+    "uv run llm-agent --contract ... でサンプル Contract が実行され completion-decision.json と report.md が生成される",
+    "pytest と vitest が通る",
+    "docs/journal/phase-4.md と Completion Report がある"
+  ],
+  "scope": {
+    "read": [
+      "**"
+    ],
+    "write": [
+      "src/local_llm/**",
+      "tests/**",
+      "agent/**",
+      "scripts/agent/**",
+      "pyproject.toml",
+      "uv.lock",
+      "README.md",
+      "docs/**",
+      ".gitignore",
+      "evidence/**"
+    ],
+    "forbidden": [
+      ".env",
+      "llama-local/**",
+      "**/*.gguf",
+      "data/chat.db",
+      ".git/**"
+    ],
+    "destinations": [
+      "127.0.0.1",
+      "registry.npmjs.org (agent/harness の依存取得のみ)"
+    ]
+  },
+  "non_goals": [
+    "書き込み・bash を許可するエージェント",
+    "マルチエージェント、サブエージェント",
+    "長期記憶",
+    "Pi 本体の改造(extension と設定のみ)",
+    "~/.pi 配下の既存設定の削除や上書き(追記は手順を journal に書いた上で可)"
+  ],
+  "constraints": [
+    {
+      "constraint_id": "NO_PUSH",
+      "statement": "git push、GitHub の公開設定変更、Hugging Face へのアップロードなど外部送信を行わない(Human Gate)",
+      "required": true
+    },
+    {
+      "constraint_id": "NO_SECRETS",
+      "statement": "API キーや個人情報をコード・ログ・ドキュメントに書かない",
+      "required": true
+    },
+    {
+      "constraint_id": "JOURNAL",
+      "statement": "docs/journal/phase-N.md を実装と同時に書き、判断の理由と確かめ方を残す",
+      "required": true
+    },
+    {
+      "constraint_id": "REPORT",
+      "statement": "完了時に docs/harness/reports/phase-N.md と phase-N.decision.json を書き、criterion ごとに証拠(コマンド出力の要点とコミット hash)を付ける",
+      "required": true
+    },
+    {
+      "constraint_id": "AMEND_NOT_EXPAND",
+      "statement": "scope 外の変更が必要になったら作業を止め、Report に Amendment 案を書く。黙って範囲を広げない",
+      "required": true
+    },
+    {
+      "constraint_id": "LLM_PROPOSES_CODE_DECIDES",
+      "statement": "ツールの許可・パス境界・予算は extension(コード)で強制する。system prompt に『使わないで』と書くだけで済ませない",
+      "required": true
+    },
+    {
+      "constraint_id": "NO_SELF_REPORT",
+      "statement": "エージェントの finish 出力をそのまま accepted にしない。runner が criterion ごとに検証する",
+      "required": true
+    }
+  ],
+  "completion_criteria": [
+    {
+      "criterion_id": "AGT-001",
+      "assertion": "allowed_tools に無いツール(bash)の呼び出しが block され、events.jsonl に block レコードが残る",
+      "required": true,
+      "verification_methods": [
+        "unit-test",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "AGT-002",
+      "assertion": "scope.read 外のパス(例 ../ や C:\\Windows)の read_file が block される",
+      "required": true,
+      "verification_methods": [
+        "unit-test",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "AGT-003",
+      "assertion": "execution_budget.max_steps=2 で実行すると停止し stop_reason=budget_exceeded が decision に記録される",
+      "required": true,
+      "verification_methods": [
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "AGT-004",
+      "assertion": "agent/contracts/summarize-docs.json の実行で completion-decision.json が生成され、必須 criterion がすべて pass のときだけ accepted になる",
+      "required": true,
+      "verification_methods": [
+        "integration-test",
+        "e2e"
+      ]
+    },
+    {
+      "criterion_id": "AGT-005",
+      "assertion": "uv run pytest と agent/harness の npm test が通る",
+      "required": true,
+      "verification_methods": [
+        "unit-test"
+      ]
+    },
+    {
+      "criterion_id": "AGT-006",
+      "assertion": "docs/journal/phase-4.md がテンプレートの全節を満たし、Pi の設定手順(models.json)が再現可能に書かれている",
+      "required": true,
+      "verification_methods": [
+        "diff-review",
+        "human-review"
+      ]
+    }
+  ],
+  "required_evidence": [
+    {
+      "requirement_id": "EV-AGT-TESTS",
+      "criterion_ids": [
+        "AGT-001",
+        "AGT-002",
+        "AGT-005"
+      ],
+      "evidence_type": "pytest / vitest 出力",
+      "minimum_independence": "deterministic-process",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-AGT-E2E",
+      "criterion_ids": [
+        "AGT-001",
+        "AGT-002",
+        "AGT-003",
+        "AGT-004"
+      ],
+      "evidence_type": "evidence/<run_id>/events.jsonl と decision.json",
+      "minimum_independence": "deterministic-process",
+      "tamper_resistance": "version-controlled"
+    },
+    {
+      "requirement_id": "EV-AGT-DOCS",
+      "criterion_ids": [
+        "AGT-006"
+      ],
+      "evidence_type": "git diff",
+      "minimum_independence": "human",
+      "tamper_resistance": "version-controlled"
+    }
+  ],
+  "risk_assessment": {
+    "confidentiality": "low",
+    "integrity": "low",
+    "availability": "low",
+    "external_side_effect": "low",
+    "reversibility": "low",
+    "financial_legal_impact": "low",
+    "credential_access": "low",
+    "tenant_boundary": "low",
+    "detection_difficulty": "low",
+    "recovery_time": "low",
+    "data_classifications": [
+      "public",
+      "internal"
+    ],
+    "rationale": [
+      "個人開発の学習用リポジトリ。機密データと本番環境は存在しない",
+      "外部送信は Human Gate で人間が行う"
+    ]
+  },
+  "risk_band": "low",
+  "capability_profile": {
+    "profile_id": "dev-phase-4",
+    "filesystem": "scoped-write",
+    "network": {
+      "mode": "allowlisted",
+      "allowed_destinations": [
+        "127.0.0.1",
+        "registry.npmjs.org (agent/harness の依存取得のみ)"
+      ]
+    },
+    "external_side_effects": "denied",
+    "credential_access": "none",
+    "allowed_tools": [
+      "read",
+      "edit",
+      "write",
+      "bash(uv, pytest, git add/commit/diff/status/log, curl 127.0.0.1, powershell scripts/*)",
+      "bash(npm install/test in agent/harness, pi --mode rpc)"
+    ],
+    "denied_tools": [
+      "git push",
+      "gh repo edit",
+      "huggingface-cli upload"
+    ],
+    "allowed_data_classifications": [
+      "public",
+      "internal"
+    ],
+    "purpose": "Phase 4 の実装"
+  },
+  "human_gates": [
+    {
+      "gate_id": "GATE_EXTERNAL_PUBLISH",
+      "trigger": "git push、リポジトリ公開設定の変更、Hugging Face へのアップロード、外部サービスへの送信",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    },
+    {
+      "gate_id": "GATE_NEW_DEPENDENCY",
+      "trigger": "pyproject.toml / package.json / training の依存に、仕様書に書かれていないライブラリを追加する",
+      "required_approvals": 1,
+      "roles": [
+        "owner"
+      ]
+    }
+  ],
+  "execution_budget": {
+    "max_steps": null,
+    "max_tool_calls": null,
+    "max_wall_time_seconds": null,
+    "same_error_limit": 2,
+    "no_progress_limit": 3,
+    "max_files_changed": 80,
+    "on_exceed": "stop"
+  },
+  "stop_conditions": [
+    "scope_violation",
+    "same_error_repeated_twice",
+    "budget_exceeded",
+    "baseline_failure_unexplained",
+    "human_gate_required"
+  ],
+  "created_at": "2026-10-25T00:00:00Z",
+  "created_by": "human:daiki (spec: docs/spec-phase3-6.md)"
+}
