@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-6",
+  "contract_id": "contract:local-llm:phase-6",
+  "contract_version": 1,
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "result_id": "vr:phase-6:EVAL-001:899664d",
+  "criterion_id": "EVAL-001",
+  "assertion": "uv run llm-eval --suite qa --config A が eval/results/ に JSON と Markdown を生成する",
+  "status": "pass",
+  "verifier": {
+    "type": "integration-test",
+    "name": "uv run pytest tests/eval + 実機 e2e(uv run llm-eval --suite qa --config A --base-url http://127.0.0.1:8082)",
+    "version": "pytest 9.x / respx / llama.cpp b11146",
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase6-eval-cde1c2)",
+    "commit": "899664d"
+  },
+  "evidence_refs": [
+    "docs/harness/reports/evidence/phase-6.verify.txt",
+    "eval/results/20261025-171641-qa-A.json",
+    "eval/results/20261025-171641-qa-A.md",
+    "tests/eval/test_runner_cli.py"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "pytest はモックの llama-server(tests/eval/conftest.py の FakeRouter)で通している。実機 e2e は writer セッション自身の実行(self-check)",
+    "実機は scripts/run-eval-all.ps1 経由(内部で同じ uv run llm-eval --suite qa --config A を呼ぶ)"
+  ],
+  "verified_at": "2026-10-25T09:10:00+00:00"
+}

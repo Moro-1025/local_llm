@@ -1,0 +1,46 @@
+﻿
+=== contracts schema ===
+OK docs\harness\contracts\phase-3.json (task-contract)
+OK docs\harness\contracts\phase-4.json (task-contract)
+OK docs\harness\contracts\phase-5.json (task-contract)
+OK docs\harness\contracts\phase-6.json (task-contract)
+OK agent\contracts\summarize-docs.json (task-contract)
+OK docs\harness\reports\phase-3.decision.json (completion-decision)
+OK docs\harness\reports\phase-4.decision.json (completion-decision)
+OK docs\harness\reports\phase-5.decision.json (completion-decision)
+OK docs\harness\reports\phase-3.RAG-001.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-002.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-003.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-004.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-005.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-001.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-002.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-003.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-004.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-005.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-006.verification.json (verification-result)
+--> OK: contracts schema
+
+=== git diff --check ===
+--> OK: git diff --check
+
+=== pytest ===
+........................................................................ [ 82%]
+...............                                                          [100%]
+87 passed in 3.63s
+--> OK: pytest
+
+=== vitest (agent/harness) ===
+
+ RUN  v5.0.5 C:/dev/local_llm/.claude/worktrees/phase6-eval-cde1c2/agent/harness
+
+
+ Test Files  4 passed (4)
+      Tests  35 passed (35)
+   Start at  16:48:02
+   Duration  535ms (import 63%, transform 25%, tests 10%, worker 3%)
+
+--> OK: vitest (agent/harness)
+
+commit: 16f9a6f
+ALL OK

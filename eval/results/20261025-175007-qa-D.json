@@ -1,0 +1,4869 @@
+{
+  "schema_version": "1.0",
+  "suite": "qa",
+  "config": {
+    "id": "D",
+    "label": "Qwen3-4B + LoRA",
+    "answer_model": "local/qwen3-4b-localllm-lora",
+    "use_rag": false,
+    "top_k": null,
+    "intent": "LoRA の効果"
+  },
+  "dataset": {
+    "path": "eval/datasets/qa-v1.jsonl",
+    "name": "qa",
+    "version": 1,
+    "sha256": "de7e554fe0435c957dd57eb3228e72d5ee9bad0df9efacec13d0a722b4d15d98",
+    "total": 147,
+    "n": 147,
+    "seed": 42,
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146
+    ]
+  },
+  "answer": {
+    "model": "local/qwen3-4b-localllm-lora",
+    "temperature": 0.0,
+    "max_tokens": 400,
+    "enable_thinking": false,
+    "system_prompt": "あなたは local_llm プロジェクトと ai_harness のドキュメントに詳しいアシスタントです。日本語で簡潔に答えてください。",
+    "rag": {
+      "enabled": false,
+      "top_k": null
+    }
+  },
+  "grader": {
+    "model": "unsloth/Qwen3-8B-GGUF:Q4_K_M",
+    "temperature": 0.0,
+    "max_tokens": 200,
+    "enable_thinking": false,
+    "scale": {
+      "min": 1,
+      "max": 5
+    },
+    "differs_from_answer_model": true,
+    "llm_grading_enabled": true
+  },
+  "server": {
+    "base_url": "http://127.0.0.1:8082"
+  },
+  "started_at": "2026-10-25T08:50:08+00:00",
+  "finished_at": "2026-10-25T08:52:29+00:00",
+  "metrics": {
+    "n": 147,
+    "threshold": 0.5,
+    "deterministic_correct": 32,
+    "deterministic_accuracy": 0.2177,
+    "mean_keyword_recall": 0.3457,
+    "llm_scored": 147,
+    "llm_failed": 0,
+    "llm_mean_score": 2.585,
+    "citation_rate": 0.0,
+    "retrieval_hit_rate_top3": null,
+    "retrieval_hit_rate_topk": null,
+    "top_k": null,
+    "mean_tok_s": 152.5,
+    "mean_sec": 0.48
+  },
+  "items": [
+    {
+      "index": 0,
+      "question": "llama-server のテストを GPU なしで実行するために使用するコマンドは何ですか。",
+      "expected": "llama-server は respx でモックするため GPU なしでテストが通ります。GPU なしでテストを実行するには、コマンドラインで「uv run pytest」を実行します。これにより Web API は FastAPI の TestClient を使用して処理されます。",
+      "source": "README.md#テスト",
+      "response": "llama-server のテストを GPU なしで実行するには、`--no-gpu` オプションを使用します。具体的には、`llama-server --no-gpu --test` というコマンドが使用されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2308,
+        "hit_keywords": [
+          "gpu",
+          "llama-server",
+          "テスト"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答ではuv run pytestが正解であり、受験者の回答は誤ったコマンドを提示しているため",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答ではuv run pytestが正解であり、受験者の回答は誤ったコマンドを提示しているため\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 75,
+        "completion_tokens": 52,
+        "tok_s": 134.2
+      }
+    },
+    {
+      "index": 1,
+      "question": "ctx-size と VRAM の関係性を計測するために使用されるスクリプトファイル名は何ですか？",
+      "expected": "計測には .\\scripts\\ctx-vram.ps1 という PowerShell スクリプトが使用されます。",
+      "source": "README.md#ctx-size と VRAM",
+      "response": "ctx-size と VRAM の関係性を計測するために使用されるスクリプトは、scripts/eval/ctx_size_vram.py です。このスクリプトは、モデルの最大文脈長と使用メモリの関係を評価するために設計されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.6,
+        "hit_keywords": [
+          "scripts",
+          "スクリプト",
+          "計測"
+        ],
+        "total_keywords": 5,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "スクリプトファイル名と拡張子が模範解答と一致せず、実際のスクリプト名を誤っている",
+        "raw": "{\"score\": 2, \"reason\": \"スクリプトファイル名と拡張子が模範解答と一致せず、実際のスクリプト名を誤っている\"}"
+      },
+      "timing": {
+        "sec": 0.42,
+        "prompt_tokens": 79,
+        "completion_tokens": 63,
+        "tok_s": 150.2
+      }
+    },
+    {
+      "index": 2,
+      "question": "Web UI のバックエンドとして採用されているフレームワークは何ですか。",
+      "expected": "Web UI のバックエンドには、Python の Web フレームワークである FastAPI が採用されています。これは他のツールとは異なり、Webインターフェースの処理を担当します。",
+      "source": "docs/external-spec.md#外部仕様書(Phase 1 / Phase 2)",
+      "response": "Web UI のバックエンドとして採用されているフレームワークは FastAPI です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5,
+        "hit_keywords": [
+          "fastapi",
+          "web",
+          "バックエンド",
+          "フレームワーク",
+          "採用"
+        ],
+        "total_keywords": 10,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同じ事実をすべて含み誤りがない",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同じ事実をすべて含み誤りがない\"}"
+      },
+      "timing": {
+        "sec": 0.15,
+        "prompt_tokens": 70,
+        "completion_tokens": 20,
+        "tok_s": 131.1
+      }
+    },
+    {
+      "index": 3,
+      "question": "systemというroleを持つメッセージは、会話APIにおいてどのような意味を持ち、配置位置に制限はありますか？",
+      "expected": "systemはモデルへの指示、具体的には口調や制約を指定するために使用されます。このメッセージは会話の先頭に1つだけ置く必要があり、省略することも可能です。",
+      "source": "docs/external-spec.md#0.2 会話 API の基本形",
+      "response": "systemというroleを持つメッセージは、会話APIにおいて指示やルールを定義する役割を果たします。ただし、このメッセージは会話の開始時にのみ配置されることが推奨されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4,
+        "hit_keywords": [
+          "system",
+          "メッセージ",
+          "会話",
+          "指示"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "模範解答と同様の主な事実を含みつつ、'推奨されている'という表現で細部が少しずれている。",
+        "raw": "{\"score\": 4, \"reason\": \"模範解答と同様の主な事実を含みつつ、'推奨されている'という表現で細部が少しずれている。\"}"
+      },
+      "timing": {
+        "sec": 0.3,
+        "prompt_tokens": 79,
+        "completion_tokens": 46,
+        "tok_s": 154.2
+      }
+    },
+    {
+      "index": 4,
+      "question": "会話ログの保存先ディレクトリを指定する際、既定値として使用される名称は何ですか？",
+      "expected": "会話ログの保存先ディレクトリを指定する --log-dir オプションの既定値は logs です。この値が指定されていない場合、デフォルトで logs ディレクトリが使用されます。",
+      "source": "docs/external-spec.md#4.1 起動",
+      "response": "会話ログの保存先ディレクトリは、`logs`という既定値で指定されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.625,
+        "hit_keywords": [
+          "logs",
+          "ディレクトリ",
+          "会話ログ",
+          "保存先ディレクトリ",
+          "既定値"
+        ],
+        "total_keywords": 8,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同じ事実をすべて含み誤りがない",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同じ事実をすべて含み誤りがない\"}"
+      },
+      "timing": {
+        "sec": 0.19,
+        "prompt_tokens": 80,
+        "completion_tokens": 25,
+        "tok_s": 134.1
+      }
+    },
+    {
+      "index": 5,
+      "question": "発言を送信して応答をストリーミングで受け取るための API パスとメソッドは何ですか？",
+      "expected": "発言を送信し、その応答をストリーミング形式で受け取るには、POST メソッドで `/api/conversations/{id}/messages` にアクセスします。成功時には HTTP ステータスコード 200 と SSE が返されます。",
+      "source": "docs/external-spec.md#6.1 一覧",
+      "response": "発言を送信して応答をストリーミングで受け取るための API パスは /api/v1/chat/completions で、HTTP メソッドは POST です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4286,
+        "hit_keywords": [
+          "http",
+          "post",
+          "メソッド",
+          "応答",
+          "発言",
+          "送信"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "API パスが模範解答と異なるため、主な事実が正しいが重要な欠落がある",
+        "raw": "{\"score\": 2, \"reason\": \"API パスが模範解答と異なるため、主な事実が正しいが重要な欠落がある\"}"
+      },
+      "timing": {
+        "sec": 0.32,
+        "prompt_tokens": 87,
+        "completion_tokens": 49,
+        "tok_s": 153.4
+      }
+    },
+    {
+      "index": 6,
+      "question": "契約書における `scope.read`、`scope.write`、`scope.forbidden` の項目はそれぞれどのような意味を持ちますか？",
+      "expected": "これらの項目は、対象となるリソースに対するアクセス権限や操作の範囲を定義します。具体的には、`scope.read` は読んでよい場所、`scope.write` は書いてよい場所、`scope.forbidden` は触ってはいけない場所（グロブ）をそれぞれ示しています。",
+      "source": "docs/harness/README.md#契約の読み方",
+      "response": "契約書の scope セクションでは、`scope.read` は読み取り専用の意味、`scope.write` は書き込み可能、`scope.forbidden` は禁止されていることを示します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2308,
+        "hit_keywords": [
+          "scope.forbidden",
+          "scope.read",
+          "scope.write"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主要な事実は正しいが、`scope.forbidden` が「触ってはいけない場所（グロブ）」という細かな説明が欠けており、完全には一致しない。",
+        "raw": "{\"score\": 4, \"reason\": \"主要な事実は正しいが、`scope.forbidden` が「触ってはいけない場所（グロブ）」という細かな説明が欠けており、完全には一致しない。\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 84,
+        "completion_tokens": 49,
+        "tok_s": 150.2
+      }
+    },
+    {
+      "index": 7,
+      "question": "llm-webプロセス内で利用されるデータベースファイルとログファイルの形式は何ですか？",
+      "expected": "llm-webプロセスでは、db.py内のDatabaseクラスがsqlite形式のdata/chat.dbファイルを使用します。また、ターミナル用プロセスであるllm-chatでは、history.py内のChatSessionがJSONLログ形式のlogs/chat-*.jsonlファイルを扱います。",
+      "source": "docs/internal-spec.md#内部仕様書(Phase 1 / Phase 2)",
+      "response": "llm-webプロセスでは、SQLite形式のデータベースファイルと、ログファイルを用いてデータを保存・記録します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3125,
+        "hit_keywords": [
+          "llm-web",
+          "sqlite",
+          "ファイル",
+          "プロセス",
+          "形式"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "データベースファイルとログファイルの形式を述べているが、具体的なファイル名やモジュール名が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"データベースファイルとログファイルの形式を述べているが、具体的なファイル名やモジュール名が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.22,
+        "prompt_tokens": 74,
+        "completion_tokens": 31,
+        "tok_s": 138.9
+      }
+    },
+    {
+      "index": 8,
+      "question": "app.js において、reasoning と content はそれぞれどのように画面に表示されますか？",
+      "expected": "app.js は readSse() で SSE データを受信し、reasoning は折りたたみ表示、content は Markdown として描画されます。また、通信完了後にはメタ行に tok/s を表示し、会話一覧を更新する処理が行われます。",
+      "source": "docs/internal-spec.md#0.3 1 リクエストの一生(Web UI の場合)",
+      "response": "app.js では、reasoning は <div class=\"reasoning\"> タグ内に、content は <div class=\"content\"> タグ内にそれぞれ表示されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "app.js",
+          "content",
+          "reasoning",
+          "表示"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な事実であるSSEデータの受信や表示方法の説明が欠如している",
+        "raw": "{\"score\": 3, \"reason\": \"重要な事実であるSSEデータの受信や表示方法の説明が欠如している\"}"
+      },
+      "timing": {
+        "sec": 0.27,
+        "prompt_tokens": 74,
+        "completion_tokens": 41,
+        "tok_s": 152.3
+      }
+    },
+    {
+      "index": 9,
+      "question": "Web UIとCLIで、履歴の管理方法としてそれぞれどのような構造やファイルが使用されていますか？",
+      "expected": "Web UIではSQLiteデータベース、具体的にはdb.pyファイルが履歴の置き場として使用されます。一方、CLIではメモリ上のlist[Message]型、ChatSession.historyが履歴として扱われます。",
+      "source": "docs/internal-spec.md#0.4 CLI の場合との違い",
+      "response": "Web UIでは、`web/app/app.py`というファイルが履歴の管理に使用されています。一方、CLIでは`cli/harness.py`というファイルが履歴の管理に使用されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3846,
+        "hit_keywords": [
+          "cli",
+          "web",
+          "ファイル",
+          "一方",
+          "履歴"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "Web UIとCLIの履歴管理に関する具体的な構造やファイル名の記述は模範解答と一致せず、誤りがある。",
+        "raw": "{\"score\": 2, \"reason\": \"Web UIとCLIの履歴管理に関する具体的な構造やファイル名の記述は模範解答と一致せず、誤りがある。\"}"
+      },
+      "timing": {
+        "sec": 0.29,
+        "prompt_tokens": 78,
+        "completion_tokens": 45,
+        "tok_s": 153.5
+      }
+    },
+    {
+      "index": 10,
+      "question": "コードを読む順番として、最初に確認すべきtypes.pyにはどのような情報が含まれていますか？",
+      "expected": "types.pyは50行程度で構成されており、MessageとChatChunkという2つのクラスの形状や構造を押さえるために最初に読むべきファイルです。これらはストリーミング処理における基本的なデータ単位となります。",
+      "source": "docs/internal-spec.md#0.4 CLI の場合との違い",
+      "response": "types.pyには、各モジュールで使用される型の定義が含まれています。これは、モジュール間で共有される型の定義を提供する役割を果たします。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0769,
+        "hit_keywords": [
+          "types.py"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "types.pyの主な役割は型の定義を提供することであり、模範解答の内容には含まれないが、重要な情報は正しい。",
+        "raw": "{\"score\": 3, \"reason\": \"types.pyの主な役割は型の定義を提供することであり、模範解答の内容には含まれないが、重要な情報は正しい。\"}"
+      },
+      "timing": {
+        "sec": 0.28,
+        "prompt_tokens": 76,
+        "completion_tokens": 43,
+        "tok_s": 153.4
+      }
+    },
+    {
+      "index": 11,
+      "question": "web/app.py から llama-server への HTTP 通信はどのように行うべきですか？",
+      "expected": "web/app.py から llama-server への HTTP 通信は、必ず LlamaClient 経由で行う必要があります。これにより、routes_chat.py に httpx が直接登場しないように制御されています。",
+      "source": "docs/internal-spec.md#3. モジュール間の依存",
+      "response": "web/app.py から llama-server への HTTP 通信は、uvicorn で起動された web サーバーが http://127.0.0.1:8000 にアクセスできるように設定されています。具体的には、uvicorn web/app:app --host 0.0.0.0 --port 8000 と実行することで、外部からアクセス可能な状態になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4,
+        "hit_keywords": [
+          "http",
+          "llama-server",
+          "web/app.py",
+          "通信"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答とは全く異なる内容で、LlamaClientの使用やhttpxの制御について触れていません。",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答とは全く異なる内容で、LlamaClientの使用やhttpxの制御について触れていません。\"}"
+      },
+      "timing": {
+        "sec": 0.57,
+        "prompt_tokens": 73,
+        "completion_tokens": 93,
+        "tok_s": 163.0
+      }
+    },
+    {
+      "index": 12,
+      "question": "settingsオブジェクトのbase_urlフィールドは、値が設定される際にどのような処理が行われますか？",
+      "expected": "base_urlフィールドは文字列型であり、値が設定される際に末尾のスラッシュ（/）が自動的に取り除かれます。",
+      "source": "docs/internal-spec.md#4.1 config.py",
+      "response": "base_urlフィールドは、値が設定される際に、URLの形式を確認し、必要に応じて修正を行います。具体的には、http://またはhttps://で始まる文字列を確認し、不足している場合は補完します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "base_url",
+          "フィールド"
+        ],
+        "total_keywords": 6,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と異なる処理内容を説明しており、正確性に欠ける",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と異なる処理内容を説明しており、正確性に欠ける\"}"
+      },
+      "timing": {
+        "sec": 0.36,
+        "prompt_tokens": 82,
+        "completion_tokens": 56,
+        "tok_s": 157.2
+      }
+    },
+    {
+      "index": 13,
+      "question": "chat()メソッドのストリーミング処理において、LlamaClientErrorが発生する具体的なケースを2つ挙げてください。",
+      "expected": "LlamaClientErrorは、httpx.AsyncClient.stream()で4xxまたは5xxのステータスコードを受け取った場合、およびストリームイベントでJSONが壊れていないものの、{\"error\": ...}形式でありchoicesフィールドが存在しない場合に発生します。",
+      "source": "docs/internal-spec.md#4.3 client.py",
+      "response": "chat()メソッドのストリーミング処理において、LlamaClientErrorが発生する具体的なケースとしては、400 Bad Requestと503 Service Unavailableがあります。これらはAPI呼び出し中に発生するエラーを示しています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "error",
+          "llamaclienterror",
+          "発生"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "主なエラーの種類は正しいが、具体的な条件（ステータスコードの種類やJSON形式の条件）が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"主なエラーの種類は正しいが、具体的な条件（ステータスコードの種類やJSON形式の条件）が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.4,
+        "prompt_tokens": 91,
+        "completion_tokens": 61,
+        "tok_s": 152.7
+      }
+    },
+    {
+      "index": 14,
+      "question": "app.pyにおいて、clientのaclose処理はいつ行われますか？",
+      "expected": "app.pyでは、`client`を外から渡さなかった場合のみ、終了時に`aclose()`が呼び出されます。テストなどでは外部から差し替えるため、この条件が適用されます。",
+      "source": "docs/internal-spec.md#5.2 ChatLogger",
+      "response": "app.pyのmain関数内では、client = ai_harness.client()でClientインスタンスを生成し、その後aclose()メソッドを呼び出して閉じています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.375,
+        "hit_keywords": [
+          "aclose",
+          "app.py",
+          "client"
+        ],
+        "total_keywords": 8,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は具体的なコードの流れを述べているが、模範解答の条件判断の説明が欠如しているため",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は具体的なコードの流れを述べているが、模範解答の条件判断の説明が欠如しているため\"}"
+      },
+      "timing": {
+        "sec": 0.27,
+        "prompt_tokens": 71,
+        "completion_tokens": 40,
+        "tok_s": 148.8
+      }
+    },
+    {
+      "index": 15,
+      "question": "DELETE 実行時に messages も同時に削除されるのはどちらの状態ですか？",
+      "expected": "「会話中」状態にある会話に対して DELETE を実行した場合、メッセージ（messages）も CASCADE で同時に削除されます。これにより、関連するデータも全てクリーンアップされます。",
+      "source": "docs/internal-spec.md#6.2 db.py (2)",
+      "response": "DELETE 実行時に messages も同時に削除されるのは、state が deleted または deleted_transition である場合です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "delete",
+          "messages",
+          "削除",
+          "同時"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と受験者の回答は相反する内容であり、主な事実が誤っている",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と受験者の回答は相反する内容であり、主な事実が誤っている\"}"
+      },
+      "timing": {
+        "sec": 0.21,
+        "prompt_tokens": 73,
+        "completion_tokens": 28,
+        "tok_s": 131.8
+      }
+    },
+    {
+      "index": 16,
+      "question": "build_prompt関数の主な処理内容と、Phase 3での役割は何ですか？",
+      "expected": "build_prompt関数は、データベースの行からMessageオブジェクトを作成します。ただしreasoningは含めず、contentが空の行は除外されます。さらにPhase 3では、検索結果やsystemメッセージをここで差し込む役割を持ちます。",
+      "source": "docs/internal-spec.md#6.3 service.py",
+      "response": "build_prompt関数は、現在のPhaseと現在のTaskを組み合わせて、実行するCommandを生成します。Phase 3では、このbuild_prompt関数を用いて、実行するCommandを構築し、その結果を確認するプロンプトを生成します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2143,
+        "hit_keywords": [
+          "build_prompt",
+          "phase",
+          "関数"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "主な処理内容とPhase 3の役割についての説明が模範解答と大きく異なっている",
+        "raw": "{\"score\": 2, \"reason\": \"主な処理内容とPhase 3の役割についての説明が模範解答と大きく異なっている\"}"
+      },
+      "timing": {
+        "sec": 0.43,
+        "prompt_tokens": 76,
+        "completion_tokens": 65,
+        "tok_s": 150.8
+      }
+    },
+    {
+      "index": 17,
+      "question": "stream_reply関数において、LlamaClientErrorが発生した場合の処理フローを説明してください。",
+      "expected": "stream_reply処理中にLlamaClientErrorが発生した場合、まずデータの保存が行われます。その後、errorイベントが1つ出力され、関数はreturnによって終了します。これは正常終了や切断時のfinallyブロックとは異なるエラー処理パスです。",
+      "source": "docs/internal-spec.md#6.3 service.py",
+      "response": "stream_reply関数では、LlamaClientErrorが発生した場合、そのエラーをtraceback付きでprintし、その後、exit(1)でプログラムを終了します。これにより、エラーの原因を確認しつつ、正常な処理を中断させずに終了します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3529,
+        "hit_keywords": [
+          "error",
+          "llamaclienterror",
+          "stream_reply",
+          "発生",
+          "終了",
+          "関数"
+        ],
+        "total_keywords": 17,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な処理フローの欠落と誤ったエラー処理方法が含まれている",
+        "raw": "{\"score\": 2, \"reason\": \"重要な処理フローの欠落と誤ったエラー処理方法が含まれている\"}"
+      },
+      "timing": {
+        "sec": 0.44,
+        "prompt_tokens": 82,
+        "completion_tokens": 68,
+        "tok_s": 155.8
+      }
+    },
+    {
+      "index": 18,
+      "question": "RAGによる検索結果の差し込み機能を実装する場合、どの関数にsystemメッセージと引用を追加する必要がありますか？",
+      "expected": "RAGの拡張ポイントでは、service.build_prompt()関数に対してsystemメッセージと引用を追加します。この際、routes_chatとclientのコードは変更不要です。",
+      "source": "docs/internal-spec.md#10. 拡張ポイント(Phase 3 以降に向けて)",
+      "response": "RAGによる検索結果の差し込み機能を実装する場合、`agent_executor`関数にsystemメッセージと引用を追加する必要があります。これにより、検索結果を自然に会話に組み込むことができます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5,
+        "hit_keywords": [
+          "rag",
+          "system",
+          "メッセージ",
+          "引用",
+          "追加",
+          "関数"
+        ],
+        "total_keywords": 12,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 2, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.37,
+        "prompt_tokens": 88,
+        "completion_tokens": 55,
+        "tok_s": 150.4
+      }
+    },
+    {
+      "index": 19,
+      "question": "Phaseのテンプレートにある「どう確かめたか(証拠)」のセクションでは、どのような形式で検証結果を記載すべきですか？",
+      "expected": "Completion Reportへの参照と要点の抜粋を含め、「テストが通った」という抽象的な表現ではなく、「このコマンドを打つとこう出る」という具体的な出力結果の形で記載します。",
+      "source": "docs/journal/README.md#各 Phase のテンプレート",
+      "response": "「どう確かめたか(証拠)」のセクションでは、検証の方法と結果を記載します。具体的には、実行したコマンドやテスト、人間の確認、ログ、スクリーンショット、スナップショット、スクリプト、APIレスポンス、差分、比較、証拠の保存先などを示します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "コマンド",
+          "テスト",
+          "具体的",
+          "記載"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主要な事実は正しいが、具体的な出力結果の記載という模範解答の核心的な点が欠落している",
+        "raw": "{\"score\": 4, \"reason\": \"主要な事実は正しいが、具体的な出力結果の記載という模範解答の核心的な点が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.56,
+        "prompt_tokens": 92,
+        "completion_tokens": 89,
+        "tok_s": 159.8
+      }
+    },
+    {
+      "index": 20,
+      "question": "CLI チャットとブラウザのチャット画面を自作しているプロジェクトの概要を教えてください。",
+      "expected": "自宅 PC の GPU でローカル LLM を動かし、それと会話するための CLI チャットとブラウザのチャット画面を自作しているプロジェクトです。モデルの推論自体は llama-server に任せ、このリポジトリのコードは HTTP で問い合わせて結果を表示・保存する役目を持ちます。",
+      "source": "docs/README.md#ドキュメントの読み方",
+      "response": "CLI チャットとブラウザのチャット画面を自作しているプロジェクトは、local_llm プロジェクトです。このプロジェクトでは、LLM の実行と結果の表示を CLI で行い、ブラウザ上でチャット画面を構築しています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4,
+        "hit_keywords": [
+          "cli",
+          "llm",
+          "チャット",
+          "チャット画面",
+          "ブラウザ",
+          "プロジェクト",
+          "結果",
+          "自作"
+        ],
+        "total_keywords": 20,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な要素であるモデルの推論が llama-server に任せている点が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"重要な要素であるモデルの推論が llama-server に任せている点が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.41,
+        "prompt_tokens": 79,
+        "completion_tokens": 64,
+        "tok_s": 154.4
+      }
+    },
+    {
+      "index": 21,
+      "question": "モデルの推論処理を担当している外部ソフトとそのコマンド名は何ですか。",
+      "expected": "モデルの推論そのものは、llama.cpp というオープンソースのサーバである llama-server に任せられています。このリポジトリの Python コードは、その外部ソフトに対して HTTP で問い合わせて結果を取得し、表示や保存を行う役割を担っています。",
+      "source": "docs/README.md#ドキュメントの読み方",
+      "response": "モデルの推論処理は、外部ソフト「llama-server」によって行われます。具体的には、`llama-server --host 0.0.0.0 --port 8080`というコマンドが使用されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "llama-server",
+          "モデル",
+          "外部ソフト",
+          "推論"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主要な事実は正しいが、コマンドの詳細なオプションは模範解答にないため細部が欠けている。",
+        "raw": "{\"score\": 4, \"reason\": \"主要な事実は正しいが、コマンドの詳細なオプションは模範解答にないため細部が欠けている。\"}"
+      },
+      "timing": {
+        "sec": 0.36,
+        "prompt_tokens": 75,
+        "completion_tokens": 54,
+        "tok_s": 151.0
+      }
+    },
+    {
+      "index": 22,
+      "question": "フロントエンドの画面構成について、サイドバーとチャット欄の配置はどうなっていますか？",
+      "expected": "画面の左側には会話一覧、新規作成、削除機能を持つサイドバーがあり、右側にはチャット欄が配置されています。",
+      "source": "docs/spec-phase1-2.md#フロント",
+      "response": "画面はサイドバーとチャット欄の2つの部分に分かれています。サイドバーにはコンテキスト、ツール、設定、履歴、権限などが配置され、チャット欄にはメッセージ、ツール呼び出し、ファイルアップロード、停止ボタンなどが配置されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4444,
+        "hit_keywords": [
+          "サイドバー",
+          "チャット欄",
+          "画面",
+          "配置"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "サイドバーとチャット欄の配置は正しいが、模範解答にない詳細な内容が含まれており、重要な情報が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"サイドバーとチャット欄の配置は正しいが、模範解答にない詳細な内容が含まれており、重要な情報が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.43,
+        "prompt_tokens": 79,
+        "completion_tokens": 67,
+        "tok_s": 154.7
+      }
+    },
+    {
+      "index": 23,
+      "question": "Phase 0 で保留していたどのスクリプトを実行することで、README の表を埋めることができますか？",
+      "expected": "Phase 0 で保留していた bench.ps1 と ctx-vram.ps1 を実行し、README の表を埋めることができます。",
+      "source": "docs/spec-phase3-6.md#5.2 計測の仕上げ",
+      "response": "Phase 0 で保留していた scripts/README.md というスクリプトを実行することで、README の表を埋めることができます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.6,
+        "hit_keywords": [
+          "phase",
+          "readme",
+          "保留"
+        ],
+        "total_keywords": 5,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "scripts/README.md はスクリプトではなくドキュメントファイルであり、実行して表を埋めるという記述は誤りです。",
+        "raw": "{\"score\": 1, \"reason\": \"scripts/README.md はスクリプトではなくドキュメントファイルであり、実行して表を埋めるという記述は誤りです。\"}"
+      },
+      "timing": {
+        "sec": 0.22,
+        "prompt_tokens": 80,
+        "completion_tokens": 31,
+        "tok_s": 139.6
+      }
+    },
+    {
+      "index": 24,
+      "question": "エージェントの自己申告ではなく、証拠として扱える具体的な例にはどのようなものがありますか？",
+      "expected": "証拠として扱えるものは、テスト結果、API応答、差分、スクリーンショット、ログ、検証レポート、再現手順、監査イベントです。これらは「修正しました」などの自己申告よりも優先されます。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#原則5　エージェントの自己申告より証拠を優先する",
+      "response": "証拠として扱える具体的な例には、git diff、git log、git blame、git show、git status、git branch、git merge、git rebase、git commit --amend、git rebase --interactive、git rebase --onto、git rebase --abort、git rebase --continue、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git re example、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --abort、git rebase --exec、git rebase --onto、git rebase --interactive、git rebase --continue、git rebase --",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0769,
+        "hit_keywords": [
+          "証拠"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答はgitコマンドの一覧を羅列しており、模範解答の証拠として扱える具体的な例とは一致しない",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答はgitコマンドの一覧を羅列しており、模範解答の証拠として扱える具体的な例とは一致しない\"}"
+      },
+      "timing": {
+        "sec": 2.41,
+        "prompt_tokens": 81,
+        "completion_tokens": 400,
+        "tok_s": 165.8
+      }
+    },
+    {
+      "index": 25,
+      "question": "Agentへ望ましい行動を伝えるための行動誘導の例として、文章中に挙げられている要素は何ですか？",
+      "expected": "行動誘導の例としては、Prompt、System Instruction、Skill、手順書が挙げられています。これらは、Agentに対して望ましい行動を伝えるために使用される手段です。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#原則14　制御の強制力を区別する",
+      "response": "文章中の行動誘導の例として、望ましいAction、Tool、Stop Condition、Evidence、Verification、Completion Criteriaが挙げられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2222,
+        "hit_keywords": [
+          "行動",
+          "行動誘導"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と受験者の回答は異なる要素を挙げており、主に誤りがある。",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と受験者の回答は異なる要素を挙げており、主に誤りがある。\"}"
+      },
+      "timing": {
+        "sec": 0.24,
+        "prompt_tokens": 83,
+        "completion_tokens": 33,
+        "tok_s": 138.1
+      }
+    },
+    {
+      "index": 26,
+      "question": "「5.7 ツール結果の共通形式」で定義されているJSONスキーマにおいて、エラー発生時にもモデルが機械的に扱えるようにするために返されるフィールドとして定義されていないものはどれですか？",
+      "expected": "定義されているフィールドにはok、status、data、evidence_refs、side_effects、retryable、error_code、messageがあります。したがって、payload_hashやidempotency_keyなどはこの共通形式には含まれていません。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#5.5 副作用の分類",
+      "response": "定義されているフィールドは、status、content、source、evidence、error、retrieval、relevanceです。これらの中で、errorフィールドはエラー発生時に返されるため、errorフィールドが定義されていないという条件は誤りです。したがって、誤った選択肢として示されたerrorフィールドは、実際には定義されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "status",
+          "フィールド",
+          "定義"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は模範解答と矛盾しており、誤ったフィールド名を挙げているため",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は模範解答と矛盾しており、誤ったフィールド名を挙げているため\"}"
+      },
+      "timing": {
+        "sec": 0.56,
+        "prompt_tokens": 108,
+        "completion_tokens": 88,
+        "tok_s": 158.0
+      }
+    },
+    {
+      "index": 27,
+      "question": "イベントログを再生の正本とする場合の確認事項は何ですか？",
+      "expected": "Event schemaのVersion管理、Duplicateと順序逆転の扱い、個人情報の削除やRetention要件との両立、Snapshotと再生結果の整合性検証、業務DBとの二重正本の回避、保存量と再生時間の運用可能性を確認する必要があります。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#継続優先(Fail Open)が向くもの",
+      "response": "イベントログを再生の正本とする場合、ログの内容を確認し、実行結果を確認し、残存状態を確認することが求められます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0,
+        "hit_keywords": [],
+        "total_keywords": 20,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は関係はあるが、模範解答に比べて重要な事項が欠落しており、内容が不十分である",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は関係はあるが、模範解答に比べて重要な事項が欠落しており、内容が不十分である\"}"
+      },
+      "timing": {
+        "sec": 0.25,
+        "prompt_tokens": 70,
+        "completion_tokens": 35,
+        "tok_s": 140.8
+      }
+    },
+    {
+      "index": 28,
+      "question": "検証(Verification)、評価(Evaluation)、レビュー(Review)の3つの概念における問いの違いは何ですか？",
+      "expected": "検証は処理や変更が要求どおり成立したかを確認し、評価はエージェントシステムの品質が基準を満たすかを確認します。一方、レビューは変更が妥当で安全、かつ保守可能かどうかを判断します。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#7.1 3つを分ける",
+      "response": "検証は「実行されたか」を確認し、評価は「どの程度達成したか」を測定し、レビューは「何が間違ったか」を分析します。これらはそれぞれ異なる目的で行われるステップです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "レビュー",
+          "検証",
+          "評価"
+        ],
+        "total_keywords": 15,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "検証、評価、レビューの目的の説明は概ね正しいが、模範解答の「妥当性・安全性・保守可能性」の点が欠落している。",
+        "raw": "{\"score\": 3, \"reason\": \"検証、評価、レビューの目的の説明は概ね正しいが、模範解答の「妥当性・安全性・保守可能性」の点が欠落している。\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 83,
+        "completion_tokens": 58,
+        "tok_s": 149.0
+      }
+    },
+    {
+      "index": 29,
+      "question": "検証ループにおける後段へのデータ流出に関する重要な原則は何ですか？",
+      "expected": "検証ループでは、実行から完了条件との照合を経て成功や修正が行われますが、その過程において未検証のデータを後段へ流さないことが非常に重要です。これにより品質を確保します。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#7.1 3つを分ける",
+      "response": "検証ループの後段へデータを流出させないことが重要です。これにより、不完全な検証結果が誤って採用されず、システムの信頼性を確保します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3846,
+        "hit_keywords": [
+          "データ",
+          "後段",
+          "検証ループ",
+          "確保",
+          "重要"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同様に後段へのデータ流出を防ぐことが重要であり、品質や信頼性の確保を説明しているため",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同様に後段へのデータ流出を防ぐことが重要であり、品質や信頼性の確保を説明しているため\"}"
+      },
+      "timing": {
+        "sec": 0.32,
+        "prompt_tokens": 72,
+        "completion_tokens": 49,
+        "tok_s": 151.0
+      }
+    },
+    {
+      "index": 30,
+      "question": "LLM-as-a-Judgeを採用する際に推奨される対策として、評価基準に関する具体的な手法は何ですか？",
+      "expected": "LLM-as-a-Judgeによる評価において、評価基準をルーブリック化することが推奨されます。これにより、曖昧な評価を避け、より一貫性のある判断が可能になります。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#7.6 LLMを評価者に使う場合",
+      "response": "LLM-as-a-Judgeを採用する際には、評価基準を人間が定義し、LLMがそれを適用するようにする必要があります。これにより、判断の妥当性を人間の知識や経験で担保し、誤った判断を防ぐことが可能になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5,
+        "hit_keywords": [
+          "llm-as-a-judge",
+          "判断",
+          "評価",
+          "評価基準"
+        ],
+        "total_keywords": 8,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "評価基準のルーブリック化が推奨される点は正しいが、人間が定義しLLMが適用するという主張は模範解答の核心を捉えていない。",
+        "raw": "{\"score\": 3, \"reason\": \"評価基準のルーブリック化が推奨される点は正しいが、人間が定義しLLMが適用するという主張は模範解答の核心を捉えていない。\"}"
+      },
+      "timing": {
+        "sec": 0.44,
+        "prompt_tokens": 85,
+        "completion_tokens": 68,
+        "tok_s": 154.5
+      }
+    },
+    {
+      "index": 31,
+      "question": "8.2節のトレース階層において、「step」の直下に位置する要素として「model_call」以外に挙げられているものを教えてください。",
+      "expected": "トレース階層において、「step」の直下には「model_call」の他に、「retrieval」、「memory_read」、「tool_call」、「verification」、「approval」、「state_transition」が含まれます。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#7.8 変更時に再評価する対象",
+      "response": "8.2節のトレース階層において、「step」の直下には「model_call」および「tool_call」の2つの要素が挙げられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5,
+        "hit_keywords": [
+          "model_call",
+          "step",
+          "tool_call",
+          "トレース階層",
+          "直下"
+        ],
+        "total_keywords": 10,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な要素が欠落しており、誤りも含まれている",
+        "raw": "{\"score\": 2, \"reason\": \"重要な要素が欠落しており、誤りも含まれている\"}"
+      },
+      "timing": {
+        "sec": 0.26,
+        "prompt_tokens": 89,
+        "completion_tokens": 37,
+        "tok_s": 144.3
+      }
+    },
+    {
+      "index": 32,
+      "question": "再生(Replay)機能の用途として、障害調査や評価ケース生成以外にどのようなものが挙げられていますか？",
+      "expected": "再生用途としては、障害調査や評価ケース生成の他に、UI表示、監査、コスト分析、新しいモデルでの再実行、および回帰確認が挙げられています。これらは追記専用イベントから過去の実行状態を再構成することにより実現されます。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#ツール",
+      "response": "再生機能の用途には、障害調査や評価ケース生成の他に、人間の指示を再現するためのものも含まれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1429,
+        "hit_keywords": [
+          "評価ケース生成",
+          "障害調査"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "受験者の回答は主な用途を一部誤っており、模範解答に記載されているUI表示や監査などの重要な用途が欠落している。",
+        "raw": "{\"score\": 3, \"reason\": \"受験者の回答は主な用途を一部誤っており、模範解答に記載されているUI表示や監査などの重要な用途が欠落している。\"}"
+      },
+      "timing": {
+        "sec": 0.27,
+        "prompt_tokens": 85,
+        "completion_tokens": 37,
+        "tok_s": 138.6
+      }
+    },
+    {
+      "index": 33,
+      "question": "unsafe_tool_attempts_thresholdの値は何で、これはどのような目的で使用されますか。",
+      "expected": "unsafe_tool_attempts_thresholdの値は1です。これはアラートの例として示されており、通常時の分布を測定してから調整するための初期監視用の仮値として使用されます。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#8.7 アラートの例",
+      "response": "unsafe_tool_attempts_thresholdの値は10です。これは、危険なツール呼び出しの試行回数を制御するために使用される設定値です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.125,
+        "hit_keywords": [
+          "unsafe_tool_attempts_threshold"
+        ],
+        "total_keywords": 8,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な事実としてunsafe_tool_attempts_thresholdの値が1である点を誤って10と述べており、目的の説明も不正確である",
+        "raw": "{\"score\": 2, \"reason\": \"重要な事実としてunsafe_tool_attempts_thresholdの値が1である点を誤って10と述べており、目的の説明も不正確である\"}"
+      },
+      "timing": {
+        "sec": 0.27,
+        "prompt_tokens": 72,
+        "completion_tokens": 39,
+        "tok_s": 146.8
+      }
+    },
+    {
+      "index": 34,
+      "question": "全体タイムアウトとモデルのタイムアウトの違いは何ですか？",
+      "expected": "文章では、1つの全体タイムアウトだけではどこが遅いかわからないとされています。そのため、全体タイムアウトの下位要素として、モデル、検索、ツール、承認待ち、検証といった工程別にタイムアウトを設定することが推奨されています。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#9.2 タイムアウトは工程別に設定する",
+      "response": "全体タイムアウトは、モデルのタイムアウトを経て、さらに10秒の余裕を確保したタイムアウトです。これにより、モデルの応答が遅れた場合でも、システム全体の応答時間の上限を管理できます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2727,
+        "hit_keywords": [
+          "タイムアウト",
+          "モデル",
+          "全体タイムアウト"
+        ],
+        "total_keywords": 11,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "全体タイムアウトとモデルタイムアウトの関係を述べているが、模範解答の要点である下位要素のタイムアウト設定について述べていない。",
+        "raw": "{\"score\": 2, \"reason\": \"全体タイムアウトとモデルタイムアウトの関係を述べているが、模範解答の要点である下位要素のタイムアウト設定について述べていない。\"}"
+      },
+      "timing": {
+        "sec": 0.38,
+        "prompt_tokens": 67,
+        "completion_tokens": 57,
+        "tok_s": 150.7
+      }
+    },
+    {
+      "index": 35,
+      "question": "境界検証で確認する必須項目には何が含まれていますか？",
+      "expected": "境界検証では、サブエージェントの出力を親へ渡す前に必須項目、出典、空値、対象範囲、変更ファイル、検証結果、未解決事項、予算使用量、停止理由を確認します。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#11.4 引継ぎ契約(Handoff Contract)",
+      "response": "境界検証では、入力、出力、状態、外部API、権限、機密、残存情報、監査ログ、残存状態、再開状態、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構築、再開、再試行、再構",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1667,
+        "hit_keywords": [
+          "出力",
+          "境界検証"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は模範解答と全く関係ない内容であり、誤った事実を含んでいます。",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は模範解答と全く関係ない内容であり、誤った事実を含んでいます。\"}"
+      },
+      "timing": {
+        "sec": 2.32,
+        "prompt_tokens": 71,
+        "completion_tokens": 400,
+        "tok_s": 172.3
+      }
+    },
+    {
+      "index": 36,
+      "question": "起動予算(Spawn Budget)の設定例で、max_active_agentsの値はいくらですか？",
+      "expected": "起動予算の設定例によると、max_active_agentsの値は3です。これは同時稼働数の最大値を示しており、タスク全体で起動できる総数とは別に管理されます。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#11.4 引継ぎ契約(Handoff Contract)",
+      "response": "起動予算(Spawn Budget)の設定例では、max_active_agentsの値は3に設定されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4444,
+        "hit_keywords": [
+          "max_active_agents",
+          "設定例",
+          "起動",
+          "起動予算"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同じ事実をすべて含み誤りがない",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同じ事実をすべて含み誤りがない\"}"
+      },
+      "timing": {
+        "sec": 0.2,
+        "prompt_tokens": 77,
+        "completion_tokens": 26,
+        "tok_s": 129.3
+      }
+    },
+    {
+      "index": 37,
+      "question": "失敗モードから逆算する際、ツール結果が壊れた場合に先に追加すべき機能は何ですか？",
+      "expected": "12.4 失敗モードから逆算するの表によると、主な失敗である「ツール結果が壊れる」に対して先に追加するべきものは「出力検証」です。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#段階1　ツール利用",
+      "response": "失敗モードから逆算する際、ツール結果が壊れた場合にまず追加すべき機能は、ツール結果の検証です。これにより、不正な結果がシステムに悪影響を与える前に確認できます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.7143,
+        "hit_keywords": [
+          "ツール結果",
+          "失敗",
+          "失敗モード",
+          "追加",
+          "逆算"
+        ],
+        "total_keywords": 7,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同様に「出力検証」を正しく挙げており、理由も正確に説明している。",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同様に「出力検証」を正しく挙げており、理由も正確に説明している。\"}"
+      },
+      "timing": {
+        "sec": 0.35,
+        "prompt_tokens": 83,
+        "completion_tokens": 56,
+        "tok_s": 158.5
+      }
+    },
+    {
+      "index": 38,
+      "question": "Checkpointには「何を試みたか」だけでなく、どのような情報を含める必要がありますか。",
+      "expected": "Checkpointには「何を試みたか」だけでなく、外部処理の確認情報を含める必要があります。これにより、再開時の判断材料として適切なデータが提供されます。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#13.8 再開時の判断",
+      "response": "Checkpointには、何を試みたかだけでなく、何を確認したか、何を変更したか、何を残したか、何を削除したか、何を再試行したか、何を保留したか、何を次にやるべきか、何を止めたらいいか、何を再評価すべきか、何を再計画すべきか、何を再検証すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、何を再確認すべきか、",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.125,
+        "hit_keywords": [
+          "checkpoint"
+        ],
+        "total_keywords": 8,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は繰り返しの「何を再確認すべきか」が含まれており、模範解答の「外部処理の確認情報」に該当しない内容ばかりで、事実の一致が全くないため。",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は繰り返しの「何を再確認すべきか」が含まれており、模範解答の「外部処理の確認情報」に該当しない内容ばかりで、事実の一致が全くないため。\"}"
+      },
+      "timing": {
+        "sec": 2.34,
+        "prompt_tokens": 73,
+        "completion_tokens": 400,
+        "tok_s": 170.7
+      }
+    },
+    {
+      "index": 39,
+      "question": "トレースイベントのJSONデータにおいて、task_idの値は何ですか。",
+      "expected": "トレースイベントのJSONデータを確認すると、task_idの値は「task_1」と設定されています。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#例: 遅延・費用の値は説明用。実測したSLOに置き換える。",
+      "response": "トレースイベントのJSONデータの例では、task_idの値は\"1234567890\"となっています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.8,
+        "hit_keywords": [
+          "json",
+          "task_id",
+          "データ",
+          "トレースイベント"
+        ],
+        "total_keywords": 5,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "task_idの値に関する主要な事実が異なるため",
+        "raw": "{\"score\": 2, \"reason\": \"task_idの値に関する主要な事実が異なるため\"}"
+      },
+      "timing": {
+        "sec": 0.22,
+        "prompt_tokens": 70,
+        "completion_tokens": 31,
+        "tok_s": 138.9
+      }
+    },
+    {
+      "index": 40,
+      "question": "authorize メソッドで tool.risk が RiskLevel.HIGH ではない場合、どのような値を返しますか？",
+      "expected": "authorize メソッドでは、tool.risk が RiskLevel.HIGH ではない場合、True と計算された digest のタプルを返します。digest は tool.name と args をハッシュ化した値です。",
+      "source": "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md#補足 (4)",
+      "response": "authorize メソッドでは、tool.risk が RiskLevel.HIGH でない場合、False を返します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3636,
+        "hit_keywords": [
+          "authorize",
+          "risklevel.high",
+          "tool.risk",
+          "メソッド"
+        ],
+        "total_keywords": 11,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な事実として digest のタプルを返す点が欠落している",
+        "raw": "{\"score\": 2, \"reason\": \"重要な事実として digest のタプルを返す点が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.19,
+        "prompt_tokens": 81,
+        "completion_tokens": 27,
+        "tok_s": 140.3
+      }
+    },
+    {
+      "index": 41,
+      "question": "Version 1.1で追加された読書ルートの対象は何ですか？",
+      "expected": "個人、Team、CI、Multi-Agent、Security Audit向けの読書ルートが追加されました。これにより、異なる利用シーンや環境に応じた適切な学習パスが提供可能になっています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#Version 1.1の主な変更",
+      "response": "Version 1.1で追加された読書ルートの対象は、学習者向けの読書ルートです。これにより、新しいユーザーがプロジェクトの構造や機能を理解しやすくなるよう設計されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1667,
+        "hit_keywords": [
+          "読書ルート",
+          "追加"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答の主要な事実は正しいが、具体的な対象が誤っており、詳細が欠如している",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答の主要な事実は正しいが、具体的な対象が誤っており、詳細が欠如している\"}"
+      },
+      "timing": {
+        "sec": 0.34,
+        "prompt_tokens": 74,
+        "completion_tokens": 53,
+        "tok_s": 156.6
+      }
+    },
+    {
+      "index": 42,
+      "question": "Project Harnessの観点での通し事例において、実装段階で使用されるワークスペースのモード名は何ですか。",
+      "expected": "実装段階では、workspace-writeというモードが使用されます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#通し事例",
+      "response": "実装段階では、workspace: agent-workspaceというモードが使用されます。これは、Agentが独自のワークスペースで実装を行うための設定です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.6667,
+        "hit_keywords": [
+          "モード",
+          "実装段階"
+        ],
+        "total_keywords": 3,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "実装段階で使用されるモード名が正しくない",
+        "raw": "{\"score\": 2, \"reason\": \"実装段階で使用されるモード名が正しくない\"}"
+      },
+      "timing": {
+        "sec": 0.26,
+        "prompt_tokens": 83,
+        "completion_tokens": 36,
+        "tok_s": 140.8
+      }
+    },
+    {
+      "index": 43,
+      "question": "利用ハーネスには、具体的になにが含まれると説明されていますか？",
+      "expected": "利用ハーネスには、リポジトリへ常時与える指示、タスクごとの目的や変更範囲、計画と実装の分離、サンドボックスと承認ポリシー、ネットワークや認証情報の制御、Gitブランチによる変更隔離、各種検査やレビュー、HooksやMCPの使い分けなどが含まれます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#本書の目的",
+      "response": "利用ハーネスには、権限、検証、ログ、監査、停止、再開、状態保持、そして外部ツールの利用が含まれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0455,
+        "hit_keywords": [
+          "利用ハーネス"
+        ],
+        "total_keywords": 22,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は利用ハーネスの内容を誤っており、模範解答と大きく異なる",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は利用ハーネスの内容を誤っており、模範解答と大きく異なる\"}"
+      },
+      "timing": {
+        "sec": 0.27,
+        "prompt_tokens": 73,
+        "completion_tokens": 42,
+        "tok_s": 157.1
+      }
+    },
+    {
+      "index": 44,
+      "question": "AIエージェント開発原則として、LLMの指示ではなく安全を守るために何を用いるべきだとされていますか？",
+      "expected": "LLMの指示ではなく、決定論的な境界で安全を守ることが原則として挙げられています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#一般的なAIエージェント開発原則から引き継ぐもの",
+      "response": "LLMの指示ではなく、安全を守るために、Agentの状態、現在の目的、完了条件、許可された操作、禁止された操作、現在の証拠、残存リスク、残存権限、残存制約を用います。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5,
+        "hit_keywords": [
+          "llm",
+          "安全",
+          "指示"
+        ],
+        "total_keywords": 6,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答の主な事実である「決定論的な境界」を含んでいないため、重要な欠落がある",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答の主な事実である「決定論的な境界」を含んでいないため、重要な欠落がある\"}"
+      },
+      "timing": {
+        "sec": 0.36,
+        "prompt_tokens": 83,
+        "completion_tokens": 58,
+        "tok_s": 159.6
+      }
+    },
+    {
+      "index": 45,
+      "question": "原則4で述べられている、常時必要な情報やタスク固有の情報を格納するべきファイルや仕組みはそれぞれ何ですか？",
+      "expected": "常時必要な情報はAGENTS.mdへ、タスク固有の目的や制約は依頼文またはTask Contractへ、必要時だけ使う手順はSkillへ、決定論的に強制するものはHook・Rule・Scriptへ置く必要があります。これらを混ぜるとAGENTS.mdが肥大化するためです。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#原則3　Agentの「完了しました」を採用条件にしない",
+      "response": "原則4では、常時必要な情報はworkspace/.env、タスク固有の情報はworkspace/.task.json、そして状態を保存するためのworkspace/.state.jsonが指定されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2222,
+        "hit_keywords": [
+          "task",
+          "タスク固有",
+          "常時必要",
+          "情報"
+        ],
+        "total_keywords": 18,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は模範解答と異なるファイル名と用途を記述しており、主な事実が誤っている",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は模範解答と異なるファイル名と用途を記述しており、主な事実が誤っている\"}"
+      },
+      "timing": {
+        "sec": 0.28,
+        "prompt_tokens": 85,
+        "completion_tokens": 42,
+        "tok_s": 147.5
+      }
+    },
+    {
+      "index": 46,
+      "question": "原則7で書込みの並列化を行う際、競合などを避けるために推奨される隔離の方法は何ですか？",
+      "expected": "原則7では、複数Agentが同じWorking Treeへ同時に書込むと競合や重複実装が増えると説明されています。そのため、書込みを並列化する場合は、Worktreeや独立ブランチを利用して隔離することが推奨されています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#原則6　最小権限をタスク単位で選ぶ",
+      "response": "原則7では、書込みの並列化を行う際、競合などを避けるために、同じファイルを同時に書き換えることを避けることが推奨されています。具体的には、同じファイルを同時に書き換えるのではなく、別ファイルを用いることが推奨されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.375,
+        "hit_keywords": [
+          "並列化",
+          "原則",
+          "同時",
+          "推奨",
+          "書込",
+          "競合"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な事実として隔離方法の具体的な手段が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"重要な事実として隔離方法の具体的な手段が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.4,
+        "prompt_tokens": 83,
+        "completion_tokens": 61,
+        "tok_s": 153.6
+      }
+    },
+    {
+      "index": 47,
+      "question": "Agent向けに設計された良いScriptの特性として、ログ出力に関する要件は何ですか？",
+      "expected": "良いScriptの特性として、ログ出力先が固定であることが挙げられます。これにより、失敗時の診断やデバッグが容易になります。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#2.3 Bootstrap Script",
+      "response": "良いScriptは、Agent向けに設計され、ログ出力はAgentのlog_levelで制御されます。これにより、Agentのログレベルによって出力が調整され、適切な情報が表示されるようになります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.125,
+        "hit_keywords": [
+          "script"
+        ],
+        "total_keywords": 8,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.32,
+        "prompt_tokens": 74,
+        "completion_tokens": 48,
+        "tok_s": 148.0
+      }
+    },
+    {
+      "index": 48,
+      "question": "Agent向けスクリプトにおいて、環境を暗黙に書き換えることは良い設計とみなされますか？",
+      "expected": "いいえ、みなされません。Agent向けに設計された良いScriptでは副作用が明示されている必要があります。一方、悪いScriptの例として、環境を暗黙に書き換える挙動が挙げられています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#2.3 Bootstrap Script",
+      "response": "いいえ、Agent向けスクリプトでは環境を暗黙に書き換えるべきではありません。明示的に変更するか、その変更を検知する仕組みを用意することが推奨されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4444,
+        "hit_keywords": [
+          "agent",
+          "明示",
+          "暗黙",
+          "環境"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同様の事実を正確に含んでおり、誤りがない。",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同様の事実を正確に含んでおり、誤りがない。\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 79,
+        "completion_tokens": 51,
+        "tok_s": 156.0
+      }
+    },
+    {
+      "index": 49,
+      "question": "AI Coding AgentへのTask依頼において、リポジトリ全体の説明をPromptへ貼り付けない理由は何ですか。",
+      "expected": "Contextを渡しすぎないために、リポジトリ全体の説明を毎回Promptへ貼り付けることは推奨されません。代わりに、Agentが自身で探索できるよう、ファイル名やSymbolなどの手掛かりを渡すことが重要です。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#3.2 Task Contractの必須項目",
+      "response": "リポジトリ全体の説明をPromptへ貼り付けない理由は、Agentがその説明を読まないためです。これにより、Agentが適切にタスクを遂行するための情報を得られず、効率的な開発が妨げられる可能性があります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3077,
+        "hit_keywords": [
+          "agent",
+          "prompt",
+          "リポジトリ全体",
+          "説明"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な欠落や誤りがあるため",
+        "raw": "{\"score\": 2, \"reason\": \"重要な欠落や誤りがあるため\"}"
+      },
+      "timing": {
+        "sec": 0.44,
+        "prompt_tokens": 84,
+        "completion_tokens": 68,
+        "tok_s": 156.3
+      }
+    },
+    {
+      "index": 50,
+      "question": "複雑なTaskを依頼する際に、最初に取るべき行動の指示として推奨される内容はどのようなものですか？",
+      "expected": "複雑なTaskの場合、まずRepositoryを調査し、変更せずに原因仮説と実行計画を提示してくださいという指示が推奨されます。これにより、安易な修正を防ぎ、適切な計画を立てることが期待されます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#3.6 Task Promptの推奨順序",
+      "response": "複雑なTaskを依頼する際には、最初に「何をしたいのか」を確認し、次に「なぜそのTaskなのか」を理解する必要があります。これにより、目的や背景を明確に把握し、適切な対応を図ることができます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "task",
+          "複雑",
+          "適切"
+        ],
+        "total_keywords": 15,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.41,
+        "prompt_tokens": 84,
+        "completion_tokens": 64,
+        "tok_s": 156.9
+      }
+    },
+    {
+      "index": 51,
+      "question": "Planが必要なTaskとして、要求が曖昧な場合の他にどのような状況が挙げられていますか？",
+      "expected": "Planが必要なTaskには、複数Subsystemへ影響する場合、Public APIが変わる場合、Data Migrationがある場合、Security境界が変わる場合、依存関係を追加する場合、UIとBackendを同時に変える場合、検証に複数Environmentが必要な場合、長時間実行になる場合が挙げられています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#4.8 定期Review",
+      "response": "Planが必要なTaskには、要求が曖昧な場合と、複数の独立したActionが必要な場合が含まれます。これらはタスクの複雑性や明確性に基づいて判断されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1667,
+        "hit_keywords": [
+          "plan",
+          "task",
+          "複数"
+        ],
+        "total_keywords": 18,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な状況が欠落しており、一部の事実が誤っている",
+        "raw": "{\"score\": 3, \"reason\": \"重要な状況が欠落しており、一部の事実が誤っている\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 80,
+        "completion_tokens": 47,
+        "tok_s": 150.9
+      }
+    },
+    {
+      "index": 52,
+      "question": "5.4で示されている「良い流れ」における検証プロセスの順序を説明してください。",
+      "expected": "良い流れでは、まず小さな変更を行い、Targeted Testを実施します。その後、次の変更へと進み、Integration Testを実行します。最後に全体Reviewを行うことで、多数の失敗や原因不明の問題を防ぎます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#5.2 Planを契約にする",
+      "response": "良い流れでは、まずTest、CI、Smoke、Integration、Human Reviewの順序で検証が行われます。これにより、機能の正しさを段階的に確認し、人間の判断を最後に残すことで、品質を高めることが目的です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "integration",
+          "review",
+          "test",
+          "最後"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "検証プロセスの順序が模範解答と大きく異なり、重要な事実が欠落している",
+        "raw": "{\"score\": 2, \"reason\": \"検証プロセスの順序が模範解答と大きく異なり、重要な事実が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.4,
+        "prompt_tokens": 81,
+        "completion_tokens": 62,
+        "tok_s": 155.0
+      }
+    },
+    {
+      "index": 53,
+      "question": "実行予算(Execution Budget)の設定を直接持つエージェントはどのようなものですか？",
+      "expected": "Vendor Agentが直接この設定を持つとは限りません。代わりに、Task Contract、Orchestrator、Hook、CI Timeout、人間運用を組み合わせて実現します。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#5.5 実行予算(Execution Budget)",
+      "response": "実行予算(Execution Budget)の設定を直接持つエージェントは、Agentの種類によって異なります。具体的には、Tool Agent、Approval Agent、Completion Agent、Verification Agent、Human-in-the-loop Agent、そしてHuman Gate Agentのいずれかです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "agent",
+          "直接"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と受験者の回答は根本的に異なる内容であり、実行予算の設定を持つエージェントについて正しい情報が含まれていない",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と受験者の回答は根本的に異なる内容であり、実行予算の設定を持つエージェントについて正しい情報が含まれていない\"}"
+      },
+      "timing": {
+        "sec": 0.37,
+        "prompt_tokens": 77,
+        "completion_tokens": 60,
+        "tok_s": 161.8
+      }
+    },
+    {
+      "index": 54,
+      "question": "Dependency調査タスクにおいて、Network権限と推奨される姿勢はどのような内容ですか。",
+      "expected": "Dependency調査タスクのNetwork権限はDomain限定です。また、推奨姿勢としてLockfileをReviewすることが定められており、Install前に承認を行う必要があります。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#6.2 基本となる権限プロファイル",
+      "response": "Network権限は、必要最小で、Network-onlyを推奨します。これにより、不要なネットワーク通信を防ぎ、セキュリティリスクを低減します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1818,
+        "hit_keywords": [
+          "network",
+          "権限"
+        ],
+        "total_keywords": 11,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "Network権限のDomain限定とLockfileのReviewが欠落しているため",
+        "raw": "{\"score\": 3, \"reason\": \"Network権限のDomain限定とLockfileのReviewが欠落しているため\"}"
+      },
+      "timing": {
+        "sec": 0.27,
+        "prompt_tokens": 78,
+        "completion_tokens": 41,
+        "tok_s": 152.2
+      }
+    },
+    {
+      "index": 55,
+      "question": "Architecture調査などのTaskでread-onlyモードを積極的に使用する主な目的は何ですか？",
+      "expected": "「調査だけ」のTaskへ書込みを許可しないことで、意図しない修正やFormattingを防ぐためです。これにより、セキュリティやデータの整合性を保つことができます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#6.3 read-onlyを積極的に使う",
+      "response": "Architecture調査などのTaskでは、read-onlyモードを積極的に使用して、変更を防ぎ、安定した状態で分析を行うことが推奨されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "task",
+          "調査"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主な目的である意図しない修正やFormattingの防止が述べられているが、セキュリティやデータの整合性への影響が明示されていない。",
+        "raw": "{\"score\": 4, \"reason\": \"主な目的である意図しない修正やFormattingの防止が述べられているが、セキュリティやデータの整合性への影響が明示されていない。\"}"
+      },
+      "timing": {
+        "sec": 0.25,
+        "prompt_tokens": 76,
+        "completion_tokens": 38,
+        "tok_s": 150.3
+      }
+    },
+    {
+      "index": 56,
+      "question": "workspace-writeの境界を確認する際にチェックすべき項目はどれですか？",
+      "expected": "Workspace rootが正しいか、生成物Directoryを含むか、親Directoryへ書込めないか、.gitやSecret pathが保護されているか、Symlink経由で外へ出られないか、Local Serviceへ副作用を起こせないかを確認します。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#6.3 read-onlyを積極的に使う",
+      "response": "workspace-writeの境界を確認する際には、workspace-writeの境界を確認するためのテストを実行し、workspace-writeの境界を確認するためのテストを実行します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0714,
+        "hit_keywords": [
+          "workspace"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は繰り返しのため意味がなく、模範解答に記載された具体的なチェック項目が一切含まれていないため",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は繰り返しのため意味がなく、模範解答に記載された具体的なチェック項目が一切含まれていないため\"}"
+      },
+      "timing": {
+        "sec": 0.28,
+        "prompt_tokens": 69,
+        "completion_tokens": 41,
+        "tok_s": 149.0
+      }
+    },
+    {
+      "index": 57,
+      "question": "MCPを追加する前に確認すべき5つの質問は何ですか？",
+      "expected": "MCPを追加する前に問うべきことは、この情報がリポジトリ内に置けないか、頻繁に変わるか、複数ユーザーやプロジェクトで再利用するか、ツールとして構造化する価値があるか、そしてサイドエフェクトを安全に制御できるかという5点です。これらはMCP導入の基準となる問いかけです。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#7.6 RuleとHookの使い分け",
+      "response": "MCPを追加する前に確認すべき5つの質問は、MCPの適用範囲、MCPの代替案、MCPの監査方法、MCPの停止方法、MCPのコストと運用負担です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.125,
+        "hit_keywords": [
+          "mcp",
+          "追加"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は関係はあるが大部分が誤りか空疎である",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は関係はあるが大部分が誤りか空疎である\"}"
+      },
+      "timing": {
+        "sec": 0.35,
+        "prompt_tokens": 70,
+        "completion_tokens": 54,
+        "tok_s": 154.6
+      }
+    },
+    {
+      "index": 58,
+      "question": "Clean Working Treeにする主な理由として、Agent変更と人間変更を区別できること以外に何がありますか。",
+      "expected": "Clean Working Treeにする主な理由としては、リvertしやすいこと、Diff Reviewがしやすいこと、そしてTest Failureの原因を分けやすいことが挙げられます。これにより、開発プロセスの管理が効率化されます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#8.2 Clean Working Tree",
+      "response": "Clean Working Treeの主な理由は、Agent変更と人間変更を区別できることだけでなく、Gitの状態を安定させること、そして変更を追跡しやすい状態を維持することです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3077,
+        "hit_keywords": [
+          "clean",
+          "tree",
+          "working",
+          "理由"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な理由が一部含まれているが、模範解答のリvertしやすさやDiff Reviewのしやすさなどの具体的な理由が欠如している。",
+        "raw": "{\"score\": 3, \"reason\": \"重要な理由が一部含まれているが、模範解答のリvertしやすさやDiff Reviewのしやすさなどの具体的な理由が欠如している。\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 82,
+        "completion_tokens": 50,
+        "tok_s": 152.0
+      }
+    },
+    {
+      "index": 59,
+      "question": "Compactionとはどのような仕組みですか？",
+      "expected": "Compactionは、古いConversationを代表的な短い状態へ変換し、Sessionを継続する仕組みです。これにより、長文の会話履歴を圧縮して管理することができます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#9.3 Compaction",
+      "response": "Compactionは、同じAgentが複数回同じTaskを実行した場合に、その履歴を一つのTaskへ統合する仕組みです。これにより、重複した記録を削除し、管理コストを削減します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "compaction",
+          "仕組",
+          "管理"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "Compactionの説明が誤り、主な目的や仕組みが模範解答と一致していない",
+        "raw": "{\"score\": 2, \"reason\": \"Compactionの説明が誤り、主な目的や仕組みが模範解答と一致していない\"}"
+      },
+      "timing": {
+        "sec": 0.36,
+        "prompt_tokens": 63,
+        "completion_tokens": 58,
+        "tok_s": 159.8
+      }
+    },
+    {
+      "index": 60,
+      "question": "Diff ReviewにおいてReviewerへ渡すべき情報として推奨されているものは何ですか。",
+      "expected": "Diff ReviewにおいてReviewerへ渡すべき情報としては、Task Contract、Diff、Relevant tests、Architecture rule、Known risksが推奨されています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#10.7 Database変更",
+      "response": "Reviewerへ渡すべき情報は、diff、contract、expected change、risk、evidence、verification planです。これらは、変更内容を理解し、リスクを評価し、検証計画を確認するために重要です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3846,
+        "hit_keywords": [
+          "contract",
+          "diff",
+          "review",
+          "reviewer",
+          "情報"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主な事実は正しいが、模範解答の「Relevant tests」「Architecture rule」が欠落している",
+        "raw": "{\"score\": 4, \"reason\": \"主な事実は正しいが、模範解答の「Relevant tests」「Architecture rule」が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.34,
+        "prompt_tokens": 71,
+        "completion_tokens": 52,
+        "tok_s": 151.7
+      }
+    },
+    {
+      "index": 61,
+      "question": "採用ゲート(Acceptance Gate)において機械判定される条件は何ですか。",
+      "expected": "採用前に機械判定できるものとして、必須Test pass、Lint pass、Type check pass、Scope外変更なし、禁止File変更なし、Secret検出なし、Completion Reportありが機械判定されます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#10.9 Completion Report",
+      "response": "採用ゲート(Acceptance Gate)では、機械判定される条件として、Test Coverage、Smoke Test、Integration Test、Security Scan、License、Documentation、Version、Release Note、Rollback、Rollout、Rollback、Rollback、Rollbackが挙げられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1176,
+        "hit_keywords": [
+          "test",
+          "機械判定"
+        ],
+        "total_keywords": 17,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と受験者の回答には関連性はあるが、主な条件が一致せず大部分が誤りである。",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と受験者の回答には関連性はあるが、主な条件が一致せず大部分が誤りである。\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 73,
+        "completion_tokens": 61,
+        "tok_s": 157.0
+      }
+    },
+    {
+      "index": 62,
+      "question": "Spawn Budgetの予算候補として設定可能な項目には、どのようなものがありますか？",
+      "expected": "Spawn Budgetの予算候補としては、最大同時Agent数、最大累計Agent数、AgentごとのTask範囲、Agentごとの時間、AgentごとのTool、AgentごとのModel、結果の最大Sizeなどが挙げられます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#11.5 Parallel Writeの条件",
+      "response": "Spawn Budgetの予算候補には、Agent数、Tool数、Tool Call数、Tool Response数、Tool Cost、Human Review数、Network Request数、Network Response数、Disk Read数、Disk Write数、Memory Usage、CPU Usage、GPU Usage、External Process数、External Process Duration、External Process Cost、External API数、External API Cost、External Database数、External Database Cost、External File数、External File Cost、External File Size、External File Duration、External File Cost per MB、External File Cost per MB per Hour、External File Cost per MB per Day、External File Cost per MB per Month、External File Cost per MB per Year、External File Cost per MB per Second、External File Cost per MB per Minute、External File Cost per MB per Hour、External File Cost per MB per Day、External File Cost per MB per Month、External File Cost per MB per Year、External File Cost per MB per Second、External File Cost per MB per Minute、External File Cost per MB per Hour、External File Cost per MB per Day、External File Cost per MB per Month、External File Cost per MB per Year、External File Cost per MB per Second、External File Cost per MB per Minute、External File Cost per MB per Hour、External File Cost per MB per Day、External File Cost per MB per Month、External File Cost per MB per Year、External File Cost per MB per Second、External File Cost per MB per Minute、External File Cost per MB per Hour、External File Cost per MB per Day、External File Cost per MB per Month、External File Cost per MB per Year、External File Cost per MB per Second、External File Cost per MB per Minute、External File Cost per MB per Hour、External File Cost per MB per Day、External File Cost per MB per Month、External File Cost per MB per Year、External File Cost per MB per Second、External File Cost per MB per Minute、External File Cost per MB per Hour",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4286,
+        "hit_keywords": [
+          "agent",
+          "budget",
+          "size",
+          "spawn",
+          "tool",
+          "予算候補"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と全く異なる内容で、Spawn Budgetの予算候補としての項目を正しく記述していない",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と全く異なる内容で、Spawn Budgetの予算候補としての項目を正しく記述していない\"}"
+      },
+      "timing": {
+        "sec": 2.32,
+        "prompt_tokens": 72,
+        "completion_tokens": 400,
+        "tok_s": 172.2
+      }
+    },
+    {
+      "index": 63,
+      "question": "Automationにおいて自然言語だけに依存せずにイベント情報を取得するために使用できる codex exec のオプションは何ですか？",
+      "expected": "Automationでは自然言語だけに依存せず、Codexでは--jsonオプションを使用してJSONL Event Streamを取得することができます。これにより、スレッドの開始やコマンド実行、ファイル変更などのイベント候補を取得できます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#12.2 `codex exec`",
+      "response": "codex exec では、--event または --events オプションを使用して、自然言語だけに依存せずにイベント情報を取得することが可能です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4,
+        "hit_keywords": [
+          "codex",
+          "event",
+          "オプション",
+          "依存",
+          "取得",
+          "自然言語"
+        ],
+        "total_keywords": 15,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "主な事実は正しいが、正しいオプション名と機能の説明が不足している",
+        "raw": "{\"score\": 2, \"reason\": \"主な事実は正しいが、正しいオプション名と機能の説明が不足している\"}"
+      },
+      "timing": {
+        "sec": 0.23,
+        "prompt_tokens": 81,
+        "completion_tokens": 35,
+        "tok_s": 149.7
+      }
+    },
+    {
+      "index": 64,
+      "question": "Release Gateにおける具体的な閾値の設定方法について、文章中の例はどう説明されていますか？",
+      "expected": "具体的な閾値は説明用に固定せず、過去の分布とRisk許容度から決めますと説明されています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#13.7 Eval Dataset",
+      "response": "文章では、Release Gateの例として、`ci/release-gate`というタスクが挙げられています。このタスクは、`ci/verify`の結果を`ci/release-gate`へ渡し、`ci/release-gate`の結果を`ci/release`へ渡すという流れを示しています。具体的な閾値の設定方法としては、`ci/release-gate`の実装で閾値を決め、`ci/release`の実行前にその閾値を確認するというプロセスが示されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2222,
+        "hit_keywords": [
+          "具体的",
+          "閾値"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "閾値の設定方法に関する主な事実が欠落している",
+        "raw": "{\"score\": 2, \"reason\": \"閾値の設定方法に関する主な事実が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.73,
+        "prompt_tokens": 78,
+        "completion_tokens": 122,
+        "tok_s": 168.0
+      }
+    },
+    {
+      "index": 65,
+      "question": "CodexのLocal実行でOTel exportを明示的に有効化する方法はありますか？また、構造化情報を取得するために使用できるコマンドは何ですか？",
+      "expected": "Codexは、Local実行でOTel exportを明示的に有効化することができます。また、構造化情報を取得するためには、コマンドライン引数に「--json」を指定した「codex exec --json」や、App Server Eventを使用することが可能です。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#13.9 OTelとJSONL",
+      "response": "CodexのLocal実行では、OTel exportを明示的に有効化するためのオプションはありません。構造化情報を取得するために使用できるコマンドは、`codex run --trace`です。これにより、実行中のトレース情報が取得可能です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5714,
+        "hit_keywords": [
+          "codex",
+          "export",
+          "local",
+          "otel",
+          "取得",
+          "明示的",
+          "有効化",
+          "構造化情報"
+        ],
+        "total_keywords": 14,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "OTel exportの有効化に関する記述が模範解答と矛盾し、構造化情報取得のコマンドも正しくない",
+        "raw": "{\"score\": 2, \"reason\": \"OTel exportの有効化に関する記述が模範解答と矛盾し、構造化情報取得のコマンドも正しくない\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 94,
+        "completion_tokens": 63,
+        "tok_s": 159.8
+      }
+    },
+    {
+      "index": 66,
+      "question": "Harness変更とEvalへ戻す運用を扱う共通原則はどの章に記述されていますか？",
+      "expected": "第14章 障害対応と継続改善において、IncidentをHarness変更とEvalへ戻す運用が共通原則として扱われています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#第14章 障害対応と継続改善",
+      "response": "Harness変更とEvalへ戻す運用は、第10章「Harness変更とEvalへ戻す運用」で扱われます。この章では、Harnessの変更プロセスや評価の再導入に関する具体的な運用手順や原則が記載されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5,
+        "hit_keywords": [
+          "eval",
+          "harness",
+          "変更",
+          "運用"
+        ],
+        "total_keywords": 8,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は章番号と章名が逆であり、模範解答の第14章の内容を誤って記述しているため",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は章番号と章名が逆であり、模範解答の第14章の内容を誤って記述しているため\"}"
+      },
+      "timing": {
+        "sec": 0.42,
+        "prompt_tokens": 80,
+        "completion_tokens": 66,
+        "tok_s": 155.8
+      }
+    },
+    {
+      "index": 67,
+      "question": "段階4 Reusable Workflow の導入要素に含まれる「Handoff Contract」以外の要素を挙げてください。",
+      "expected": "段階4 Reusable Workflow の導入要素には、Skills、MCP、Custom Agents、Task-specific Profilesが含まれています。これらは再利用可能なワークフローを構築するための重要な構成要素です。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#15.3 段階2　Verification Harness",
+      "response": "段階4 Reusable Workflow の導入要素には、Tool Contract、Approval、Budget、Timeout、Retry、Evidence、Completion Criteria、Verification、Rollback、Evidence Archive、Evidence Review、Evidence Approval が含まれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2667,
+        "hit_keywords": [
+          "reusable",
+          "workflow",
+          "導入要素",
+          "段階"
+        ],
+        "total_keywords": 15,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は関係があるが大部分が誤りであり、模範解答の要素とは異なる内容を含んでいる",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は関係があるが大部分が誤りであり、模範解答の要素とは異なる内容を含んでいる\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 82,
+        "completion_tokens": 47,
+        "tok_s": 151.9
+      }
+    },
+    {
+      "index": 68,
+      "question": "同じファイルへ複数のWriterによる実装を行う場合の推奨事項は何ですか？",
+      "expected": "Single Agent・Subagentの状況において、同じファイルへ複数のWriterによる実装を行う場合は避けることが推奨されます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#A.4 Local・Worktree・Cloud",
+      "response": "同じファイルへ複数のWriterによる実装を行う場合は、Writerごとに独立したCommitを実施することが推奨されています。これにより、各Writerの変更内容が分離され、競合や混同を防ぐことができます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5556,
+        "hit_keywords": [
+          "writer",
+          "ファイル",
+          "実装",
+          "推奨",
+          "複数"
+        ],
+        "total_keywords": 9,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と相反する内容であり、主要な事実が誤っている",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と相反する内容であり、主要な事実が誤っている\"}"
+      },
+      "timing": {
+        "sec": 0.35,
+        "prompt_tokens": 75,
+        "completion_tokens": 53,
+        "tok_s": 152.7
+      }
+    },
+    {
+      "index": 69,
+      "question": "Plan前提が誤っていた場合、RetryではなくReplanを選ぶ理由は何ですか？",
+      "expected": "Plan前提が誤っている場合、単に同じ処理を繰り返すRetryでは解決しません。そのため、計画そのものを再検討し直すReplanというアクションが選択されます。これは一時的なTool Timeoutのような状況とは異なる対処が必要だからです。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#A.6 Interactive・Exec・SDK・App Server",
+      "response": "Plan前提が誤っていた場合は、RetryではなくReplanを選ぶべきです。これは、同じPlanを繰り返すのではなく、新しい計画を立てて修正を行うためです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "plan",
+          "replan",
+          "retry",
+          "前提",
+          "計画"
+        ],
+        "total_keywords": 15,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主な事実を正しく含めており、細部の説明が少なめだが誤りはない",
+        "raw": "{\"score\": 4, \"reason\": \"主な事実を正しく含めており、細部の説明が少なめだが誤りはない\"}"
+      },
+      "timing": {
+        "sec": 0.28,
+        "prompt_tokens": 70,
+        "completion_tokens": 40,
+        "tok_s": 145.4
+      }
+    },
+    {
+      "index": 70,
+      "question": "設定例にあるtimeout = 30という値は、実際のCodex Hooks Event Schemaにおける標準的なタイムアウト時間を意味するものですか？",
+      "expected": "いいえ、timeout = 30は説明用の仮値であり、実際の標準的なタイムアウト時間を意味するものではありません。実測後に調整する必要があると明記されています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#C.11 Codex Hook設定例",
+      "response": "はい、設定例のtimeout = 30は、Codex Hooks Event Schemaにおける標準的なタイムアウト時間を示しています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3,
+        "hit_keywords": [
+          "timeout",
+          "タイムアウト時間",
+          "標準的"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は模範解答と直接矛盾しており、事実が誤っています。",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は模範解答と直接矛盾しており、事実が誤っています。\"}"
+      },
+      "timing": {
+        "sec": 0.2,
+        "prompt_tokens": 86,
+        "completion_tokens": 28,
+        "tok_s": 141.9
+      }
+    },
+    {
+      "index": 71,
+      "question": "Codexのベストプラクティスに関する公式情報はどこで確認できますか？",
+      "expected": "Codexのベストプラクティスに関する公式情報は、OpenAIの開発者ポータルのCodexセクションにある「Codex Best practices」のページで確認できます。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#Codex固有語との関係 (2)",
+      "response": "Codexのベストプラクティスに関する公式情報は、Codexの公式ドキュメントで確認できます。具体的には、Codexのベストプラクティスセクションに記載されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4444,
+        "hit_keywords": [
+          "codex",
+          "セクション",
+          "ベストプラクティス",
+          "公式情報"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主要な事実は正しいが、具体的なページ名やURLが記載されていないため細部が欠ける。",
+        "raw": "{\"score\": 4, \"reason\": \"主要な事実は正しいが、具体的なページ名やURLが記載されていないため細部が欠ける。\"}"
+      },
+      "timing": {
+        "sec": 0.28,
+        "prompt_tokens": 72,
+        "completion_tokens": 44,
+        "tok_s": 154.8
+      }
+    },
+    {
+      "index": 72,
+      "question": "AGENTS.mdファイルを使用してカスタム指示を設定する機能の公式情報はどこにありますか？",
+      "expected": "AGENTS.mdファイルを使用してカスタム指示を設定する機能に関する公式情報は、OpenAIの開発者ポータルの「Custom instructions with AGENTS.md」ページに掲載されています。",
+      "source": "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md#Codex固有語との関係 (2)",
+      "response": "AGENTS.mdファイルを使用してカスタム指示を設定する機能の公式情報は、AGENTS.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md.md",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4167,
+        "hit_keywords": [
+          "agents.md",
+          "カスタム指示",
+          "ファイル",
+          "公式情報",
+          "機能"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は長すぎる無関係な文字列であり、質問の答えを正しく提供していません。",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は長すぎる無関係な文字列であり、質問の答えを正しく提供していません。\"}"
+      },
+      "timing": {
+        "sec": 2.34,
+        "prompt_tokens": 78,
+        "completion_tokens": 400,
+        "tok_s": 170.8
+      }
+    },
+    {
+      "index": 73,
+      "question": "契約の改訂において、変更候補を検知した後の処理手順を記述したYAML形式の例で定義されているフィールドはどれですか？",
+      "expected": "YAML形式の例で定義されているフィールドは、contract_version、previous_contract_hash、change_reason、changed_fields、risk_delta、required_reapprovalです。これらは最低限の改訂情報として管理されます。",
+      "source": "data/corpus/ai_harness/docs/core/decision-model.md#1. Task Contractを固定する",
+      "response": "契約の改訂において、変更候補を検知した後の処理手順を記述したYAML形式の例では、`contract_revision`というフィールドが定義されています。このフィールドは、契約の改訂に関する情報を保持するために使用されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3077,
+        "hit_keywords": [
+          "yaml",
+          "フィールド",
+          "定義",
+          "形式"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "変更候補検知後の処理手順を記述するフィールドとして正しい情報を記述しているが、模範解答のフィールド名と一致していないため",
+        "raw": "{\"score\": 2, \"reason\": \"変更候補検知後の処理手順を記述するフィールドとして正しい情報を記述しているが、模範解答のフィールド名と一致していないため\"}"
+      },
+      "timing": {
+        "sec": 0.43,
+        "prompt_tokens": 96,
+        "completion_tokens": 65,
+        "tok_s": 150.9
+      }
+    },
+    {
+      "index": 74,
+      "question": "Task Contractの改訂プロセスにおいて、旧契約はどういう状態にして保持されますか？",
+      "expected": "改訂プロセスにおいて、旧契約は削除せず、supersededとして保持します。これにより、過去の契約履歴や証拠の有効性を再判定するための参照が可能になります。",
+      "source": "data/corpus/ai_harness/docs/core/decision-model.md#1. Task Contractを固定する",
+      "response": "Task Contractの改訂プロセスでは、旧契約は保持され、改訂前の状態を保持したまま、改訂後の状態を別ファイルに保存します。これにより、過去の契約状態を参照できるようになります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4545,
+        "hit_keywords": [
+          "保持",
+          "参照",
+          "改訂プロセス",
+          "旧契約",
+          "過去"
+        ],
+        "total_keywords": 11,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "旧契約が保持され、過去の状態を参照可能であるという主な事実は正しいが、'superseded'という状態の記述が欠けている。",
+        "raw": "{\"score\": 4, \"reason\": \"旧契約が保持され、過去の状態を参照可能であるという主な事実は正しいが、'superseded'という状態の記述が欠けている。\"}"
+      },
+      "timing": {
+        "sec": 0.35,
+        "prompt_tokens": 76,
+        "completion_tokens": 55,
+        "tok_s": 158.0
+      }
+    },
+    {
+      "index": 75,
+      "question": "Policy Decisionの保存形式について、どのスキーマファイルに従う必要がありますか？",
+      "expected": "Policy Decisionは、schemas/policy-decision.schema.jsonに記載されているスキーマ定義に従って保存される必要があります。これにより、承認判断の結果データの一貫性と整合性が保たれます。",
+      "source": "data/corpus/ai_harness/docs/core/decision-model.md#4. Authorizationを論理的なPDPへ集約する",
+      "response": "Policy Decisionは、JSON Schemaで定義された「policy-decision.schema.json」に従って保存する必要があります。このスキーマは、Policy Decisionの構造と必須項目を規定しています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3,
+        "hit_keywords": [
+          "decision",
+          "policy",
+          "保存"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "模範解答と同様の事実を含んでおり、スキーマファイル名と目的について正しい記述をしているが、一貫性と整合性の保証についての記述は省略されている。",
+        "raw": "{\"score\": 4, \"reason\": \"模範解答と同様の事実を含んでおり、スキーマファイル名と目的について正しい記述をしているが、一貫性と整合性の保証についての記述は省略されている。\"}"
+      },
+      "timing": {
+        "sec": 0.3,
+        "prompt_tokens": 73,
+        "completion_tokens": 44,
+        "tok_s": 146.7
+      }
+    },
+    {
+      "index": 76,
+      "question": "criterion_idに「AUTH-001」と指定された場合、そのassertionの内容は何ですか？",
+      "expected": "criterion_idが「AUTH-001」の場合、assertionの内容は「期限切れTokenで401を返す」となります。また、この検証結果はpassであり、verifierは独立したintegration-testであるauth-integrationが使用されています。",
+      "source": "data/corpus/ai_harness/docs/core/decision-model.md#実行予算",
+      "response": "criterion_idに「AUTH-001」と指定された場合、そのassertionの内容は「認証済みユーザーのみが操作できる」です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "assertion",
+          "auth-001",
+          "criterion_id"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "主な事実は誤り、模範解答と矛盾する内容を述べている",
+        "raw": "{\"score\": 2, \"reason\": \"主な事実は誤り、模範解答と矛盾する内容を述べている\"}"
+      },
+      "timing": {
+        "sec": 0.26,
+        "prompt_tokens": 77,
+        "completion_tokens": 37,
+        "tok_s": 141.5
+      }
+    },
+    {
+      "index": 77,
+      "question": "Audit Replayを実行する際に、外部のToolを呼び出すことは可能ですか。",
+      "expected": "Audit Replayは保存済みEventから過去Stateを再構築する処理であり、外部Toolは呼びません。この処理では外部サービスやツールへのアクセスを行わず、内部のイベントデータのみを使用して状態を復元します。",
+      "source": "data/corpus/ai_harness/docs/core/decision-model.md#Audit Replay",
+      "response": "Audit Replayは、外部Toolを呼び出すことなく、既存のTool CallとTool Responseを再現するプロセスです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2353,
+        "hit_keywords": [
+          "audit",
+          "replay",
+          "tool",
+          "外部"
+        ],
+        "total_keywords": 17,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "Audit Replayは外部Toolを呼び出さないことが正しいが、既存のTool CallとResponseを再現するという説明は模範解答と異なる点がある。",
+        "raw": "{\"score\": 4, \"reason\": \"Audit Replayは外部Toolを呼び出さないことが正しいが、既存のTool CallとResponseを再現するという説明は模範解答と異なる点がある。\"}"
+      },
+      "timing": {
+        "sec": 0.22,
+        "prompt_tokens": 72,
+        "completion_tokens": 30,
+        "tok_s": 138.7
+      }
+    },
+    {
+      "index": 78,
+      "question": "Reviewer Assuranceにおけるhigh riskな案件に対して、Trusted CIだけで人間の判断を代替することはできますか。",
+      "expected": "できません。Trusted CIだけではRequirementやUXに関する人間の判断の代わりにはなりません。高リスクほど異なる独立性を組み合わせて多軸で表す必要があり、別ModelやTrusted CI単独では決定論的テストや人間判断を完全に代替できません。",
+      "source": "data/corpus/ai_harness/docs/core/decision-model.md#Audit Replay",
+      "response": "いいえ、できません。Trusted CIは自動テストやCIの結果を確認するためのものであり、人間の判断を代替することはできません。高リスクな案件では、人間のレビューが不可欠です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3846,
+        "hit_keywords": [
+          "trusted",
+          "人間",
+          "代替",
+          "判断",
+          "高リスク"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "Trusted CIの役割と人間判断の不可欠性を正しく述べているが、模範解答にある「高リスクほど異なる独立性を組み合わせて多軸で表す必要がある」という点は欠落している。",
+        "raw": "{\"score\": 4, \"reason\": \"Trusted CIの役割と人間判断の不可欠性を正しく述べているが、模範解答にある「高リスクほど異なる独立性を組み合わせて多軸で表す必要がある」という点は欠落している。\"}"
+      },
+      "timing": {
+        "sec": 0.32,
+        "prompt_tokens": 77,
+        "completion_tokens": 48,
+        "tok_s": 149.6
+      }
+    },
+    {
+      "index": 79,
+      "question": "Eval Contaminationとはどのような現象を指しますか？",
+      "expected": "Eval Contaminationは、評価Caseや期待結果、採点基準が生成側へ漏洩し、結果として見かけの性能が押し上げられてしまう現象を指します。これは評価の妥当性を損なう要因となります。",
+      "source": "data/corpus/ai_harness/docs/core/glossary.md#再生・評価・レビュー",
+      "response": "Eval Contaminationは、評価プロセスで外部情報や人間の指示を混入させることを指します。これにより、モデルの実際の能力を正確に測定することが困難になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2308,
+        "hit_keywords": [
+          "contamination",
+          "eval",
+          "評価"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な概念の一部は正しいが、Eval Contaminationの具体的なメカニズムや影響についての説明が不足している",
+        "raw": "{\"score\": 3, \"reason\": \"重要な概念の一部は正しいが、Eval Contaminationの具体的なメカニズムや影響についての説明が不足している\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 66,
+        "completion_tokens": 46,
+        "tok_s": 149.9
+      }
+    },
+    {
+      "index": 80,
+      "question": "CORE-02でLLMへ任せるべき処理の例として挙げられているものは何ですか？",
+      "expected": "LLMへ任せるべき処理の例として、意図理解、候補生成、分類、計画案、検索語、説明文など、曖昧さを許容できる処理が挙げられています。",
+      "source": "data/corpus/ai_harness/docs/core/principles.md#CORE-01 モデルとエージェントを同一視しない",
+      "response": "LLMへ任せるべき処理の例として、文章の要約、文章の内容確認、文章の内容再構成、文章の内容修正、文章の内容生成、文章の内容検証、文章の内容生成、文章の内容修正、文章の内容検証、文章の内容生成が挙げられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "llm",
+          "処理"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答の例と受験者の回答の内容は大きく異なるため、関係はあるが大部分が誤りか空疎である。",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答の例と受験者の回答の内容は大きく異なるため、関係はあるが大部分が誤りか空疎である。\"}"
+      },
+      "timing": {
+        "sec": 0.47,
+        "prompt_tokens": 79,
+        "completion_tokens": 77,
+        "tok_s": 162.1
+      }
+    },
+    {
+      "index": 81,
+      "question": "CORE-10において、モデル比較だけで本番タスクの成功率や安全性を判断してはいけない理由に関連する評価対象の例を挙げて説明してください。",
+      "expected": "評価対象はモデルではなくシステム全体とするため、モデル、Prompt、コンテキスト構築、検索、ツール定義、ツール実装、再試行、ルーティング、記憶、権限、完了判定、人間承認など、多様な要素を含める必要があります。",
+      "source": "data/corpus/ai_harness/docs/core/principles.md#CORE-09 可観測性を後付けしない",
+      "response": "CORE-10では、モデル比較だけで本番タスクの成功率や安全性を判断してはいけない理由として、実測評価が挙げられています。これは、モデルの比較結果だけでは現実的な運用条件やエージェントの実行環境を正確に評価できないため、実測を通じて検証を行う必要があります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0625,
+        "hit_keywords": [
+          "モデル"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は実測評価を挙げているが、模範解答で示されたシステム全体の要素を具体的に挙げていないため、重要な欠落がある。",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は実測評価を挙げているが、模範解答で示されたシステム全体の要素を具体的に挙げていないため、重要な欠落がある。\"}"
+      },
+      "timing": {
+        "sec": 0.49,
+        "prompt_tokens": 98,
+        "completion_tokens": 79,
+        "tok_s": 161.6
+      }
+    },
+    {
+      "index": 82,
+      "question": "task.mdにおける期限切れRefresh Tokenの問題修正の目的は何ですか",
+      "expected": "期限切れRefresh Tokenで500になる問題を修正することが目的です。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/coding-agent-tutorial.md#2. Task Contractを書く",
+      "response": "期限切れRefresh Tokenの問題修正の目的は、Tokenが期限切れになっても、その状態を無視して正常に処理できるようにすることです。これにより、認証やリソースアクセスの中断を防ぎ、より安定した運用が可能になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.8571,
+        "hit_keywords": [
+          "refresh",
+          "token",
+          "修正",
+          "問題",
+          "期限切",
+          "目的"
+        ],
+        "total_keywords": 7,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な目的である500エラーの修正が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"重要な目的である500エラーの修正が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 68,
+        "completion_tokens": 61,
+        "tok_s": 157.4
+      }
+    },
+    {
+      "index": 83,
+      "question": "調査だけを依頼する際、Agentに返すべき項目として500が発生する実行経路以外に何がありますか？",
+      "expected": "関係するFileとSymbol、最小変更案、追加・更新するTest、Task Contractを変更する必要がある点、停止条件へ該当する事項を返す必要があります。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/coding-agent-tutorial.md#必要な証拠",
+      "response": "調査だけを依頼する場合は、Agentに返すべき項目は500が発生する実行経路だけではありません。具体的には、調査結果、関連する証拠、問題の根本原因、および修正案が含まれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0,
+        "hit_keywords": [],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "模範解答の主要な項目は含まれていないが、調査結果や原因などは関連する内容として部分的に正しい",
+        "raw": "{\"score\": 3, \"reason\": \"模範解答の主要な項目は含まれていないが、調査結果や原因などは関連する内容として部分的に正しい\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 90,
+        "completion_tokens": 62,
+        "tok_s": 159.2
+      }
+    },
+    {
+      "index": 84,
+      "question": "Task Contractの停止条件にはどのようなケースが挙げられていますか？",
+      "expected": "Task Contractの停止条件として、workspace外の読取りが必要になった場合、5 Stepを超える場合、そしてREADMEが存在しない場合が挙げられています。これらの条件を満たすと、タスクは終了されます。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/harness-basics.md#エージェント",
+      "response": "停止条件には、完了条件が満たされた場合、期限切れ、権限切れ、予算切れ、外部APIの失敗、不完全な結果、不適切な結果、不安全な結果、不透明な状態、不完全な検証、不完全な評価、不完全な報告、不完全な収集、不完全な保存、不完全な再構築、不完全な再検証、不完全な再評価、不完全な再報告、不完全な再収集、不完全な再保存、不完全な再再構築、不完全な再再検証、不完全な再再評価、不完全な再再報告、不完全な再再収集、不完全な再再保存、不完全な再再再構築、不完全な再再再検証、不も再再評価、不完全な再再再報告、不完全な再再再収集、不完全な再再再保存、不完全な再再再再構築、不完全な再再再再検証、不完全な再再再再評価、不完全な再再再再報告、不完全な再再再再収集、不完全な再再再再保存、不完全な再再再再再構築、不完全な再再再再再検証、不完全な再再再再再評価、不完全な再再再再再報告、不完全な再再再再再収集、不完全な再再再再再保存、不完全な再再再再再再構築、不完全な再再再再再再検証、不完全な再再再再再再評価",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "停止条件",
+          "条件"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と全く異なる停止条件を挙げており、事実が誤っている",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と全く異なる停止条件を挙げており、事実が誤っている\"}"
+      },
+      "timing": {
+        "sec": 2.33,
+        "prompt_tokens": 69,
+        "completion_tokens": 400,
+        "tok_s": 171.6
+      }
+    },
+    {
+      "index": 85,
+      "question": "harness-basics.mdの3.6セクションにおいて、Criterion PROJECT-002の検証対象となるEvidenceファイルはどのファイルですか？",
+      "expected": "3.6検証と証拠の説明によると、Criterion PROJECT-002は回答にSource参照が含まれることを検証するためのものです。この検証を行う際に参照されるEvidenceファイルは「completion.json」と明記されており、ここから参照の有無を確認します。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/harness-basics.md#3.5 状態",
+      "response": "Criterion PROJECT-002の検証対象となるEvidenceファイルは、`evidence/002-project-002.md`です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3571,
+        "hit_keywords": [
+          "criterion",
+          "evidence",
+          "project-002",
+          "ファイル",
+          "検証"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答ではcompletion.jsonが正解であるが、受験者の回答は別のファイル名を記載しているため誤りがある。",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答ではcompletion.jsonが正解であるが、受験者の回答は別のファイル名を記載しているため誤りがある。\"}"
+      },
+      "timing": {
+        "sec": 0.26,
+        "prompt_tokens": 90,
+        "completion_tokens": 36,
+        "tok_s": 138.6
+      }
+    },
+    {
+      "index": 86,
+      "question": "擬似コードにおける`enforce_budget`関数の役割は何ですか？",
+      "expected": "擬似コードにおける`enforce_budget`関数は、ループ内で実行される処理の一つであり、現在の状態に基づいて予算制限を適用・管理する役割を持っています。モデルはこれを無効化できません。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/harness-basics.md#3.7 停止条件",
+      "response": "`enforce_budget`関数は、予算を超過していないかを確認する役割を持っています。これにより、実行中のタスクが予算制限を超えないかを監査し、必要に応じて停止や修正を促すことが可能になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "enforce_budget",
+          "予算制限",
+          "役割",
+          "関数"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "重要な事実を含んでおり、予算制限の監視と制御に関する説明があるが、模範解答の「ループ内で実行される処理の一つ」と「モデルが無効化できない」という点は欠落している。",
+        "raw": "{\"score\": 4, \"reason\": \"重要な事実を含んでおり、予算制限の監視と制御に関する説明があるが、模範解答の「ループ内で実行される処理の一つ」と「モデルが無効化できない」という点は欠落している。\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 71,
+        "completion_tokens": 62,
+        "tok_s": 159.2
+      }
+    },
+    {
+      "index": 87,
+      "question": "Teamで同じ運用を共有する場合、どの構成へ移行する必要がありますか？",
+      "expected": "Teamで同じ運用を共有する場合、初級構成のまま実行せず、チームハーネスへ移行する必要があります。これは、複数チームでの運用を効率化するための中間レベルの構成です。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/harness-basics.md#コーディングエージェント利用",
+      "response": "Teamで同じ運用を共有する場合は、Shared Agentへ移行する必要があります。これにより、チーム全体で同じ設定やプロンプト、権限管理などが共有され、運用の一貫性が保たれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4,
+        "hit_keywords": [
+          "team",
+          "共有",
+          "移行",
+          "運用"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と受験者の回答は異なる構成の名称を示しており、事実の一致が少ない",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と受験者の回答は異なる構成の名称を示しており、事実の一致が少ない\"}"
+      },
+      "timing": {
+        "sec": 0.32,
+        "prompt_tokens": 73,
+        "completion_tokens": 49,
+        "tok_s": 154.1
+      }
+    },
+    {
+      "index": 88,
+      "question": "初期段階でModel部分が決定論的なSimulatorに設定されている理由は何ですか？",
+      "expected": "API KeyやNetwork、Providerの差異なしで、Agent Loop、Tool検証、Budget、State、Evidence、Completionを確認できるようにするためです。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/simple-agent-tutorial.md#(冒頭)",
+      "response": "初期段階でModel部分が決定論的なSimulatorに設定されている理由は、Modelの実装が未定であるためです。これは、Modelの実装が未定であるため、初期段階では決定論的なSimulatorを使用してModelを代替するための措置です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0,
+        "hit_keywords": [],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答の主な理由が欠落し、受験者の回答は誤った理由を述べている",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答の主な理由が欠落し、受験者の回答は誤った理由を述べている\"}"
+      },
+      "timing": {
+        "sec": 0.4,
+        "prompt_tokens": 73,
+        "completion_tokens": 63,
+        "tok_s": 159.0
+      }
+    },
+    {
+      "index": 89,
+      "question": "run関数内でaction_fingerprint関数の戻り値がstate.action_fingerprintsに含まれていた場合、どのような応答が返されますか。",
+      "expected": "action_fingerprintの戻り値がstate.action_fingerprintsに含まれていた場合、ステータスはblocked、停止理由はrepeated_actionとして返され、現在のstateのスナップショットが状態情報として含まれます。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/simple-agent-tutorial.md#3. 実装する (3)",
+      "response": "action_fingerprint関数の戻り値がstate.action_fingerprintsに含まれていた場合、\"Action fingerprint already exists\"という文字列を返します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3,
+        "hit_keywords": [
+          "action_fingerprint",
+          "state",
+          "state.action_fingerprints"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な情報としてステータスや停止理由が欠落している",
+        "raw": "{\"score\": 2, \"reason\": \"重要な情報としてステータスや停止理由が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.25,
+        "prompt_tokens": 89,
+        "completion_tokens": 36,
+        "tok_s": 145.1
+      }
+    },
+    {
+      "index": 90,
+      "question": "Tool引数の形が崩れるという観測した失敗に対して、追加すべき候補は何ですか？",
+      "expected": "Tool引数の形が崩れるという失敗が観測された場合、追加する候補としてJSON Schemaが挙げられています。これは、入力データの構造を定義することで、不正な形式の引数が渡されるのを防ぐための対策です。",
+      "source": "data/corpus/ai_harness/docs/learning/beginner/simple-agent-tutorial.md#7. 次に追加するもの",
+      "response": "Tool引数の形が崩れるという観測した失敗に対して、追加すべき候補は「Schema」です。これは、Toolの引数構造が予期せぬ形に変化した際に、データの型や構造を検証するために使用されるものです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5714,
+        "hit_keywords": [
+          "schema",
+          "tool",
+          "候補",
+          "失敗",
+          "引数",
+          "構造",
+          "観測",
+          "追加"
+        ],
+        "total_keywords": 14,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同じ事実をすべて含み誤りがない",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同じ事実をすべて含み誤りがない\"}"
+      },
+      "timing": {
+        "sec": 0.42,
+        "prompt_tokens": 79,
+        "completion_tokens": 65,
+        "tok_s": 156.1
+      }
+    },
+    {
+      "index": 91,
+      "question": "Model Contextにはどのような情報が含まれますか？",
+      "expected": "Model Contextには、State Store、Append-only Event Log、およびBusiness Systemから、今回必要な情報だけを派生させて含まれます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md#3. Active State",
+      "response": "Model Contextには、現在のAgentのRole、現在のTask、現在のPhase、現在のStep、そしてそのStepの目的が含まれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1667,
+        "hit_keywords": [
+          "context",
+          "model"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "Model Contextに関する正しい情報は含まれていないが、Agentの状態に関する情報が述べられている",
+        "raw": "{\"score\": 2, \"reason\": \"Model Contextに関する正しい情報は含まれていないが、Agentの状態に関する情報が述べられている\"}"
+      },
+      "timing": {
+        "sec": 0.23,
+        "prompt_tokens": 64,
+        "completion_tokens": 32,
+        "tok_s": 139.9
+      }
+    },
+    {
+      "index": 92,
+      "question": "Action Proposalの例示されたJSONデータにおけるargumentsフィールドの構成要素を教えてください。",
+      "expected": "例示されたJSONデータでは、argumentsフィールド内にpath、start_line、max_linesという3つの要素が含まれています。pathにはファイルパス、start_lineとmax_linesには読み取り範囲の行数が指定されています。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md#5. Action Proposal",
+      "response": "Action Proposalの例示されたJSONデータでは、argumentsフィールドが存在しません。代わりに、action、reason、evidence、approval、approval_id、approval_typeのフィールドが含まれています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "arguments",
+          "json",
+          "データ",
+          "例示"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と矛盾する内容を含んでおり、事実が誤っている",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と矛盾する内容を含んでおり、事実が誤っている\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 75,
+        "completion_tokens": 47,
+        "tok_s": 151.3
+      }
+    },
+    {
+      "index": 93,
+      "question": "Error分類はRetry前に行うべき理由として、文章に何が述べられていますか？",
+      "expected": "Retry前に分類を行うべき理由として、同じ引数を無条件で再送しないことが明記されています。これにより、適切な対応策を選択できます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md#8. Error分類",
+      "response": "Error分類はRetry前に行うべき理由として、文章では「ErrorをRetry前に行うことで、同じErrorを無限に再試行しない」と述べられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3,
+        "hit_keywords": [
+          "retry",
+          "分類",
+          "理由"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.26,
+        "prompt_tokens": 74,
+        "completion_tokens": 38,
+        "tok_s": 148.5
+      }
+    },
+    {
+      "index": 94,
+      "question": "No ProgressのSignalとして検出される具体的な条件にはどのようなものがありますか？",
+      "expected": "No ProgressのSignalには、同じToolと引数の使用、同じFileの往復、同じError Codeの出力、State Hashの不変、Pending Criterionの減少なし、Evidenceの増加なし、同じ仮説の言い換え、Scope外変更のみの増加などが含まれます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md#9. Execution BudgetとNo Progress",
+      "response": "No ProgressのSignalとして検出される具体的な条件には、同じ状態が3回確認された場合、同じActionを3回実行した場合、同じToolを3回呼び出した場合、同じStop Reasonを3回確認した場合、同じEvidenceを3回確認した場合、同じVerificationを3回実行した場合、同じVerification Resultを3回確認した場合、同じCompletion Criterionを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じCompletion Verificationを3回実行した場合、同じCompletion Resultを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じCompletion Verificationを3回実行した場合、同じCompletion Resultを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じCompletion Verificationを3回実行した場合、同じCompletion Resultを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じCompletion Verificationを3回実行した場合、同じCompletion Resultを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じCompletion Verificationを3回実行した場合、同じCompletion Resultを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じCompletion Verificationを3回実行した場合、同じCompletion Resultを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じCompletion Verificationを3回実行した場合、同じCompletion Resultを3回確認した場合、同じCompletion Decisionを3回確認した場合、同じCompletion Evidenceを3回確認した場合、同じ",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "criterion",
+          "evidence",
+          "progress",
+          "signal",
+          "tool"
+        ],
+        "total_keywords": 20,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は模範解答と全く異なる内容で、No ProgressのSignalとして検出される具体的な条件を正しく記述しておらず、誤った情報が含まれている",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は模範解答と全く異なる内容で、No ProgressのSignalとして検出される具体的な条件を正しく記述しておらず、誤った情報が含まれている\"}"
+      },
+      "timing": {
+        "sec": 2.33,
+        "prompt_tokens": 72,
+        "completion_tokens": 400,
+        "tok_s": 172.0
+      }
+    },
+    {
+      "index": 95,
+      "question": "Idempotencyキーとして使用される例を示すJSONオブジェクト内のフィールド名は何ですか。",
+      "expected": "提供されたJSON例では、\"idempotency_key\"というフィールドに\"task-123:contract-2:step-7:recipient-456\"という値が設定されています。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md#10. Idempotency",
+      "response": "Idempotencyキーとして使用される例を示すJSONオブジェクト内のフィールド名は`idempotency_key`です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.375,
+        "hit_keywords": [
+          "idempotency_key",
+          "json",
+          "フィールド"
+        ],
+        "total_keywords": 8,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同様にidempotency_keyというフィールド名を正しく指摘している",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同様にidempotency_keyというフィールド名を正しく指摘している\"}"
+      },
+      "timing": {
+        "sec": 0.24,
+        "prompt_tokens": 79,
+        "completion_tokens": 33,
+        "tok_s": 136.7
+      }
+    },
+    {
+      "index": 96,
+      "question": "再開手順における最後のステップで決定すべき要素は何ですか。",
+      "expected": "再開手順の最終ステップでは、Checkpointと現実の差を計算した後に、Continue、Replan、Compensate、Humanのいずれを決定するかを判断します。これは手順の7番目に位置しています。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md#再開手順",
+      "response": "再開手順の最後のステップでは、どのタスクを再開するかを決定します。これにより、中断前の進捗を正確に追跡し、適切なタスクへ焦点を当てることができます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2143,
+        "hit_keywords": [
+          "再開手順",
+          "手順",
+          "決定"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な要素として「Checkpointと現実の差を計算した後の決定」が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"重要な要素として「Checkpointと現実の差を計算した後の決定」が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.32,
+        "prompt_tokens": 70,
+        "completion_tokens": 50,
+        "tok_s": 155.0
+      }
+    },
+    {
+      "index": 97,
+      "question": "分散化を実装する際に必要になる技術要素として、LeaseやFencing Tokenの他に何が挙げられていますか？",
+      "expected": "分散化すると、Lease、Fencing Token、CAS、Outbox / Inbox、Event順序、Duplicate、Schema Versionが必要になります。これらは分散実行プロファイルを適用する際に考慮すべき要素です。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md#14. 分散実行へ進む条件",
+      "response": "分散化を実装するためには、LeaseやFencing Tokenの他に、Idempotency、Retry、Circuit Breaker、Rate Limit、Timeout、Backoff、Compensation、Compensating、Rollback、Compensation、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compensating、Compens, が挙げられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "fencing",
+          "lease",
+          "token",
+          "分散化"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答に記載されている要素は一切含まれず、誤った技術要素が多数含まれている",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答に記載されている要素は一切含まれず、誤った技術要素が多数含まれている\"}"
+      },
+      "timing": {
+        "sec": 1.03,
+        "prompt_tokens": 84,
+        "completion_tokens": 175,
+        "tok_s": 170.4
+      }
+    },
+    {
+      "index": 98,
+      "question": "Credentialの推奨構成において、Agent Jobで使用するCredentialの量はどうすべきですか？",
+      "expected": "推奨される構成では、Agent Jobで使用するCredentialは必要最小限のものに限るべきです。これにより、セキュリティリスクを低減し、適切な権限管理を実現します。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/ci-review-and-evaluation.md#Credential",
+      "response": "Agent Jobで使用するCredentialは、最小限に抑えることが推奨されています。これにより、セキュリティリスクを低減し、不要な権限を保持しないようにするための重要な対策です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5455,
+        "hit_keywords": [
+          "agent",
+          "credential",
+          "job",
+          "セキュリティリスク",
+          "低減",
+          "推奨"
+        ],
+        "total_keywords": 11,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同様の事実をすべて含み、誤りがない。",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同様の事実をすべて含み、誤りがない。\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 75,
+        "completion_tokens": 51,
+        "tok_s": 155.1
+      }
+    },
+    {
+      "index": 99,
+      "question": "Deterministic CIとAgent Reviewの役割について、文章ではどのように位置づけられていますか？",
+      "expected": "Agent Reviewだけを唯一のMerge Gateにするべきではありません。また、Deterministic CIだけで意味的正しさが保証されるとも考えません。両者は補完的な関係にあり、単独で完全な品質保証を行うものではないとされています。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/ci-review-and-evaluation.md#Agent Review",
+      "response": "Deterministic CIは、Agent Reviewの前提となる検証プロセスであり、Agent Reviewはその結果を人間が再確認するプロセスとして位置づけられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2143,
+        "hit_keywords": [
+          "agent",
+          "deterministic",
+          "review"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落や軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落や軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.28,
+        "prompt_tokens": 74,
+        "completion_tokens": 41,
+        "tok_s": 147.0
+      }
+    },
+    {
+      "index": 100,
+      "question": "Review Resultの例にある「findings」配列内の「severity」フィールドにはどのような値が入りますか？",
+      "expected": "提供されたReview Resultの例では、findings配列内のオブジェクトに含まれるseverityフィールドに「high」という値が入っています。これは発見された問題の深刻度を示していると考えられます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/ci-review-and-evaluation.md#5. Machine-readable Output",
+      "response": "Review Resultの例では、findings配列内の各要素にはseverityフィールドが含まれています。このフィールドには「critical」や「high」などのセキュリティや品質上の重要度を示す文字列値が設定されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5833,
+        "hit_keywords": [
+          "findings",
+          "high",
+          "result",
+          "review",
+          "severity",
+          "フィールド",
+          "配列内"
+        ],
+        "total_keywords": 12,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "模範解答と同じ事実を含みつつ、受験者の回答は追加の情報（criticalの可能性）を含んでいるため細部が欠けている。",
+        "raw": "{\"score\": 4, \"reason\": \"模範解答と同じ事実を含みつつ、受験者の回答は追加の情報（criticalの可能性）を含んでいるため細部が欠けている。\"}"
+      },
+      "timing": {
+        "sec": 0.35,
+        "prompt_tokens": 81,
+        "completion_tokens": 56,
+        "tok_s": 159.2
+      }
+    },
+    {
+      "index": 101,
+      "question": "本番環境でのインシデント情報をRegression Caseへ追加する際の処理方針はどのようなものですか？",
+      "expected": "本番Incidentを匿名化・最小化し、それをRegression Caseへ追加します。これにより、実世界の課題をテストデータとして活用できます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/ci-review-and-evaluation.md#8. Eval DatasetをVersion管理する",
+      "response": "本番環境でのインシデント情報をRegression Caseへ追加する際は、Sourceを追加し、Scopeを限定します。これにより、必要な範囲で情報が利用可能になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4,
+        "hit_keywords": [
+          "case",
+          "regression",
+          "本番",
+          "追加"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.3,
+        "prompt_tokens": 81,
+        "completion_tokens": 44,
+        "tok_s": 149.0
+      }
+    },
+    {
+      "index": 102,
+      "question": "「Completion Criteria」において、良いCriterionの条件として列挙されている項目のうち、検証に関連する要素はどれですか？",
+      "expected": "良いCriterionには、一つの観測可能なAssertion、安定したID、必須か任意かの指定、検証方法、必要Evidence、対象、そしてFailure時の扱いという7つの要素が含まれます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/evidence-and-policy.md#2. Completion Criteriaを設計する",
+      "response": "良いCriterionの条件として、検証に関連する要素は「Verification」です。これには、Test、Evidence、Evidence Location、Repro、Failure Conditionが含まれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3636,
+        "hit_keywords": [
+          "criterion",
+          "evidence",
+          "failure",
+          "要素"
+        ],
+        "total_keywords": 11,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "模範解答の検証に関連する要素に相当する内容を含んでいるが、具体的な要素の列挙が不足している。",
+        "raw": "{\"score\": 4, \"reason\": \"模範解答の検証に関連する要素に相当する内容を含んでいるが、具体的な要素の列挙が不足している。\"}"
+      },
+      "timing": {
+        "sec": 0.26,
+        "prompt_tokens": 85,
+        "completion_tokens": 40,
+        "tok_s": 151.0
+      }
+    },
+    {
+      "index": 103,
+      "question": "Policy Decision Pointにおける入力のsubjectセクションで定義されているrolesの値は何ですか？",
+      "expected": "入力のsubjectセクションにおいて、rolesには「coding-worker」がリストされています。これは、エージェントワーカー1がコーディング作業に関する権限を持つことを示す属性情報として設定されています。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/evidence-and-policy.md#5. Policy Decision Point",
+      "response": "Policy Decision Pointにおける入力のsubjectセクションでは、rolesの値が\"contractor\"に設定されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4,
+        "hit_keywords": [
+          "roles",
+          "subject",
+          "セクション",
+          "入力"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答では「coding-worker」が正しいが、受験者の回答は「contractor」と誤った値を記述しているため。",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答では「coding-worker」が正しいが、受験者の回答は「contractor」と誤った値を記述しているため。\"}"
+      },
+      "timing": {
+        "sec": 0.19,
+        "prompt_tokens": 76,
+        "completion_tokens": 27,
+        "tok_s": 140.9
+      }
+    },
+    {
+      "index": 104,
+      "question": "出力結果のdecisionフィールドの値と、その理由として挙げられている「Task ScopeとWorkspaceが一致」の意味を説明してください。",
+      "expected": "出力結果のdecisionフィールドの値は「allow」です。これは、タスクのスコープとワークスペースが一致しているため、ポリシーに基づいてアクセスや操作が許可されたことを意味します。この決定により、処理が継続可能となります。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/evidence-and-policy.md#5. Policy Decision Point",
+      "response": "decisionフィールドの値は「Approved」であり、その理由として「Task ScopeとWorkspaceが一致」が挙げられています。これは、実行するタスクの範囲とワークスペースが一致していることを意味します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.375,
+        "hit_keywords": [
+          "decision",
+          "タスク",
+          "フィールド",
+          "ワークスペース",
+          "一致",
+          "意味"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "decisionフィールドの値が模範解答と異なるため重要な欠落がある",
+        "raw": "{\"score\": 3, \"reason\": \"decisionフィールドの値が模範解答と異なるため重要な欠落がある\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 90,
+        "completion_tokens": 52,
+        "tok_s": 158.2
+      }
+    },
+    {
+      "index": 105,
+      "question": "複数のRuleが競合した場合、どのような判定が採用されますか？",
+      "expected": "複数のRuleが競合した場合、最も制限の強い判定を採用します。これにより、安全サイドへの判断が優先され、リスクを最小限に抑えることができます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/evidence-and-policy.md#優先順位",
+      "response": "複数のRuleが競合した場合、Ruleの優先順位に基づいて判定が行われます。具体的には、Ruleの優先順位が高いものから順に適用され、競合するRuleが存在する場合、その優先順位に基づいて最終的な判断が決定されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5455,
+        "hit_keywords": [
+          "rule",
+          "優先",
+          "判定",
+          "判断",
+          "競合",
+          "複数"
+        ],
+        "total_keywords": 11,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.4,
+        "prompt_tokens": 72,
+        "completion_tokens": 64,
+        "tok_s": 161.5
+      }
+    },
+    {
+      "index": 106,
+      "question": "Completion Decisionにおけるaccepted条件として、required_criteria_complete、evidence_binding_check、scope_check、policy_check、critical_unresolved_errors、uncertain_actionsのそれぞれどのような状態である必要がありますか。",
+      "expected": "accepted条件では、required_criteria_completeがtrueであり、かつevidence_binding_check、scope_check、policy_checkのすべてがpassしている必要があります。さらに、critical_unresolved_errorsが0で、uncertain_actionsが空であることが必須条件です。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/evidence-and-policy.md#10. Completion Decision",
+      "response": "accepted条件では、required_criteria_completeがtrue、evidence_binding_checkがtrue、scope_checkがtrue、policy_checkがtrue、critical_unresolved_errorsがfalse、uncertain_actionsがfalseである必要があります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.8182,
+        "hit_keywords": [
+          "accepted",
+          "critical_unresolved_errors",
+          "evidence_binding_check",
+          "policy_check",
+          "required_criteria_complete",
+          "scope_check",
+          "true",
+          "uncertain_actions",
+          "条件"
+        ],
+        "total_keywords": 11,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "模範解答と同様の条件を述べているが、critical_unresolved_errorsとuncertain_actionsの状態を「false」であると誤って記述している。",
+        "raw": "{\"score\": 4, \"reason\": \"模範解答と同様の条件を述べているが、critical_unresolved_errorsとuncertain_actionsの状態を「false」であると誤って記述している。\"}"
+      },
+      "timing": {
+        "sec": 0.29,
+        "prompt_tokens": 93,
+        "completion_tokens": 43,
+        "tok_s": 149.9
+      }
+    },
+    {
+      "index": 107,
+      "question": "AgentにはOwnerを置くべきですか？最終責任は誰へ割り当てられますか？",
+      "expected": "AgentにはOwnerを置きません。最終責任は人間または組織のRoleへ割り当てる必要があります。これにより、技術的な実装主体であるエージェントと、責任主体である人間を明確に区別し、倫理的・法的責任を明確にします。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/team-harness.md#1. チーム化で増える失敗",
+      "response": "AgentにはOwnerを置かず、最終責任はHumanへ割り当てます。これは、Agentが完全に独立して判断できるわけではないため、人間が最終的な決定を行う仕組みを採用するためです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3077,
+        "hit_keywords": [
+          "agent",
+          "owner",
+          "人間",
+          "最終責任"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主要な事実は正しいが、模範解答では最終責任を人間または組織のRoleへ割り当てる必要があると述べており、受験者の回答は組織のRoleを省略しているため細部が欠けている。",
+        "raw": "{\"score\": 4, \"reason\": \"主要な事実は正しいが、模範解答では最終責任を人間または組織のRoleへ割り当てる必要があると述べており、受験者の回答は組織のRoleを省略しているため細部が欠けている。\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 74,
+        "completion_tokens": 49,
+        "tok_s": 147.2
+      }
+    },
+    {
+      "index": 108,
+      "question": "段階1で構成される構成要素として、Task TemplateやBranch以外にAGENTS.mdとverify Scriptが含まれますか？",
+      "expected": "はい、段階1の構成要素にはAGENTS.md、Task Template、Branch、verify Script、Completion Reportが含まれます。これらはチームハルネスの最初の段階を形成する主要な要素です。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/team-harness.md#段階1",
+      "response": "はい、段階1ではTask Template、Branch、AGENTS.md、verify Scriptの4つの構成要素が含まれます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.6,
+        "hit_keywords": [
+          "agents.md",
+          "branch",
+          "script",
+          "task",
+          "template",
+          "verify",
+          "構成要素",
+          "段階",
+          "要素"
+        ],
+        "total_keywords": 15,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "模範解答と同様の4つの構成要素を挙げているが、Completion Reportの記述が欠落している。",
+        "raw": "{\"score\": 4, \"reason\": \"模範解答と同様の4つの構成要素を挙げているが、Completion Reportの記述が欠落している。\"}"
+      },
+      "timing": {
+        "sec": 0.21,
+        "prompt_tokens": 83,
+        "completion_tokens": 29,
+        "tok_s": 135.6
+      }
+    },
+    {
+      "index": 109,
+      "question": "Read-heavyな調査の並列化において、同じSnapshotを使用することにはどのような利点がありますか？",
+      "expected": "Read-heavyな調査は、同じSnapshotで並列化することができます。これにより、読み取り処理を並行して実行することが可能になり、調査効率を向上させることができます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/team-harness.md#並列化",
+      "response": "同じSnapshotを使用することで、並列化した調査が同じ状態で実行できるため、競合を防ぐことができます。これにより、並列処理の信頼性が向上します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.625,
+        "hit_keywords": [
+          "snapshot",
+          "並列化",
+          "処理",
+          "向上",
+          "調査"
+        ],
+        "total_keywords": 8,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 77,
+        "completion_tokens": 47,
+        "tok_s": 150.0
+      }
+    },
+    {
+      "index": 110,
+      "question": "Verification用の良いScriptに求められる特性として、非対話であること以外にどのような要件がありますか？",
+      "expected": "良いScriptには、非対話であることに加え、正しいExit Codeを返すこと、失敗理由が短いこと、Log出力先が一定であること、変更対象から検証Scopeを導出できること、Version情報を記録すること、SecretをMaskすること、そしてMachine-readableなSummaryを返すことが求められます。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/team-harness.md#並列化",
+      "response": "Verification用の良いScriptには、非対話であること、独立実行可能であること、再現性があること、そして出力の可視化が求められます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1053,
+        "hit_keywords": [
+          "script",
+          "非対話"
+        ],
+        "total_keywords": 19,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な特性は含まれているが、模範解答に比べて具体的な要件が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"重要な特性は含まれているが、模範解答に比べて具体的な要件が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.25,
+        "prompt_tokens": 78,
+        "completion_tokens": 37,
+        "tok_s": 145.7
+      }
+    },
+    {
+      "index": 111,
+      "question": "Sprint 3のPolicyに関連する記録として、どのようなものが挙げられていますか？",
+      "expected": "Sprint 3では、Risk AssessmentやCapability Profileと共に、Policy Decision記録とApproval Recordが挙げられています。さらに、Contract AmendmentもこのSprintで扱われる項目の一つです。",
+      "source": "data/corpus/ai_harness/docs/learning/intermediate/team-harness.md#Sprint 1: 共通入口",
+      "response": "Sprint 3のPolicyに関連する記録として、Policy Review、Policy Change、Policy Enforcement、Policy Auditが挙げられています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2308,
+        "hit_keywords": [
+          "policy",
+          "sprint",
+          "記録"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答と受験者の回答には共通の項目がなく、内容が大きく異なっているため",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答と受験者の回答には共通の項目がなく、内容が大きく異なっているため\"}"
+      },
+      "timing": {
+        "sec": 0.22,
+        "prompt_tokens": 76,
+        "completion_tokens": 32,
+        "tok_s": 144.3
+      }
+    },
+    {
+      "index": 112,
+      "question": "Codex固有の機能がない製品で同じ責任を果たす場合、どう対応すべきですか？",
+      "expected": "Codex固有の機能がない製品へ読み替える場合は、同じ機能名を探すのではなく、同じ責任を満たせるかを確認する必要があります。",
+      "source": "data/corpus/ai_harness/docs/profiles/codex.md#(冒頭)",
+      "response": "Codex固有の機能がない製品で同じ責任を果たす場合、Codexの代替として機能する製品を採用する必要があります。これにより、Codexの特徴を活かすことが可能になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.8333,
+        "hit_keywords": [
+          "codex",
+          "固有",
+          "機能",
+          "製品",
+          "責任"
+        ],
+        "total_keywords": 6,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な欠落か軽い誤りがある",
+        "raw": "{\"score\": 3, \"reason\": \"重要な欠落か軽い誤りがある\"}"
+      },
+      "timing": {
+        "sec": 0.34,
+        "prompt_tokens": 81,
+        "completion_tokens": 53,
+        "tok_s": 156.4
+      }
+    },
+    {
+      "index": 113,
+      "question": "調査Profile例におけるsandbox_modeとapproval_policyの設定値は何ですか？",
+      "expected": "調査Profile例では、sandbox_modeが「read-only」、approval_policyが「on-request」に設定されています。",
+      "source": "data/corpus/ai_harness/docs/profiles/codex.md#3. SandboxとApprovalを分ける",
+      "response": "調査Profile例では、sandbox_modeは\"strict\"、approval_policyは\"human\"に設定されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.6667,
+        "hit_keywords": [
+          "approval_policy",
+          "profile",
+          "sandbox_mode",
+          "調査"
+        ],
+        "total_keywords": 6,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "sandbox_modeとapproval_policyの設定値が模範解答と完全に一致していません。",
+        "raw": "{\"score\": 1, \"reason\": \"sandbox_modeとapproval_policyの設定値が模範解答と完全に一致していません。\"}"
+      },
+      "timing": {
+        "sec": 0.18,
+        "prompt_tokens": 72,
+        "completion_tokens": 25,
+        "tok_s": 137.3
+      }
+    },
+    {
+      "index": 114,
+      "question": "Session終了時に実行されるHookの処理は何ですか？",
+      "expected": "Session終了時に実行されるHookの処理は、Evidence Bundleの作成です。HooksはAgentが手順を忘れることを前提にLifecycleへ自動Controlを置くために使われ、その用途例としてSession終了時のEvidence Bundleがリストされています。",
+      "source": "data/corpus/ai_harness/docs/profiles/codex.md#5. Hooks",
+      "response": "Session終了時に実行されるHookは、Sessionの終了を確認し、必要に応じてSessionを保存または削除する処理です。これにより、Sessionの状態を適切に管理します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "hook",
+          "session",
+          "処理",
+          "終了時"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "Session終了時のHookの処理としてEvidence Bundleの作成が正しいが、受験者の回答はSessionの保存や削除に焦点を当てており、模範解答の主な内容を反映していない。",
+        "raw": "{\"score\": 2, \"reason\": \"Session終了時のHookの処理としてEvidence Bundleの作成が正しいが、受験者の回答はSessionの保存や削除に焦点を当てており、模範解答の主な内容を反映していない。\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 69,
+        "completion_tokens": 51,
+        "tok_s": 153.9
+      }
+    },
+    {
+      "index": 115,
+      "question": "codex製品のWorktree機能または通常のGit Worktreeは、どのような目的で使われますか？",
+      "expected": "Codex製品のWorktree機能または通常のGit Worktreeは、変更隔離へ使うために利用されます。",
+      "source": "data/corpus/ai_harness/docs/profiles/codex.md#9. Git Worktree",
+      "response": "codex製品のWorktree機能または通常のGit Worktreeは、複数のタスクを並列実行するために使用されます。これにより、異なる変更や作業を同時に進めることが可能になります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.75,
+        "hit_keywords": [
+          "codex",
+          "git",
+          "worktree",
+          "機能",
+          "製品",
+          "通常"
+        ],
+        "total_keywords": 8,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な目的である変更隔離の記述が欠如しており、並列実行の説明は誤解を招く可能性がある。",
+        "raw": "{\"score\": 3, \"reason\": \"重要な目的である変更隔離の記述が欠如しており、並列実行の説明は誤解を招く可能性がある。\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 79,
+        "completion_tokens": 49,
+        "tok_s": 160.4
+      }
+    },
+    {
+      "index": 116,
+      "question": "CI Reviewプロファイルにおいて、pushコマンドの実行が制限されるのは誰ですか？",
+      "expected": "CI Reviewプロファイルにはpushの設定項目が含まれていません。pushの設定はLocal Implementationプロファイルでのみ定義されており、CI Reviewには存在しません。",
+      "source": "data/corpus/ai_harness/docs/profiles/codex.md#Local Implementation",
+      "response": "CI Reviewプロファイルでは、pushコマンドの実行が禁止されています。これにより、CIプロセスの実行者が直接リポジトリに変更を適用することを防ぎ、より安全なレビュープロセスを維持します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4286,
+        "hit_keywords": [
+          "push",
+          "review",
+          "プロファイル"
+        ],
+        "total_keywords": 7,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "CI Reviewプロファイルではpushコマンドの制限が存在しないという重要な事実が誤っており、模範解答と矛盾しています。",
+        "raw": "{\"score\": 2, \"reason\": \"CI Reviewプロファイルではpushコマンドの制限が存在しないという重要な事実が誤っており、模範解答と矛盾しています。\"}"
+      },
+      "timing": {
+        "sec": 0.36,
+        "prompt_tokens": 75,
+        "completion_tokens": 56,
+        "tok_s": 154.1
+      }
+    },
+    {
+      "index": 117,
+      "question": "Codexの導入順序において、最初のステップで何を使用すべきですか？",
+      "expected": "導入順序の1番目として、短い入口にするためにAGENTS.mdを使用します。これは他の設定やツールを導入する前に最初に設定すべき要素です。",
+      "source": "data/corpus/ai_harness/docs/profiles/codex.md#13. 導入順序",
+      "response": "Codexの導入順序の最初のステップでは、Codexを実行するための最小構成を用意します。具体的には、Codexを実行するための最小構成を用意し、その後でCodexを実行するための最小構成を用意します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.375,
+        "hit_keywords": [
+          "導入",
+          "導入順序",
+          "最初"
+        ],
+        "total_keywords": 8,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と全く異なる内容で、正しい事実を述べていない",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と全く異なる内容で、正しい事実を述べていない\"}"
+      },
+      "timing": {
+        "sec": 0.43,
+        "prompt_tokens": 73,
+        "completion_tokens": 68,
+        "tok_s": 158.7
+      }
+    },
+    {
+      "index": 118,
+      "question": "導入時に確認すべき公式資料以外に何を確認する必要がありますか？",
+      "expected": "AGENTS.mdやRulesなどの公式資料へのリンクに加え、導入時にはChangelog、Feature Maturity、利用ClientのVersionも確認してください。",
+      "source": "data/corpus/ai_harness/docs/profiles/codex.md#13. 導入順序",
+      "response": "導入時に確認すべき公式資料以外には、既存のCI/CD、権限管理、権限分離、監査、データ残存、セッション管理、権限不要化、権限不要化の検証、権限不要化の再評価、権限不要化の再評価の再評価、権限不要化の再評価の再評価、権限不要化の再評価の再評価、権限不要化の再評価の再評価、権限不要化の再評価の再評価、権限不要も再評価が必要です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1818,
+        "hit_keywords": [
+          "公式資料",
+          "導入時"
+        ],
+        "total_keywords": 11,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は質問と関係のない内容ばかりで、模範解答に記載されているChangelog、Feature Maturity、利用ClientのVersionなどの確認点が全く含まれていない",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は質問と関係のない内容ばかりで、模範解答に記載されているChangelog、Feature Maturity、利用ClientのVersionなどの確認点が全く含まれていない\"}"
+      },
+      "timing": {
+        "sec": 0.9,
+        "prompt_tokens": 70,
+        "completion_tokens": 149,
+        "tok_s": 165.9
+      }
+    },
+    {
+      "index": 119,
+      "question": "IdempotencyのKey生成において、normalized_arguments_hash以外に使用される要素は何ですか？",
+      "expected": "IdempotencyのKeyは、task_id、contract_version、tool_name、normalized_arguments_hash、target_resource、target_versionの6つの要素を組み合わせて生成されます。",
+      "source": "data/corpus/ai_harness/docs/profiles/distributed-execution.md#Idempotency",
+      "response": "IdempotencyのKey生成では、normalized_arguments_hashとcurrent_versionが使用されます。これらは、リクエストの引数を標準化したハッシュと、現在のバージョンを組み合わせて、重複処理を防ぐための要素です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5,
+        "hit_keywords": [
+          "idempotency",
+          "key",
+          "normalized_arguments_hash",
+          "生成",
+          "要素"
+        ],
+        "total_keywords": 10,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "模範解答の要素を一部誤っており、重要な要素が欠落している",
+        "raw": "{\"score\": 2, \"reason\": \"模範解答の要素を一部誤っており、重要な要素が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.39,
+        "prompt_tokens": 74,
+        "completion_tokens": 62,
+        "tok_s": 158.1
+      }
+    },
+    {
+      "index": 120,
+      "question": "Leaseレコードに含まれるfencing_tokenの役割や意味は文章から分かりますか？",
+      "expected": "文章にはfencing_tokenというフィールドが存在することは記載されていますが、その具体的な役割や意味に関する説明は提供されていません。",
+      "source": "data/corpus/ai_harness/docs/profiles/distributed-execution.md#Idempotency",
+      "response": "Leaseレコードにはfencing_tokenが含まれており、その役割や意味は文章から直接的に説明されていません。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.5556,
+        "hit_keywords": [
+          "fencing_token",
+          "役割",
+          "意味",
+          "文章",
+          "説明"
+        ],
+        "total_keywords": 9,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同じ事実をすべて含み誤りがない。",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同じ事実をすべて含み誤りがない。\"}"
+      },
+      "timing": {
+        "sec": 0.19,
+        "prompt_tokens": 76,
+        "completion_tokens": 29,
+        "tok_s": 150.8
+      }
+    },
+    {
+      "index": 121,
+      "question": "Parallel AgentのRead並列処理において、どの項目を共有または固定する必要がありますか？",
+      "expected": "Parallel AgentのRead並列処理では、同じSnapshot、狭いTask、Structured Result、Parent Integration、Spawn Budgetが必須候補として挙げられています。",
+      "source": "data/corpus/ai_harness/docs/profiles/distributed-execution.md#Checkpoint",
+      "response": "Parallel AgentのRead並列処理では、Shared state、Shared cache、Shared database、Shared network、Shared credential、Shared tool、Shared model、Shared budget、Shared timer、Shared progress、Shared approval、Shared verification、Shared evidence、Shared evidence store、Shared evidence validation、Shared evidence review、Shared evidence integration、Shared evidence verification、Shared evidence validation、Shared evidence reviewを共有または固定する必要があります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4615,
+        "hit_keywords": [
+          "agent",
+          "budget",
+          "integration",
+          "parallel",
+          "read",
+          "並列処理"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と全く異なる項目を挙げており、正しい事実を含んでいない",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と全く異なる項目を挙げており、正しい事実を含んでいない\"}"
+      },
+      "timing": {
+        "sec": 0.52,
+        "prompt_tokens": 75,
+        "completion_tokens": 85,
+        "tok_s": 163.6
+      }
+    },
+    {
+      "index": 122,
+      "question": "適用Triggerの一つである「Rollback困難」以外に、どのような条件が含まれますか？",
+      "expected": "適用Triggerには、Production Resource、顧客・従業員・患者等の機密Data、Credential、Token、Key、Cross-tenant、外部メール・公開・Issue作成、決済・返金・送金、大量変更・削除、権限付与・失効、契約・法的効果などがあります。また、人間が毎回Outputを確認しない場合や誤りの検出が難しい場合、復旧時間が長い場合も含まれます。",
+      "source": "data/corpus/ai_harness/docs/profiles/production-high-risk.md#(冒頭)",
+      "response": "適用Triggerには、Rollback困難、人間の判断が必要、外部API呼び出し、大量データ処理、複数Agent協調、権限変更、長期状態変化、外部依存、複雑な条件、高リスク、高コスト、機密情報、機密API、機密データ、機密Key、機密資産、機密契約、機密契約書、機密契約書の更新、機密契約書の再確認、機密契約書の再確認が必要な場合があります。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2174,
+        "hit_keywords": [
+          "key",
+          "trigger",
+          "人間",
+          "機密",
+          "適用"
+        ],
+        "total_keywords": 23,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な条件は含まれているが、模範解答にない「外部API呼び出し」「複数Agent協調」「長期状態変化」などの項目が含まれており、一部の事実が誤っている",
+        "raw": "{\"score\": 3, \"reason\": \"重要な条件は含まれているが、模範解答にない「外部API呼び出し」「複数Agent協調」「長期状態変化」などの項目が含まれており、一部の事実が誤っている\"}"
+      },
+      "timing": {
+        "sec": 0.73,
+        "prompt_tokens": 74,
+        "completion_tokens": 122,
+        "tok_s": 167.4
+      }
+    },
+    {
+      "index": 123,
+      "question": "「必須Architecture」におけるTool Gatewayの構成要素にはどのようなものが含まれますか？",
+      "expected": "Tool Gatewayには、Schema、Identity、Policy Decision、Data Flow / DLP、Approval、Idempotency、Auditが含まれます。",
+      "source": "data/corpus/ai_harness/docs/profiles/production-high-risk.md#必須Architecture",
+      "response": "Tool Gatewayは、Tool Contract、Tool Server、Tool Client、Tool Auth、Tool Rate Limit、Tool Budget、Tool Approval、Tool Approval UI、Tool Approval Policy、Tool Approval Decision、Tool Approval Evidence、Tool Approval Evidence Store、Tool Approval Evidence Verification、Tool Approval Evidence Verification Policy、Tool Approval Evidence Verification Decision、Tool Approval Evidence Verification Evidence、Tool Approval Evidence Verification Evidence Store、Tool Approval Evidence Verification Evidence Verification Policy、Tool Approval Evidence Verification Evidence Verification Decision、Tool Approval Evidence Verification Evidence Verification Evidence、Tool Approval Evidence Verification Evidence Verification Evidence Store、Tool Approval Evidence Verification Evidence Verification Evidence Verification Policy、Tool Approval Evidence Verification Evidence Verification Evidence Verification Decision、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Store、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Policy、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Decision、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Store、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Policy、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Decision、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Store、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Policy、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Decision、Tool Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Store、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Policy、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Decision、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Store、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Policy、Tool Approval Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Evidence Verification Decision、",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4167,
+        "hit_keywords": [
+          "approval",
+          "decision",
+          "gateway",
+          "policy",
+          "tool"
+        ],
+        "total_keywords": 12,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と全く異なる内容で、正しい構成要素を含んでいない",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と全く異なる内容で、正しい構成要素を含んでいない\"}"
+      },
+      "timing": {
+        "sec": 2.33,
+        "prompt_tokens": 72,
+        "completion_tokens": 400,
+        "tok_s": 171.3
+      }
+    },
+    {
+      "index": 124,
+      "question": "Independent Enforcementの構成要素として、OSやContainer以外にどのような要素が挙げられていますか？",
+      "expected": "Independent Enforcementの構成要素として、Network / Egress、Credential Broker、Database Authorization、Provider-side Controlが挙げられています。",
+      "source": "data/corpus/ai_harness/docs/profiles/production-high-risk.md#必須Architecture",
+      "response": "Independent Enforcementの構成要素には、OSやContainerの他に、Network、File System、Process、User、Secret、Credential、Network Identity、Network Policy、Network Access Control、Network egress、Network egress Policy、Network egress Approval、Network egress Approval Policy、Network egress Approval Approval、Network egress Approval Approval Policy、Network egress Approval Approval Approval、Network egress Approval Approval Approval Policy、Network egress Approval Approval Approval Approval、Network egress Approval Approval Approval Approval Policy、Network e.e.g. Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、Network e.g. Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Approval Policy、",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.6364,
+        "hit_keywords": [
+          "control",
+          "credential",
+          "egress",
+          "enforcement",
+          "independent",
+          "network",
+          "構成要素"
+        ],
+        "total_keywords": 11,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "受験者の回答は模範解答と全く一致せず、誤った要素を多数含んでいます。",
+        "raw": "{\"score\": 1, \"reason\": \"受験者の回答は模範解答と全く一致せず、誤った要素を多数含んでいます。\"}"
+      },
+      "timing": {
+        "sec": 2.35,
+        "prompt_tokens": 76,
+        "completion_tokens": 400,
+        "tok_s": 170.4
+      }
+    },
+    {
+      "index": 125,
+      "question": "External Side EffectにおけるTimeout処理の方針と、再送に関するルールは何ですか。",
+      "expected": "External Side Effectでは、タイムアウトが発生した場合でも、それをFailureとして無条件に再送する処理は行いません。これは、外部システムとの整合性を保つために、再送による二重実行や状態の不整合を防ぐ重要な設計方針です。",
+      "source": "data/corpus/ai_harness/docs/profiles/production-high-risk.md#Break-glass",
+      "response": "Timeout処理は、外部APIのタイムアウトを検知して、その結果をAgentへ通知する方針です。一方、再送は、Timeoutが発生した場合にのみ実行されるものであり、その結果をAgentへ通知します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.25,
+        "hit_keywords": [
+          "タイムアウト",
+          "再送",
+          "処理",
+          "発生"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "タイムアウト処理と再送に関する主な事実が誤っており、模範解答の設計方針と矛盾している",
+        "raw": "{\"score\": 2, \"reason\": \"タイムアウト処理と再送に関する主な事実が誤っており、模範解答の設計方針と矛盾している\"}"
+      },
+      "timing": {
+        "sec": 0.38,
+        "prompt_tokens": 74,
+        "completion_tokens": 58,
+        "tok_s": 154.4
+      }
+    },
+    {
+      "index": 126,
+      "question": "Break-glassプロファイルで使用が必須とされている要素には、どのようなものがありますか。",
+      "expected": "Break-glassプロファイルでは、Strong AuthenticationやNarrow Capability、Short TTL、Incident ID、Real-time alert、Immutable Audit、Mandatory post-review、Automatic revokeなどが適用されます。特にReasonの必須入力も定められています。",
+      "source": "data/corpus/ai_harness/docs/profiles/production-high-risk.md#Break-glass",
+      "response": "Break-glassプロファイルでは、人間承認、独立監査、残存リスク評価、残存リスク承認、残存リスク監査、残存リスク報告、残存リスク再評価が必須とされています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1,
+        "hit_keywords": [
+          "break-glass",
+          "プロファイル"
+        ],
+        "total_keywords": 20,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と受験者の回答は全く異なる内容であり、正しい要素が含まれていない",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と受験者の回答は全く異なる内容であり、正しい要素が含まれていない\"}"
+      },
+      "timing": {
+        "sec": 0.33,
+        "prompt_tokens": 73,
+        "completion_tokens": 53,
+        "tok_s": 161.3
+      }
+    },
+    {
+      "index": 127,
+      "question": "Stop Conditionsとして設定されている、監査関連の問題は何ですか。",
+      "expected": "Stop Conditionsの一つとして「Audit保存不能」が設定されています。これにより、監査ログの保存ができない状況では処理を停止するよう定義されています。",
+      "source": "data/corpus/ai_harness/docs/profiles/production-high-risk.md#Rollout",
+      "response": "Stop Conditionsには、監査が完了していない状態で停止するという条件が設定されています。これにより、必要な確認が行われていない場合でも、適切に停止するよう制御されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3,
+        "hit_keywords": [
+          "conditions",
+          "stop",
+          "停止"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "Stop Conditionsの具体的な監査関連の問題についての記述が不足している",
+        "raw": "{\"score\": 2, \"reason\": \"Stop Conditionsの具体的な監査関連の問題についての記述が不足している\"}"
+      },
+      "timing": {
+        "sec": 0.28,
+        "prompt_tokens": 70,
+        "completion_tokens": 43,
+        "tok_s": 155.8
+      }
+    },
+    {
+      "index": 128,
+      "question": "「team-ci」プロファイルのrisk_scopeの値は何ですか。",
+      "expected": "「team-ci」プロファイルのrisk_scopeは「medium-to-high」です。これは、プロファイルが中から高リスクのスコープを対象としていることを示しています。",
+      "source": "data/corpus/ai_harness/docs/profiles/team-ci.md#(冒頭)",
+      "response": "「team-ci」プロファイルのrisk_scopeの値は「medium」です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4286,
+        "hit_keywords": [
+          "risk_scope",
+          "team-ci",
+          "プロファイル"
+        ],
+        "total_keywords": 7,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "risk_scopeの値として「medium」を記述しているが、模範解答では「medium-to-high」とされているため重要な欠落がある。",
+        "raw": "{\"score\": 3, \"reason\": \"risk_scopeの値として「medium」を記述しているが、模範解答では「medium-to-high」とされているため重要な欠落がある。\"}"
+      },
+      "timing": {
+        "sec": 0.15,
+        "prompt_tokens": 69,
+        "completion_tokens": 19,
+        "tok_s": 129.2
+      }
+    },
+    {
+      "index": 129,
+      "question": "PR説明の役割として、文章ではどのような説明がなされていますか？",
+      "expected": "文章によると、PR説明はEvidenceへの索引であると説明されています。これにより、プルリクエストの内容に関連する証拠や検証結果を効率的に参照・追跡できるようになります。",
+      "source": "data/corpus/ai_harness/docs/profiles/team-ci.md#Pull Request要件",
+      "response": "PR説明は、変更内容を簡潔に説明する役割を果たします。具体的には、変更したファイルや修正したバージョン、実行したテスト、確認した変更、そして残存リスクを記載します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1,
+        "hit_keywords": [
+          "説明"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "PR説明の役割として模範解答のEvidenceへの索引という点が欠落しており、受験者の回答は別の観点から説明しているため",
+        "raw": "{\"score\": 2, \"reason\": \"PR説明の役割として模範解答のEvidenceへの索引という点が欠落しており、受験者の回答は別の観点から説明しているため\"}"
+      },
+      "timing": {
+        "sec": 0.37,
+        "prompt_tokens": 74,
+        "completion_tokens": 58,
+        "tok_s": 155.1
+      }
+    },
+    {
+      "index": 130,
+      "question": "証拠とポリシーについての説明はどのファイルに記載されていますか？",
+      "expected": "「証拠とポリシー」に関する内容は、関連文書のリストに ../learning/intermediate/evidence-and-policy.md というファイル名で記載されています。",
+      "source": "data/corpus/ai_harness/docs/profiles/team-ci.md#関連文書",
+      "response": "証拠とポリシーの説明は、docs/agent/証拠とポリシー.mdというファイルに記載されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4286,
+        "hit_keywords": [
+          "ポリシー",
+          "記載",
+          "証拠"
+        ],
+        "total_keywords": 7,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な情報が欠落しており、ファイルパスが正しくない",
+        "raw": "{\"score\": 2, \"reason\": \"重要な情報が欠落しており、ファイルパスが正しくない\"}"
+      },
+      "timing": {
+        "sec": 0.24,
+        "prompt_tokens": 76,
+        "completion_tokens": 35,
+        "tok_s": 146.5
+      }
+    },
+    {
+      "index": 131,
+      "question": "初級ガイドではどのような内容を扱わないとされていますか？",
+      "expected": "初級ガイドでは、外部送信、本番変更、認証情報、個人情報、金銭、不可逆操作を扱いません。これらは中級以上のガイドで扱う対象となります。",
+      "source": "data/corpus/ai_harness/docs/README.md#初級",
+      "response": "初級ガイドでは、権限管理、セッション、状態、ツール、権限、権限分離、権限制約、権限監査、権限変更、権限再評価、権限再確認、権限再確認、権限再確認、権限再確認、権限再確認、権限再確認、権限再確認、権限再確認、権限再確認、権も扱いません。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "ガイド",
+          "初級ガイド"
+        ],
+        "total_keywords": 10,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と全く異なる内容を述べており、誤った事実を含んでいる",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と全く異なる内容を述べており、誤った事実を含んでいる\"}"
+      },
+      "timing": {
+        "sec": 0.71,
+        "prompt_tokens": 68,
+        "completion_tokens": 117,
+        "tok_s": 165.4
+      }
+    },
+    {
+      "index": 132,
+      "question": "profile/codex.mdは、どのような場面や目的で使用されるProfileですか。",
+      "expected": "profile/codex.mdは、Codexの機能への対応付けを行うために使用されるProfileです。他のProfileがリスクや実行環境に基づいているのに対し、このProfileは特定のツール機能との整合性を取る目的で使用されます。",
+      "source": "data/corpus/ai_harness/docs/README.md#3. Reference",
+      "response": "profile/codex.mdは、Codexモデルを用いたコーディングタスクのProfileです。このProfileは、Codexモデルの能力と制約を反映したタスク定義や実行ルールを提供するために使用されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2727,
+        "hit_keywords": [
+          "codex",
+          "profile",
+          "profile/codex.md"
+        ],
+        "total_keywords": 11,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な事実を含んでいますが、Codexの機能への対応付けという模範解答の核心的な点が欠落しています。",
+        "raw": "{\"score\": 3, \"reason\": \"重要な事実を含んでいますが、Codexの機能への対応付けという模範解答の核心的な点が欠落しています。\"}"
+      },
+      "timing": {
+        "sec": 0.34,
+        "prompt_tokens": 72,
+        "completion_tokens": 54,
+        "tok_s": 160.9
+      }
+    },
+    {
+      "index": 133,
+      "question": "適用順序において、Capability Profileを選んだ後に実行する処理は何ですか？",
+      "expected": "適用順序の手順によると、Capability Profileを選んだ後には、LearningまたはReferenceで実装を行います。その後、Product Profileへ読み替えるステップへと進みます。",
+      "source": "data/corpus/ai_harness/docs/README.md#適用順序",
+      "response": "適用順序において、Capability Profileを選んだ後には、Capability Contractを実行します。その後、Policyを適用し、最後にHookを実行します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3333,
+        "hit_keywords": [
+          "capability",
+          "profile",
+          "適用順序"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "重要な手順が欠落しており、模範解答と矛盾する内容も含まれている",
+        "raw": "{\"score\": 2, \"reason\": \"重要な手順が欠落しており、模範解答と矛盾する内容も含まれている\"}"
+      },
+      "timing": {
+        "sec": 0.24,
+        "prompt_tokens": 73,
+        "completion_tokens": 35,
+        "tok_s": 148.6
+      }
+    },
+    {
+      "index": 134,
+      "question": "Profile間で競合が発生した場合、どのような判定が採用されますか？",
+      "expected": "Profile間で競合が生じた場合は、より制限の強い判定を採用します。明示的な例外が必要な場合は、Task Contractの改訂、Risk再評価、期限付き承認、監査記録を要求する必要があります。",
+      "source": "data/corpus/ai_harness/docs/README.md#適用順序",
+      "response": "Profile間で競合が発生した場合、Profileの優先順位に基づいて判定を行います。具体的には、Profileの優先順位が高いものから低いものへ順に適用し、競合するRuleを上書きまたは無視する処理が行われます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1875,
+        "hit_keywords": [
+          "profile",
+          "判定",
+          "競合"
+        ],
+        "total_keywords": 16,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "競合の判定方法として優先順位に基づく処理を述べているが、模範解答の制限の強い判定や例外処理の必要性が欠落している",
+        "raw": "{\"score\": 2, \"reason\": \"競合の判定方法として優先順位に基づく処理を述べているが、模範解答の制限の強い判定や例外処理の必要性が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.38,
+        "prompt_tokens": 74,
+        "completion_tokens": 63,
+        "tok_s": 164.4
+      }
+    },
+    {
+      "index": 135,
+      "question": "Agent開発の4層アーキテクチャにおけるRuntime層の主な責任には何が含まれますか？",
+      "expected": "Runtime層の主な責任には、Process、Queue、永続化、再開、同時実行が含まれます。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#1. 読み方",
+      "response": "Runtime層の主な責任は、Agentの実行環境を提供することです。具体的には、Agentの実行を制御し、ToolやModelの呼び出しを管理する役割を担います。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2857,
+        "hit_keywords": [
+          "runtime",
+          "責任"
+        ],
+        "total_keywords": 7,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "Runtime層の主な責任として具体的な要素が欠如している",
+        "raw": "{\"score\": 3, \"reason\": \"Runtime層の主な責任として具体的な要素が欠如している\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 81,
+        "completion_tokens": 46,
+        "tok_s": 146.6
+      }
+    },
+    {
+      "index": 136,
+      "question": "4.1 分離において、Sessionとは何を指すのですか？",
+      "expected": "4.1 分離の定義によると、Sessionは会話、Event、Stateの継続単位を指します。これはモデルの処理単位や状態管理において重要な概念として位置づけられています。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#3.5 Stop Reason",
+      "response": "Sessionは、Agentの実行状態を保持するためのコンテキストです。具体的には、現在のタスク、状態、ツール呼び出し、そしてその結果を管理するために使用されます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.0714,
+        "hit_keywords": [
+          "session"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "Sessionの定義に近い内容だが、模範解答の「会話、Event、Stateの継続単位」という核心的な要素が欠如している。",
+        "raw": "{\"score\": 3, \"reason\": \"Sessionの定義に近い内容だが、模範解答の「会話、Event、Stateの継続単位」という核心的な要素が欠如している。\"}"
+      },
+      "timing": {
+        "sec": 0.3,
+        "prompt_tokens": 70,
+        "completion_tokens": 46,
+        "tok_s": 153.2
+      }
+    },
+    {
+      "index": 137,
+      "question": "4.2 Source of Truthの表において、Business Dataの代表的な正本にはどのようなものが挙げられていますか？",
+      "expected": "Business Dataの代表的な正本には、業務DB、外部System、Version Artifactが挙げられています。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#4.2 Source of Truth",
+      "response": "Business Dataの代表的な正本には、契約、支払い、発票、顧客契約、顧客履歴、顧客支払い、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返証、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金、顧客返品、顧客返金",
+      "finish_reason": "length",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.4444,
+        "hit_keywords": [
+          "business",
+          "data",
+          "代表的",
+          "正本"
+        ],
+        "total_keywords": 9,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答の内容とは全く一致せず、誤った事実を述べています。",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答の内容とは全く一致せず、誤った事実を述べています。\"}"
+      },
+      "timing": {
+        "sec": 2.33,
+        "prompt_tokens": 80,
+        "completion_tokens": 400,
+        "tok_s": 171.7
+      }
+    },
+    {
+      "index": 138,
+      "question": "Retry処理はどのような場合に実行されるべきですか？",
+      "expected": "Retryは、transientなどのエラー分類において、再実行しても副作用が安全な場合に限って行われる必要があります。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#6.3 Error分類",
+      "response": "Retry処理は、HTTPステータス429や5xx、またはタイムアウトなどの「再試行可能」なエラーが発生した場合に実行されます。これにより、一時的な失敗を軽減し、システムの頑健性を高めます。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1667,
+        "hit_keywords": [
+          "retry"
+        ],
+        "total_keywords": 6,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "主な事実が正しいが、模範解答の「再実行しても副作用が安全な場合」の条件が欠落している",
+        "raw": "{\"score\": 4, \"reason\": \"主な事実が正しいが、模範解答の「再実行しても副作用が安全な場合」の条件が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.43,
+        "prompt_tokens": 68,
+        "completion_tokens": 67,
+        "tok_s": 156.1
+      }
+    },
+    {
+      "index": 139,
+      "question": "Agentの終了とTask Acceptanceの関係についてどう記述されていますか？",
+      "expected": "Agentの終了とTask Acceptanceは、別個のものとして扱うために分けられています。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#7.4 Completion",
+      "response": "Agentの終了はTask Acceptanceとは別概念であり、Task AcceptanceはAgentが完了したことを示すものではありません。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.8,
+        "hit_keywords": [
+          "acceptance",
+          "agent",
+          "task",
+          "終了"
+        ],
+        "total_keywords": 5,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 5,
+        "reason": "模範解答と同じ事実をすべて含み誤りがない",
+        "raw": "{\"score\": 5, \"reason\": \"模範解答と同じ事実をすべて含み誤りがない\"}"
+      },
+      "timing": {
+        "sec": 0.2,
+        "prompt_tokens": 72,
+        "completion_tokens": 28,
+        "tok_s": 138.4
+      }
+    },
+    {
+      "index": 140,
+      "question": "8.1 4層に含まれるレイヤー名を教えてください。",
+      "expected": "8.1 4層には、Component、Trajectory、Outcome、Operationalの4つが含まれます。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#7.4 Completion",
+      "response": "8.1 4層には、Agent、Task、Step、Action が含まれています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.2,
+        "hit_keywords": [
+          "8.1"
+        ],
+        "total_keywords": 5,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 1,
+        "reason": "模範解答と受験者の回答は完全に異なるレイヤー名を含んでおり、事実が一致していません。",
+        "raw": "{\"score\": 1, \"reason\": \"模範解答と受験者の回答は完全に異なるレイヤー名を含んでおり、事実が一致していません。\"}"
+      },
+      "timing": {
+        "sec": 0.16,
+        "prompt_tokens": 71,
+        "completion_tokens": 21,
+        "tok_s": 128.0
+      }
+    },
+    {
+      "index": 141,
+      "question": "Untrusted Inputとして扱われるデータの種類と、それに対するModelの目標について説明してください。",
+      "expected": "User、Web、Email、Attachment、RAG、Tool Result、Subagent Output、Memoryを非信頼入力として扱います。目標はModelが絶対にInjectionへ騙されないことではなく、悪意ある指示を読んだ際にPolicyやPermission、PEPが拒否して事故へ進まないようにすることです。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#9.2 Privacy",
+      "response": "Untrusted Inputには、Userの入力、外部APIの結果、DBの結果、Fileの内容、Networkの結果などが含まれます。Modelの目標は、これらを信頼せず、SchemaやSchema + Validation、Schema + Validation + Approval、Schema + Validation + Approval + Verificationのいずれかで処理することです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1364,
+        "hit_keywords": [
+          "model",
+          "user",
+          "目標"
+        ],
+        "total_keywords": 22,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "重要な事実が欠落しており、Modelの目標の説明が模範解答と異なる",
+        "raw": "{\"score\": 3, \"reason\": \"重要な事実が欠落しており、Modelの目標の説明が模範解答と異なる\"}"
+      },
+      "timing": {
+        "sec": 0.43,
+        "prompt_tokens": 78,
+        "completion_tokens": 72,
+        "tok_s": 165.8
+      }
+    },
+    {
+      "index": 142,
+      "question": "High-risk Operation の必須候補に含まれる Emergency Stop とは何か。",
+      "expected": "High-risk Operation の必須候補には、Emergency Stop が含まれます。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#12. High-risk Operation",
+      "response": "Emergency Stop は、高リスク操作の必須候補の一つとして明記されています。これは緊急停止の操作を指し、システムやプロセスが突然停止できるようにするための重要な機能です。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.6,
+        "hit_keywords": [
+          "emergency",
+          "stop",
+          "必須候補"
+        ],
+        "total_keywords": 5,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 4,
+        "reason": "模範解答の主な事実を含んでおり、Emergency Stop の意味も補足しているが、'必須候補'の具体的な定義や文脈が不足している。",
+        "raw": "{\"score\": 4, \"reason\": \"模範解答の主な事実を含んでおり、Emergency Stop の意味も補足しているが、'必須候補'の具体的な定義や文脈が不足している。\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 70,
+        "completion_tokens": 48,
+        "tok_s": 157.3
+      }
+    },
+    {
+      "index": 143,
+      "question": "失効した古いWorkerが実行を続けるリスクを回避するために、Lease取得時に発行されるものは何ですか？",
+      "expected": "Lease取得ごとに単調増加するFencing Tokenを発行します。State StoreやTool GatewayはこのFencing Tokenを用いて、古いTokenによるリクエストを拒否することでリスクを回避します。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#13.1 At-least-once",
+      "response": "Lease取得時に発行されるものは、Worker IDと現在の時間です。これにより、失効した古いWorkerが実行を続けるリスクを回避します。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.3571,
+        "hit_keywords": [
+          "lease",
+          "リスク",
+          "取得",
+          "回避",
+          "発行"
+        ],
+        "total_keywords": 14,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "Worker IDと現在の時間の記述は誤りで、模範解答のFencing Tokenが正解である",
+        "raw": "{\"score\": 2, \"reason\": \"Worker IDと現在の時間の記述は誤りで、模範解答のFencing Tokenが正解である\"}"
+      },
+      "timing": {
+        "sec": 0.26,
+        "prompt_tokens": 82,
+        "completion_tokens": 38,
+        "tok_s": 145.6
+      }
+    },
+    {
+      "index": 144,
+      "question": "Completion Criteriaの直後に位置する順序付けの要素は何ですか？",
+      "expected": "提供された順序付けによると、Completion Criteriaの直後にはTool Validationが位置しています。",
+      "source": "data/corpus/ai_harness/docs/reference/agent-development-handbook.md#Stage 0: Generation",
+      "response": "Completion Criteriaの直後に位置する順序付けの要素は、Verification、Evidence、Approvalです。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.625,
+        "hit_keywords": [
+          "completion",
+          "criteria",
+          "位置",
+          "直後",
+          "順序付"
+        ],
+        "total_keywords": 8,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 2,
+        "reason": "受験者の回答は模範解答と異なる要素を挙げており、主な事実が誤っている。",
+        "raw": "{\"score\": 2, \"reason\": \"受験者の回答は模範解答と異なる要素を挙げており、主な事実が誤っている。\"}"
+      },
+      "timing": {
+        "sec": 0.15,
+        "prompt_tokens": 69,
+        "completion_tokens": 22,
+        "tok_s": 142.6
+      }
+    },
+    {
+      "index": 145,
+      "question": "本書で扱う共通原則と用語の正本はどのディレクトリに格納されていますか？",
+      "expected": "本書では共通原則と用語について、`docs/core/`ディレクトリにある文書を正本として扱うことが定められています。",
+      "source": "data/corpus/ai_harness/docs/reference/coding-agent-usage-handbook.md#(冒頭)",
+      "response": "本書で扱う共通原則と用語の正本は、本書のルートディレクトリ内にある docs/ 目録にある common/ ディレクトリに格納されています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.7143,
+        "hit_keywords": [
+          "ディレクトリ",
+          "共通原則",
+          "本書",
+          "正本",
+          "用語"
+        ],
+        "total_keywords": 7,
+        "correct": true,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "正本のディレクトリ名と配置が模範解答と異なるため重要な欠落がある",
+        "raw": "{\"score\": 3, \"reason\": \"正本のディレクトリ名と配置が模範解答と異なるため重要な欠落がある\"}"
+      },
+      "timing": {
+        "sec": 0.31,
+        "prompt_tokens": 80,
+        "completion_tokens": 47,
+        "tok_s": 149.6
+      }
+    },
+    {
+      "index": 146,
+      "question": "Hookはどのような特性を持たせ、Hook間の順序に対する依存についてどう規定していますか？",
+      "expected": "Hookは、Hook間の暗黙順序へ依存せず、Idempotent（冪等性）を保ち、TimeoutおよびFailure Policyを持つように設定されます。これにより、Secret検知やPre-tool Policyなどの機能を実装します。",
+      "source": "data/corpus/ai_harness/docs/reference/coding-agent-usage-handbook.md#8.1 Skill",
+      "response": "Hookは並列実行を許可し、Hook間の順序に対する依存は禁止しています。これにより、各Hookの独立性を保ち、予期せぬ依存関係による副作用を防ぐことが定められています。",
+      "finish_reason": "stop",
+      "retrieval": null,
+      "deterministic": {
+        "keyword_recall": 0.1538,
+        "hit_keywords": [
+          "hook",
+          "依存"
+        ],
+        "total_keywords": 13,
+        "correct": false,
+        "cited": false
+      },
+      "llm": {
+        "score": 3,
+        "reason": "Hookの並列実行と依存禁止に関する記述は正しいが、IdempotentやTimeout、Failure Policyなどの模範解答にある重要な要素が欠落している",
+        "raw": "{\"score\": 3, \"reason\": \"Hookの並列実行と依存禁止に関する記述は正しいが、IdempotentやTimeout、Failure Policyなどの模範解答にある重要な要素が欠落している\"}"
+      },
+      "timing": {
+        "sec": 0.34,
+        "prompt_tokens": 76,
+        "completion_tokens": 54,
+        "tok_s": 156.6
+      }
+    }
+  ]
+}

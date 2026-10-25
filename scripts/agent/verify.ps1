@@ -43,6 +43,7 @@ function Step([string]$name, [scriptblock]$body) {
 }
 
 Step "contracts schema" { uv run python scripts/agent/check_contracts.py }
+Step "eval results schema" { uv run python scripts/agent/check_eval_results.py }
 Step "git diff --check" { git diff --check; if ($LASTEXITCODE -eq $null) { $global:LASTEXITCODE = 0 } }
 
 if (-not $SkipPytest) {

@@ -9,10 +9,10 @@
 | Phase | ファイル | 内容 |
 | --- | --- | --- |
 | 0〜2 | [phase-0-2.md](phase-0-2.md) | 土台、CLI、Web UI(振り返りとしてまとめ) |
-| 3 | phase-3.md | RAG |
+| 3 | [phase-3.md](phase-3.md) | RAG |
 | 4 | [phase-4.md](phase-4.md) | Pi とハーネスでエージェント |
-| 5 | phase-5.md | LoRA ファインチューニング(WSL) |
-| 6 | phase-6.md | 評価・計測・公開 |
+| 5 | [phase-5.md](phase-5.md) | LoRA ファインチューニング(WSL) |
+| 6 | [phase-6.md](phase-6.md) | 評価・計測・公開準備 |
 
 ## 各 Phase のテンプレート
 

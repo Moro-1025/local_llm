@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-6",
+  "contract_id": "contract:local-llm:phase-6",
+  "contract_version": 1,
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "result_id": "vr:phase-6:EVAL-005:899664d",
+  "criterion_id": "EVAL-005",
+  "assertion": "README に構成図、再現手順、各 Phase の成果、LICENSE(MIT)がある",
+  "status": "not_run",
+  "verifier": {
+    "type": "human-review",
+    "name": "owner Moro-1025(README.md と LICENSE のレビュー)",
+    "version": null,
+    "independent_from_writer": true
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase6-eval-cde1c2)",
+    "commit": "899664d"
+  },
+  "evidence_refs": [
+    "README.md",
+    "LICENSE",
+    "docs/journal/phase-6.md"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "human-review は未実施(writer セッションは pass を付けない)。自己確認: README に Mermaid の構成図、「最短の再現手順」、「各 Phase の成果」表、ロードマップ、「公開(人間が行う手順)」があり、LICENSE は MIT(Copyright (c) 2026 Moro-1025)"
+  ],
+  "verified_at": "2026-10-25T09:10:00+00:00"
+}
