@@ -74,15 +74,17 @@ def grade_deterministic(expected: str, response: str, *, threshold: float = DEFA
 def retrieval_hit(source_path: str, retrieved_paths: list[str], *, top: int | None = None) -> bool:
     """出典ファイルが検索結果(上位 top 件)に含まれるか。
 
-    コーパス側のパスは `local_llm/docs/x.md` のように接頭辞が付くので、末尾一致で判定する。
+    データセットの source は `docs/x.md` や `data/corpus/ai_harness/y.md`、コーパス側のパスは
+    `local_llm/docs/x.md` や `ai_harness/y.md` のように接頭辞が違うので、
+    どちらかがもう一方の末尾(パス区切り単位)に一致すればヒットとみなす。
     """
-    target = source_path.replace("\\", "/").lstrip("./")
+    target = source_path.replace("\\", "/").strip("/")
     if not target:
         return False
     paths = retrieved_paths if top is None else retrieved_paths[:top]
     for p in paths:
-        q = p.replace("\\", "/")
-        if q == target or q.endswith("/" + target):
+        q = p.replace("\\", "/").strip("/")
+        if q == target or q.endswith("/" + target) or target.endswith("/" + q):
             return True
     return False
 

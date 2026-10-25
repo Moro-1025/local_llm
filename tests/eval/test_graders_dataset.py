@@ -46,6 +46,9 @@ def test_retrieval_hit_suffix_match():
     assert retrieval_hit("docs/core/glossary.md", paths, top=2)
     assert not retrieval_hit("docs/core/glossary.md", paths, top=1)
     assert not retrieval_hit("spec.md", paths)  # 部分一致ではなく末尾のパス要素一致
+    # データセット側に data/corpus/ の接頭辞が付き、コーパス側に無いケース(ai_harness の問い)
+    assert retrieval_hit("data/corpus/ai_harness/docs/core/glossary.md", paths)
+    assert not retrieval_hit("data/corpus/ai_harness/docs/core/other.md", paths)
 
 
 @pytest.mark.parametrize(

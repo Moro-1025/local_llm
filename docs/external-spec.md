@@ -631,3 +631,81 @@ runner が持つ検査と、サンプル Contract での意味:
 | 許可外ツール要求 | block して記録、run は続く。`ONLY_ALLOWED_TOOLS` は pass のまま |
 | scope 外の `read_file` | block し `scope_violation` で停止、`blocked` |
 | 手数超過 | `budget_exceeded` で停止、`blocked` |
+
+## 12. 評価 `llm-eval`: 5 構成を同じ問題で比べる(Phase 6)
+
+### 12.1 何ができるか
+
+版番号付きの Q&A データセット(`eval/datasets/qa-v1.jsonl`、147 問)を回答モデルに投げ、
+決定論的な採点(キーワード再現率)と LLM 採点(1〜5)の 2 段で点を付け、`eval/results/` に JSON と Markdown を出す。
+比較する構成は 5 つで、モデルは llama-server のルーターモードで 1 つずつ載せ替える。
+
+| 構成 | 回答モデル(`/v1/models` の id) | RAG | 意図 |
+| --- | --- | --- | --- |
+| A | `LLM_DEFAULT_MODEL`(既定 `unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M`) | なし | 大型モデルの素の知識 |
+| B | 同上 | あり | RAG の効果 |
+| C | `unsloth/Qwen3-4B-GGUF:Q4_K_M` | なし | 小型の基準 |
+| D | `local/qwen3-4b-localllm-lora` | なし | LoRA の効果 |
+| E | `local/qwen3-4b-localllm-lora` | あり | 併用 |
+
+採点モデルは回答モデルと**別**(既定 `unsloth/Qwen3-8B-GGUF:Q4_K_M`、`LLM_GRADER_MODEL` / `--grader-model`)。
+同じモデルを指定すると何も実行せず終了コード 2 で止まる。
+
+### 12.2 起動
+
+```powershell
+.\scripts\start-server.ps1 -Preset .\eval\models-eval.ini   # 8B 採点モデルに hf-repo を足したプリセット(12.6)
+uv run llm-index                                             # RAG あり構成(B / E)の索引。コーパスは 10.2 と scripts/sync-local-corpus.ps1
+uv run llm-eval --suite qa --config A                        # 1 構成
+.\scripts\run-eval-all.ps1                                   # A〜E を順に実行し、最後に比較表を出す
+uv run llm-eval --summarize                                  # 構成ごと最新の結果から比較表(Markdown)だけを出す
+```
+
+| オプション | 既定 | 内容 |
+| --- | --- | --- |
+| `--suite` | `qa` | データセットの種類(現在は qa のみ) |
+| `--config` | (必須) | A〜E |
+| `--n` / `--seed` | 全件 / 42 | 部分集合で走らせるときの件数と seed。使った件数・seed・行番号は結果 JSON に残る |
+| `--top-k` | 5 | RAG あり構成で差し込む資料数 |
+| `--grader-model` | `LLM_GRADER_MODEL` | 採点モデル id |
+| `--large-model` | `LLM_DEFAULT_MODEL` | 構成 A / B の大型モデル id |
+| `--base-url` / `--db` / `--out-dir` | 設定値 / 設定値 / `eval/results` | llama-server、RAG 索引、出力先 |
+| `--threshold` | 0.5 | 正答とみなすキーワード再現率 |
+| `--max-tokens` | 400 | 回答の最大トークン数 |
+| `--no-llm-grade` | | LLM 採点を行わない(決定論的採点のみ) |
+| `--no-manage-models` | | ルーターの `/models/load` `/models/unload` を使わない(単体モデルのサーバ向け) |
+
+実行中は 1 問ごとに `[A 回答] 12/147 recall=0.67 OK (3.1s)`、採点中は `[A 採点] 12/147 score=4` と出る。
+途中経過は `eval/results/<日時>-qa-A.partial.json` に書かれ、完了時に消える。
+
+### 12.3 採点の規則
+
+| 段 | 指標 | 規則 |
+| --- | --- | --- |
+| 1(決定論) | キーワード再現率 | 正解文の語(英数字 3 字以上、カタカナ・漢字 2 字以上、一般語を除外)のうち応答に含まれる割合。0.5 以上で「正答」。Phase 5 の `training/eval_quick.py` と同じ規則 |
+| 1(決定論) | 引用率 | 応答に `[n]` があるか(RAG あり構成で資料を根拠にしたかの目安) |
+| 1(決定論) | 検索ヒット率 | 問いの出典ファイル(`source` のパス部分)が検索結果の上位 3 件 / k 件に含まれるか(RAG あり構成のみ) |
+| 2(LLM) | 1〜5 の整数 | 採点モデルに質問・模範解答・応答を渡し、温度 0・thinking off・JSON Schema 強制で `{"score", "reason"}` を返させる。JSON が壊れていれば `score: null` として失敗数に数える |
+
+### 12.4 出力
+
+- `eval/results/<日時>-<suite>-<構成>.json`: `eval/schemas/qa-result.schema.json` に適合。`answer.model` と `grader.model`、`dataset.{version, n, seed, indices, sha256}`、`metrics`、全問の応答と採点が入る
+- 同名の `.md`: 指標の表と各問の一覧
+- `--summarize`: 構成 A〜E の最新結果を 1 つの表にする(README の比較表はこれを転記する)
+
+### 12.5 エラー時の振る舞い(評価固有)
+
+| 状況 | 振る舞い |
+| --- | --- |
+| 採点モデル == 回答モデル | 実行前に止まる(終了コード 2)。サーバには何も送らない |
+| RAG あり構成で索引が空 | 「先に `uv run llm-index`」と案内して終了コード 1 |
+| データセット名が `<name>-v<N>.jsonl` でない / 行に question・answer・source が無い | 終了コード 1 |
+| ルーターに無いモデル id | `/models` に出ないので「models.ini を確認」と出て終了コード 1 |
+| 途中で Ctrl+C | `*.partial.json` を残して終了コード 130 |
+
+### 12.6 プリセットについて
+
+`models.ini` の `[unsloth/Qwen3-8B-GGUF:Q4_K_M]` に `hf-repo` が無いと、ルーターは 8B の子プロセスにモデルを渡さず、
+子がそれ自身ルーターとして起動して永遠に `loading` のままになる(Phase 5 で 4B に起きた現象と同じ)。
+Phase 6 の契約では `models.ini` を書き換えられないため、1 行だけ足した `eval/models-eval.ini` を用意した。
+`models.ini` 本体に同じ 1 行を入れれば(Completion Report の Amendment 案)このファイルは不要になる。

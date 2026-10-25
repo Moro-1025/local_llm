@@ -883,3 +883,61 @@ flowchart TB
 | hash の一致 | pytest が `node --experimental-strip-types` で `contractHash` を呼び、`canonical_hash` と比較 |
 | runner → verify → report | `tests/agent/fake_pi.py`。環境変数 `FAKE_PI_SCENARIO`(finish / budget / bash)で events.jsonl と RPC イベントを再現し、decision が accepted / blocked になることを見る |
 | 実機 | `evidence/e2e-*` の 4 run(Completion Report)。モデルの挙動に依存するので pytest には含めない |
+
+## 13. 評価層(eval/、src/local_llm/eval/、Phase 6)
+
+### 13.1 責務の分割
+
+| モジュール | 入力 → 出力 | 外部依存 |
+| --- | --- | --- |
+| `configs.py` | 構成 id → `EvalConfig(id, label, answer_model, use_rag, top_k)`。A/B の大型モデルは `LLM_DEFAULT_MODEL`、採点モデルの既定は `DEFAULT_GRADER_MODEL` | `config.py` |
+| `dataset.py` | `<name>-v<N>.jsonl` → `Dataset(name, version, sha256, items)`。`select_items(n, seed)` は `random.Random(seed).sample` で行番号を選び元の順序で返す | なし |
+| `graders.py` | 決定論: `grade_deterministic()`(キーワード再現率・引用)、`retrieval_hit()`。LLM: `build_grader_messages()`、`GRADER_RESPONSE_FORMAT`(json_schema)、`parse_llm_grade()` | `types.py` |
+| `runner.py` | `EvalRunner.run()`: load 回答モデル → 全問回答 → unload → load 採点モデル → 全問採点 → unload。`GraderSeparationError` を生成時に投げる | `client.py`, `rag/` |
+| `report.py` | `compute_metrics()`、`write_result()`(JSON + Markdown)、`render_comparison()`、`latest_per_config()` | なし |
+| `cli.py` | `llm-eval` の argparse と `asyncio.run` | 上記すべて |
+
+llama-server への HTTP は `LlamaClient` だけが持つ。Phase 6 で足したのは `chat(max_tokens=, response_format=)` と
+ルーターモードの `router_models()` / `router_load()` / `router_unload()`(`GET /models`、`POST /models/load|unload`)。
+
+### 13.2 データフロー(構成 B、RAG あり)
+
+```mermaid
+sequenceDiagram
+    participant cli as llm-eval
+    participant r as EvalRunner
+    participant srv as llama-server(ルーター)
+    cli->>r: run(dataset)
+    r->>srv: POST /models/load {answer_model} → GET /models が loaded になるまで待つ
+    loop 各問
+        r->>srv: POST /v1/embeddings(質問)→ Retriever が上位 k 件
+        r->>srv: POST /v1/chat/completions(system: RAG 指示 + 資料, user: 質問, temperature 0, thinking off, max_tokens 400)
+        r->>r: grade_deterministic / retrieval_hit → *.partial.json
+    end
+    r->>srv: POST /models/unload {answer_model}
+    r->>srv: POST /models/load {grader_model}
+    loop 各問
+        r->>srv: POST /v1/chat/completions(採点プロンプト, response_format=json_schema)
+        r->>r: parse_llm_grade
+    end
+    r->>srv: POST /models/unload {grader_model}
+    r-->>cli: result dict → write_result(JSON, Markdown)
+```
+
+12 GB の VRAM に 35B(GPU 側約 3 GB + CPU 側 MoE)と 8B(約 5.5 GB)を同時に載せないため、回答と採点を分けて順に実行する。
+埋め込みモデル(約 0.7 GB)は常駐させたままにする。
+
+### 13.3 結果 JSON と採点モデル分離の検証(EVAL-003)
+
+- `eval/schemas/qa-result.schema.json`(draft 2020-12)。`grader.differs_from_answer_model` は `const: true`、`metrics` と `items[]` は `additionalProperties: false`。
+- JSON Schema は 2 つのプロパティの値の比較を表現できないので、`scripts/agent/check_eval_results.py` が `grader.model != answer.model` を文字列で比較する。
+  `verify.ps1` の「eval results schema」ステップで毎回走る。結果ファイルが無い環境では「対象なし」で通す。
+- 多重の守り: runner は生成時に `GraderSeparationError`、CLI は終了コード 2、Schema は `const true`、チェッカは文字列比較。
+
+### 13.4 テスト戦略(評価)
+
+| 対象 | 方法 |
+| --- | --- |
+| 採点規則・データセット・構成 | `tests/eval/test_graders_dataset.py`(HTTP なし) |
+| CLI 一式 | `tests/eval/test_runner_cli.py`。`tests/eval/conftest.py` の `FakeRouter` が `/models`、`/models/load`、`/models/unload`、`/v1/chat/completions` を respx で受け、採点モデルには JSON の点数を返す。載せ替え順、`temperature 0` / `chat_template_kwargs` / `response_format` の送信、Schema 適合、同一モデル拒否(exit 2)を見る |
+| 実機 | `eval/results/*.json`(Completion Report から参照)。モデルの出力に依存するので pytest には含めない |
