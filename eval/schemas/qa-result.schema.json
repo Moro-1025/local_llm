@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:local-llm:eval:qa-result:1.0",
+  "title": "local_llm eval result (suite qa)",
+  "description": "llm-eval が eval/results/ に書く結果 JSON。grader.model と answer.model が別であること(契約 GRADER_SEPARATION)は、runner が実行前に拒否し、ここでは grader.differs_from_answer_model の const true で記録を要求する。文字列比較の裏取りは scripts/agent/check_eval_results.py が行う。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "suite", "config", "dataset", "answer", "grader", "server", "started_at", "finished_at", "metrics", "items"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "suite": {"enum": ["qa"]},
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "answer_model", "use_rag", "top_k", "intent"],
+      "properties": {
+        "id": {"enum": ["A", "B", "C", "D", "E"]},
+        "label": {"type": "string", "minLength": 1},
+        "answer_model": {"type": "string", "minLength": 1},
+        "use_rag": {"type": "boolean"},
+        "top_k": {"type": ["integer", "null"], "minimum": 1, "maximum": 20},
+        "intent": {"type": "string"}
+      }
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "name", "version", "sha256", "total", "n", "seed", "indices"],
+      "properties": {
+        "path": {"type": "string", "pattern": "-v[0-9]+\\.jsonl$"},
+        "name": {"type": "string", "minLength": 1},
+        "version": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "total": {"type": "integer", "minimum": 1},
+        "n": {"type": "integer", "minimum": 1},
+        "seed": {"type": "integer"},
+        "indices": {"type": "array", "items": {"type": "integer", "minimum": 0}, "uniqueItems": true}
+      }
+    },
+    "answer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "temperature", "max_tokens", "enable_thinking", "system_prompt", "rag"],
+      "properties": {
+        "model": {"type": "string", "minLength": 1},
+        "temperature": {"type": "number"},
+        "max_tokens": {"type": "integer", "minimum": 1},
+        "enable_thinking": {"type": "boolean"},
+        "system_prompt": {"type": "string"},
+        "rag": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "top_k"],
+          "properties": {"enabled": {"type": "boolean"}, "top_k": {"type": ["integer", "null"]}}
+        }
+      }
+    },
+    "grader": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "temperature", "max_tokens", "enable_thinking", "scale", "differs_from_answer_model", "llm_grading_enabled"],
+      "properties": {
+        "model": {"type": "string", "minLength": 1},
+        "temperature": {"type": "number"},
+        "max_tokens": {"type": "integer", "minimum": 1},
+        "enable_thinking": {"type": "boolean"},
+        "scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {"min": {"const": 1}, "max": {"const": 5}}
+        },
+        "differs_from_answer_model": {"const": true},
+        "llm_grading_enabled": {"type": "boolean"}
+      }
+    },
+    "server": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_url"],
+      "properties": {"base_url": {"type": "string", "pattern": "^https?://"}}
+    },
+    "started_at": {"type": "string", "format": "date-time"},
+    "finished_at": {"type": "string", "format": "date-time"},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n", "threshold", "deterministic_correct", "deterministic_accuracy", "mean_keyword_recall", "llm_scored", "llm_failed", "llm_mean_score", "citation_rate", "retrieval_hit_rate_top3", "retrieval_hit_rate_topk", "top_k", "mean_tok_s", "mean_sec"],
+      "properties": {
+        "n": {"type": "integer", "minimum": 1},
+        "threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "deterministic_correct": {"type": "integer", "minimum": 0},
+        "deterministic_accuracy": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "mean_keyword_recall": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "llm_scored": {"type": "integer", "minimum": 0},
+        "llm_failed": {"type": "integer", "minimum": 0},
+        "llm_mean_score": {"type": ["number", "null"], "minimum": 1, "maximum": 5},
+        "citation_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "retrieval_hit_rate_top3": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "retrieval_hit_rate_topk": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "top_k": {"type": ["integer", "null"]},
+        "mean_tok_s": {"type": ["number", "null"], "minimum": 0},
+        "mean_sec": {"type": ["number", "null"], "minimum": 0}
+      }
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["index", "question", "expected", "source", "response", "finish_reason", "retrieval", "deterministic", "llm", "timing"],
+        "properties": {
+          "index": {"type": "integer", "minimum": 0},
+          "question": {"type": "string"},
+          "expected": {"type": "string"},
+          "source": {"type": "string"},
+          "response": {"type": "string"},
+          "finish_reason": {"type": ["string", "null"]},
+          "retrieval": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["top_k", "sources", "hit_top3", "hit_topk"],
+            "properties": {
+              "top_k": {"type": "integer"},
+              "sources": {"type": "array", "items": {"type": "object"}},
+              "hit_top3": {"type": "boolean"},
+              "hit_topk": {"type": "boolean"}
+            }
+          },
+          "deterministic": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["keyword_recall", "hit_keywords", "total_keywords", "correct", "cited"],
+            "properties": {
+              "keyword_recall": {"type": "number", "minimum": 0, "maximum": 1},
+              "hit_keywords": {"type": "array", "items": {"type": "string"}},
+              "total_keywords": {"type": "integer", "minimum": 0},
+              "correct": {"type": "boolean"},
+              "cited": {"type": "boolean"}
+            }
+          },
+          "llm": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "required": ["score", "reason", "raw"],
+            "properties": {
+              "score": {"type": ["integer", "null"], "minimum": 1, "maximum": 5},
+              "reason": {"type": "string"},
+              "raw": {"type": "string"}
+            }
+          },
+          "timing": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sec", "prompt_tokens", "completion_tokens", "tok_s"],
+            "properties": {
+              "sec": {"type": "number", "minimum": 0},
+              "prompt_tokens": {"type": ["integer", "null"]},
+              "completion_tokens": {"type": ["integer", "null"]},
+              "tok_s": {"type": ["number", "null"]}
+            }
+          }
+        }
+      }
+    }
+  }
+}

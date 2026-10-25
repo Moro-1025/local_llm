@@ -195,6 +195,48 @@ class LlamaClient:
             vectors.append([float(x) for x in vec])
         return vectors
 
+    # ------------------------------------------------------------ ルーターモード(Phase 6)
+
+    async def router_models(self) -> dict[str, str]:
+        """`GET /models`(ルーターモード)からモデル id → 状態("loaded" / "unloaded" / "loading")を返す。"""
+        data = await self._get_json("/models")
+        result: dict[str, str] = {}
+        for item in data.get("data", []):
+            status = item.get("status")
+            value = status.get("value") if isinstance(status, dict) else status
+            if "id" in item:
+                result[item["id"]] = str(value or "unknown")
+        return result
+
+    async def _router_post(self, path: str, model: str) -> None:
+        try:
+            response = await self._http.post(path, json={"model": model})
+        except httpx.HTTPError as exc:
+            raise self._wrap_transport_error(exc) from exc
+        self._raise_for_status(response, response.text)
+
+    async def router_load(self, model: str, *, wait: bool = True, poll_interval: float = 2.0) -> None:
+        """`POST /models/load` でモデルを読み込む。wait=True なら状態が loaded になるまで待つ。
+
+        タイムアウトは httpx のクライアント設定(既定 600 秒)に任せる。初回はダウンロードが走るので長い。
+        """
+        await self._router_post("/models/load", model)
+        if not wait:
+            return
+        import asyncio
+
+        while True:
+            status = (await self.router_models()).get(model)
+            if status == "loaded":
+                return
+            if status is None:
+                raise LlamaClientError(f"ルーターにモデル {model} がありません(models.ini を確認)")
+            await asyncio.sleep(poll_interval)
+
+    async def router_unload(self, model: str) -> None:
+        """`POST /models/unload` でモデルを VRAM から外す(12 GB に複数モデルを同時に載せないため)。"""
+        await self._router_post("/models/unload", model)
+
     def _build_payload(
         self,
         messages: list[Message],
@@ -203,6 +245,8 @@ class LlamaClient:
         stream: bool,
         temperature: float | None,
         enable_thinking: bool,
+        max_tokens: int | None = None,
+        response_format: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": model,
@@ -214,6 +258,11 @@ class LlamaClient:
             payload["stream_options"] = {"include_usage": True}
         if temperature is not None:
             payload["temperature"] = temperature
+        if max_tokens is not None:
+            payload["max_tokens"] = int(max_tokens)
+        if response_format is not None:
+            # Phase 6 の LLM 採点で JSON Schema 付きの応答を強制する(llama-server の json_schema 対応)
+            payload["response_format"] = response_format
         if not enable_thinking:
             # Qwen3 系の chat template は enable_thinking で思考の有無を切り替えられる
             payload["chat_template_kwargs"] = {"enable_thinking": False}
@@ -227,13 +276,22 @@ class LlamaClient:
         stream: bool = True,
         temperature: float | None = None,
         enable_thinking: bool = True,
+        max_tokens: int | None = None,
+        response_format: dict[str, Any] | None = None,
     ) -> AsyncIterator[ChatChunk]:
         """`POST /v1/chat/completions` を呼び、応答を ChatChunk で逐次返す。
 
         stream=False のときも 1 個の ChatChunk を返す(呼び出し側の形を揃えるため)。
+        max_tokens / response_format は Phase 6 の評価が使う(省略時は送らない)。
         """
         payload = self._build_payload(
-            messages, model, stream=stream, temperature=temperature, enable_thinking=enable_thinking
+            messages,
+            model,
+            stream=stream,
+            temperature=temperature,
+            enable_thinking=enable_thinking,
+            max_tokens=max_tokens,
+            response_format=response_format,
         )
         if not stream:
             yield await self._chat_once(payload)

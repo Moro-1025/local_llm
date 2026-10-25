@@ -18,6 +18,7 @@ llm-chat = "local_llm.cli:main"
 llm-web = "local_llm.web.app:main"
 llm-index = "local_llm.rag.indexer:main"
 llm-agent = "local_llm.agent.runner:main"
+llm-eval = "local_llm.eval.cli:main"
 
 [dependency-groups]
 dev = [

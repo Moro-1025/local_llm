@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "suite": "qa",
+  "config": {"id": "A", "label": "test", "answer_model": "answer-model", "use_rag": false, "top_k": null, "intent": "test"},
+  "dataset": {"path": "eval/datasets/qa-v1.jsonl", "name": "qa", "version": 1, "sha256": "0000000000000000000000000000000000000000000000000000000000000000", "total": 3, "n": 3, "seed": 42, "indices": [0, 1, 2]},
+  "answer": {"model": "answer-model", "temperature": 0.0, "max_tokens": 400, "enable_thinking": false, "system_prompt": "s", "rag": {"enabled": false, "top_k": null}},
+  "grader": {"model": "grader-model", "temperature": 0.0, "max_tokens": 200, "enable_thinking": false, "scale": {"min": 1, "max": 5}, "differs_from_answer_model": true, "llm_grading_enabled": true},
+  "server": {"base_url": "http://127.0.0.1:8082"},
+  "started_at": "2026-01-01T00:00:00+00:00",
+  "finished_at": "2026-01-01T00:01:00+00:00",
+  "metrics": {"n": 3, "threshold": 0.5, "deterministic_correct": 2, "deterministic_accuracy": 0.6667, "mean_keyword_recall": 0.6, "llm_scored": 3, "llm_failed": 0, "llm_mean_score": 3.0, "citation_rate": 0.0, "retrieval_hit_rate_top3": null, "retrieval_hit_rate_topk": null, "top_k": null, "mean_tok_s": 50.0, "mean_sec": 2.0},
+  "items": [
+    {"index": 0, "question": "q", "expected": "a", "source": "README.md#x", "response": "r", "finish_reason": "stop", "retrieval": null,
+     "deterministic": {"keyword_recall": 1.0, "hit_keywords": ["a"], "total_keywords": 1, "correct": true, "cited": false},
+     "llm": {"score": 3, "reason": "ok", "raw": "{}"}, "timing": {"sec": 2.0, "prompt_tokens": 10, "completion_tokens": 100, "tok_s": 50.0}}
+  ]
+}
