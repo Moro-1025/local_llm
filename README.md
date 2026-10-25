@@ -248,7 +248,17 @@ uv run llm-eval --summarize                                  # 構成ごと最�
 ```
 
 <!-- eval-table:start -->
-(評価の実行後に `uv run llm-eval --summarize` の出力を貼る)
+| 構成 | モデル | RAG | 正答率(決定論) | キーワード再現率 | LLM 採点(1〜5) | 引用率 | 検索ヒット top-3 | tok/s | 結果ファイル |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| A | `unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M` | なし | 53 / 147(36.0%) | 0.410 | 2.72 | 0.0% | - | 36.9 | `20261025-171641-qa-A.json` |
+| B | `unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M` | あり | 79 / 147(53.7%) | 0.536 | 3.82 | 91.2% | 77.5% | 16.7 | `20261025-173634-qa-B.json` |
+| C | `unsloth/Qwen3-4B-GGUF:Q4_K_M` | なし | 27 / 147(18.4%) | 0.326 | 2.55 | 0.0% | - | 153.6 | `20261025-174748-qa-C.json` |
+| D | `local/qwen3-4b-localllm-lora` | なし | 32 / 147(21.8%) | 0.346 | 2.58 | 0.0% | - | 152.5 | `20261025-175007-qa-D.json` |
+| E | `local/qwen3-4b-localllm-lora` | あり | 98 / 147(66.7%) | 0.599 | 3.77 | 55.1% | 77.5% | 117.4 | `20261025-175230-qa-E.json` |
+
+- 採点モデルは全構成で `unsloth/Qwen3-8B-GGUF:Q4_K_M`(回答モデルと別。LLM 採点の失敗 0 / 735 件)。実行 2026-10-25 08:16〜08:55 UTC、結果は `eval/results/`
+- 要点: RAG の効果が最も大きい(A→B で +17.7 pt、D→E で +44.9 pt)。LoRA 単体の効果は小さい(C→D で +3.4 pt、LLM 採点 2.55→2.58)。LoRA + RAG の E が決定論の正答率で最も高く、LLM 採点では B(35B + RAG)と同程度
+- A は 147 問中 33 問が max_tokens 400 で打ち切り(平均 278 トークン生成)。RAG あり構成は 70〜80 トークンで答えるので打ち切りは 1 問
 <!-- eval-table:end -->
 
 - 条件: 147 問全件(seed 42 は部分集合用で未使用)、temperature 0、thinking off、max_tokens 400、RAG は top_k 5。採点は温度 0、JSON Schema 強制
@@ -298,7 +308,17 @@ asyncio.run(main())
 条件: prompt 512 tok / 生成 128 tok / 3 回平均 / flash-attn on。
 
 <!-- bench-table:start -->
-(bench.ps1 の実行後に貼る)
+| モデル | 種類 | GGUF サイズ | GPU 層数 | pp512(tok/s) | tg128(tok/s) |
+| --- | --- | --- | --- | --- | --- |
+| `unsloth/Qwen3-4B-GGUF:Q4_K_M` | dense 4B | 2.32 GiB | 99(全層) | 8318 ± 341 | 180.1 ± 1.2 |
+| `local/qwen3-4b-localllm-lora`(Phase 5 の LoRA マージ GGUF) | dense 4B | 2.32 GiB | 99(全層) | 8317 ± 334 | 179.7 ± 1.1 |
+| `unsloth/Qwen3-8B-GGUF:Q4_K_M` | dense 8B | 4.68 GiB | 99(全層) | 5020 ± 119 | 113.7 ± 0.5 |
+| `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M` | MoE 35B(アクティブ 3B) | 20.60 GiB | 99 + エキスパートは CPU(`-ot`) | 494 ± 73 | 43.5 ± 0.7 |
+| `unsloth/Qwen3.8-27B-GGUF:UD-Q4_K_M` | dense 27B | 15.32 GiB | 39/65 層 | 99.2 ± 0.9 | 5.9 ± 0.04 |
+
+- 計測日 2026-10-25、RTX 5070 12 GB、llama.cpp b11146。生の出力は `bench/bench-20261025-175710.md`
+- 計測中は前のセッションの llama-server(:8080)と llm-web が残っていた(VRAM 約 1.7〜3.4 GB を占有)。27B は 39 層でも VRAM に収まり、OOM は起きていない
+- LoRA マージ GGUF は素の 4B と同じ速度(構造が同じなので当然だが、マージで遅くなっていないことの確認)
 <!-- bench-table:end -->
 
 ### ctx-size と VRAM
@@ -306,13 +326,23 @@ asyncio.run(main())
 計測: `.\scripts\ctx-vram.ps1`(結果は `bench/ctx-vram-<日時>.md`)。
 
 <!-- ctx-table:start -->
-(ctx-vram.ps1 の実行後に貼る)
+| ctx-size | VRAM 使用(MiB) | 起動前比 | 読み込み秒 |
+| --- | --- | --- | --- |
+| 8192 | 5644 | +3906 | 31 |
+| 16384 | 5820 | +4082 | 8 |
+| 32768 | 6296 | +4558 | 8 |
+
+- モデル `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M`(`--cpu-moe`)、起動前の VRAM 使用 1738 MiB(前のセッションのプロセス分)。生の出力は `bench/ctx-vram-20261025-175920.md`
+- MoE のエキスパートを CPU に置いているので、GPU 側は注意層 + KV キャッシュだけ。ctx を 8k → 32k にしても +650 MiB で、12 GB の GPU なら 32k まで余裕がある。初回 31 秒はファイルキャッシュが無い状態の読み込み、2 回目以降は 8 秒
 <!-- ctx-table:end -->
 
 ### 普段使いのモデル
 
 <!-- daily-model:start -->
-(計測後にここへ結論を書く)
+- **普段使いは `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M`(既定)**。生成 43.5 tok/s(llama-bench)/ 実運用 37 tok/s(評価 A)で読む速さを超え、素の状態でも 4B 系より正答率が高く(36.0% 対 18.4%)、RAG を付けると 53.7%。VRAM は ctx 32k でも約 4.6 GB
+- **27B は品質が欲しいときだけ**。39 層しか GPU に載らず 5.9 tok/s で、会話には遅すぎる
+- **8B は採点用**。113.7 tok/s で、Phase 6 では回答モデルと別の採点モデルとして使った
+- **4B LoRA は RAG と組み合わせたときだけ意味がある**。単体では 21.8%(素の 4B と 3 pt 差)だが、RAG を付けると 66.7% で最も高く、180 tok/s と速い。短く答える代わりに引用率が 55% と低い(B は 91%)
 <!-- daily-model:end -->
 
 ## フォルダ構成
@@ -387,6 +417,10 @@ local_llm/
 - 12 GB の VRAM で 4B の QLoRA は余裕がある(ピーク 5.9 GiB)。難しいのは学習そのものではなく、合成データの品質と「知識が定着したか」を測る方法(Phase 5 → 6)
 - LLM 採点は回答モデルと別のモデルで行う。同じモデルが自分を採点すると、同じ誤解を正解扱いする。JSON Schema で出力の形を強制すると採点結果のパース失敗がほぼ無くなる
 <!-- learned-phase6:start -->
+- RAG と LoRA は代替ではなく補完。同じ 147 問で、RAG は +18〜45 pt、LoRA 単体は +3 pt、LoRA + RAG が決定論の正答率で最も高い(66.7%)。小さいモデルに「語彙」を覚えさせ、「事実」は検索で渡すのが 12 GB では一番効く
+- 決定論の採点(キーワード)と LLM 採点は別の軸を見ている。B では「キーワード外れ・LLM 4 以上」が 32 問あった。片方の数字だけで結論を出さない
+- 回答の長さは採点に効く。素の 35B は 400 トークンで 33 問が打ち切られ、RAG あり構成は 70〜80 トークンで答える。max_tokens は条件として必ず記録する
+- PowerShell 5.1 で `$ErrorActionPreference = "Stop"` のまま `& exe 2>&1` すると、exe が stderr に進行ログを書くだけで NativeCommandError になって止まる(llama-bench で再発)。外部コマンドの呼び出しだけ Continue にする
 <!-- learned-phase6:end -->
 
 ## 公開(人間が行う手順)

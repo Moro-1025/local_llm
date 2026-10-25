@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-6",
+  "contract_id": "contract:local-llm:phase-6",
+  "contract_version": 1,
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "result_id": "vr:phase-6:EVAL-002:899664d",
+  "criterion_id": "EVAL-002",
+  "assertion": "5 構成の結果ファイルがそろい、README の比較表の数値が結果 JSON と一致する",
+  "status": "not_run",
+  "verifier": {
+    "type": "human-review",
+    "name": "owner Moro-1025(README と eval/results/*.json の照合)",
+    "version": null,
+    "independent_from_writer": true
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase6-eval-cde1c2)",
+    "commit": "899664d"
+  },
+  "evidence_refs": [
+    "eval/results/20261025-171641-qa-A.json",
+    "eval/results/20261025-173634-qa-B.json",
+    "eval/results/20261025-174748-qa-C.json",
+    "eval/results/20261025-175007-qa-D.json",
+    "eval/results/20261025-175230-qa-E.json",
+    "README.md#評価-5-構成の比較phase-6",
+    "docs/harness/reports/evidence/phase-6.verify.txt"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "human-review は未実施(writer セッションは pass を付けない)。diff-review 側の自己確認: README の表は uv run llm-eval --summarize の出力をそのまま貼り、5 ファイルは scripts/agent/check_eval_results.py で Schema 適合を確認済み(verify.ps1 の eval results schema ステップ)",
+    "owner は uv run llm-eval --summarize を再実行して README の表と比べれば照合できる"
+  ],
+  "verified_at": "2026-10-25T09:10:00+00:00"
+}

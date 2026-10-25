@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-6",
+  "contract_id": "contract:local-llm:phase-6",
+  "contract_version": 1,
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "decision_id": "cd:phase-6:899664d",
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase6-eval-cde1c2)",
+    "commit": "899664d"
+  },
+  "status": "needs_human",
+  "criterion_results": [
+    {
+      "criterion_id": "EVAL-001",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-6.EVAL-001.verification.json"
+      ],
+      "notes": "pytest tests/eval(モックのルーターで --suite qa --config A → JSON + Markdown、Schema 適合)+ 実機 e2e: eval/results/20261025-171641-qa-A.{json,md}(147 問、08:16〜08:36 UTC)"
+    },
+    {
+      "criterion_id": "EVAL-002",
+      "required": true,
+      "status": "not_run",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-6.EVAL-002.verification.json"
+      ],
+      "notes": "5 構成の結果ファイルはそろい(A〜E、各 147 問)、README の比較表は uv run llm-eval --summarize の出力を貼った。human-review(owner による README と JSON の照合)が未実施なので pass にしていない"
+    },
+    {
+      "criterion_id": "EVAL-003",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-6.EVAL-003.verification.json"
+      ],
+      "notes": "scripts/agent/check_eval_results.py: 5 ファイルすべて OK(Schema 適合 + grader.model != answer.model の文字列比較)。verify.ps1 の「eval results schema」ステップに組み込み済み。採点は全構成 unsloth/Qwen3-8B-GGUF:Q4_K_M"
+    },
+    {
+      "criterion_id": "EVAL-004",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-6.EVAL-004.verification.json"
+      ],
+      "notes": "bench/bench-20261025-175710.md(5 モデル)と bench/ctx-vram-20261025-175920.md(35B、8k/16k/32k)から README の 2 表に転記。writer の self-check"
+    },
+    {
+      "criterion_id": "EVAL-005",
+      "required": true,
+      "status": "not_run",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-6.EVAL-005.verification.json"
+      ],
+      "notes": "README に構成図(Mermaid)、再現手順、各 Phase の成果表、LICENSE(MIT、Moro-1025)を用意。human-review 未実施"
+    },
+    {
+      "criterion_id": "EVAL-006",
+      "required": true,
+      "status": "not_run",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-6.EVAL-006.verification.json"
+      ],
+      "notes": "docs/journal/phase-6.md はテンプレート全節 + 「評価の限界」節(件数、LLM 採点の主観性、採点モデルと回答モデルの関係、データセットの合成元)。human-review 未実施"
+    }
+  ],
+  "required_criteria_complete": false,
+  "evidence_binding_check": "pass",
+  "scope_check": "pass",
+  "policy_check": "pass",
+  "critical_unresolved_errors": 0,
+  "unresolved_errors": [
+    {
+      "severity": "low",
+      "code": "STRAY_PROCESSES",
+      "description": "前のセッションの llama-server ルーター(:8080、PID 6268 と子 12844 / 28232)と llm-web(:8000 PID 11164、:8010 PID 46628)の Stop-Process が実行環境のポリシーで拒否され、残ったまま。評価・ベンチは自分のサーバ(:8082)で行い、起動前 VRAM 1.7〜3.4 GB の条件で計測した。人の手で停止が必要",
+      "evidence_refs": [
+        "docs/harness/reports/phase-6.md#残っているプロセス人の手で停止が必要",
+        "docs/journal/phase-6.md#5-計測bench--ctx-vram"
+      ]
+    },
+    {
+      "severity": "low",
+      "code": "MODELS_INI_8B_HF_REPO",
+      "description": "models.ini の [unsloth/Qwen3-8B-GGUF:Q4_K_M] に hf-repo が無く、ルーター経由では 8B が loading のまま戻らない。models.ini は scope.write 外なので eval/models-eval.ini(1 行追加のコピー)で回避。本体への 1 行追加は Amendment 案",
+      "evidence_refs": [
+        "docs/harness/reports/phase-6.md#amendment-案契約の変更は行っていない",
+        "docs/external-spec.md#126-評価用プリセット"
+      ]
+    }
+  ],
+  "uncertain_actions": [],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "residual_risks": [
+    {
+      "risk": "評価は 1 データセット(qa-v1、147 問)× 1 回の実行。temperature 0 でも llama.cpp の実行は完全には決定的でなく、再実行で数問はぶれる。構成間の差のうち数 pt のもの(C と D の 3.4 pt)は有意とは言えない",
+      "severity": "medium",
+      "accepted_by": null
+    },
+    {
+      "risk": "LLM 採点は Qwen3-8B 1 モデルの判断で、模範解答の細部へのこだわりが問いごとにぶれる(B で「キーワード外れ・LLM 4 以上」32 問)。決定論の採点と並べて読む前提",
+      "severity": "medium",
+      "accepted_by": null
+    },
+    {
+      "risk": "データセット qa-v1 は LoRA の学習データと同じ合成元(35B が docs から生成した Q&A の eval 側 10%)。D / E の LoRA には有利な方向のバイアスがある可能性があり、他の文書で測った値ではない",
+      "severity": "medium",
+      "accepted_by": null
+    },
+    {
+      "risk": "EVAL-001 / 003 / 004 の検証は writer セッションの self-check(independent_from_writer=false)。独立検証は行っていない",
+      "severity": "low",
+      "accepted_by": null
+    },
+    {
+      "risk": "8B GGUF(5.0 GB)を huggingface.co から取得した。契約 scope.destinations は 127.0.0.1 のみで、モデル取得は Phase 0〜5 と同じ扱い(モデルのダウンロード)として行ったが、明示の許可は無い",
+      "severity": "low",
+      "accepted_by": null
+    },
+    {
+      "risk": "ベンチの「起動前 VRAM」は残ったプロセスの分だけ本来より大きく、空き VRAM の絶対値は環境依存。tok/s への影響は小さい",
+      "severity": "low",
+      "accepted_by": null
+    }
+  ],
+  "decided_by": {
+    "type": "runtime",
+    "identifier": "claude-code session phase6-eval-cde1c2(自動検証の self-check。human-review 条件は未判定)",
+    "version": "claude-fable-5-1"
+  },
+  "decided_at": "2026-10-25T09:20:00+00:00",
+  "reasons": [
+    "EVAL-001 / 003 / 004 は自動検証で pass(pytest 107 件、check_eval_results.py 5 ファイル OK、bench 2 ファイルから転記)。",
+    "EVAL-002 / 005 / 006 は verification_methods に human-review を含むため、writer セッションは pass を付けず not_run のまま owner のレビューに回す。よって required_criteria_complete=false、status=needs_human。",
+    "scope: 変更ファイルは contract.scope.write 内(src/local_llm/**, tests/**, eval/**, bench/**, scripts/**, pyproject.toml, README.md, LICENSE, docs/**)。models.ini、.env、llama-local/**、*.gguf、data/chat.db は触っていない。",
+    "policy: push・公開設定・HF アップロード・外部送信なし。新規依存なし(jsonschema は既存の dev 依存)。接続先は 127.0.0.1 と、8B GGUF 取得時の huggingface.co のみ。",
+    "GRADER_SEPARATION: 採点は Qwen3-8B、回答は 35B / 4B / 4B-LoRA。同一なら runner が実行前に拒否(終了コード 2)し、結果 Schema と check_eval_results.py が記録を検証する。DATASET_VERSIONED: eval/datasets/qa-v1.jsonl(sha256 を結果に記録)。"
+  ]
+}

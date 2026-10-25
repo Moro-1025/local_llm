@@ -42,6 +42,8 @@ $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $outFile = Join-Path $outDir "bench-$stamp.md"
 
 function Find-Gguf([string]$spec) {
+    # ローカルの GGUF(例: Phase 5 の LoRA マージ済みモデル)はパスをそのまま受け付ける(Phase 6)
+    if ($spec -like "*.gguf" -and (Test-Path -LiteralPath $spec)) { return (Resolve-Path -LiteralPath $spec).Path }
     $repo, $quant = $spec -split ":", 2
     $folder = "models--" + ($repo -replace "/", "--")
     $snap = Join-Path $hubDir "$folder\snapshots"
@@ -86,7 +88,12 @@ foreach ($spec in $Models) {
         Write-Host "  MoE と判定: エキスパートを CPU に配置 (-ot)"
     }
 
-    $result = & $bench @cliArgs 2>&1 | Out-String
+    # llama-bench は進行ログを stderr に出す。$ErrorActionPreference = Stop のままだと
+    # 2>&1 がそれを NativeCommandError として投げて止まるので、この呼び出しだけ Continue にする(Phase 6)
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $result = & $bench @cliArgs 2>&1 | ForEach-Object { "$_" } | Out-String
+    $ErrorActionPreference = $prevEap
     Write-Host $result
     Add-Content -Encoding UTF8 $outFile "## $spec`n`n$result`n"
 }

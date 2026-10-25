@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-6",
+  "contract_id": "contract:local-llm:phase-6",
+  "contract_version": 1,
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "result_id": "vr:phase-6:EVAL-003:899664d",
+  "criterion_id": "EVAL-003",
+  "assertion": "結果 JSON の grader.model と answer.model が異なる(schema で検証)",
+  "status": "pass",
+  "verifier": {
+    "type": "schema",
+    "name": "scripts/agent/check_eval_results.py(eval/schemas/qa-result.schema.json + 文字列比較)",
+    "version": "jsonschema Draft 2020-12",
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase6-eval-cde1c2)",
+    "commit": "899664d"
+  },
+  "evidence_refs": [
+    "docs/harness/reports/evidence/phase-6.verify.txt",
+    "eval/schemas/qa-result.schema.json",
+    "scripts/agent/check_eval_results.py",
+    "tests/eval/test_runner_cli.py"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "JSON Schema は grader.differs_from_answer_model の const true を要求するが、2 つの文字列が異なることは JSON Schema 単体では表現できないので check_eval_results.py が文字列比較で裏取りする(内部仕様 13 章)",
+    "実行前の拒否(runner の GraderSeparationError、CLI 終了コード 2)は pytest で確認"
+  ],
+  "verified_at": "2026-10-25T09:10:00+00:00"
+}

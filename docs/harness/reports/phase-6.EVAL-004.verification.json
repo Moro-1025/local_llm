@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-6",
+  "contract_id": "contract:local-llm:phase-6",
+  "contract_version": 1,
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "result_id": "vr:phase-6:EVAL-004:899664d",
+  "criterion_id": "EVAL-004",
+  "assertion": "README のベンチマーク表と ctx-size 表が bench/ の結果で埋まっている",
+  "status": "pass",
+  "verifier": {
+    "type": "diff-review",
+    "name": "claude-code session phase6-eval-cde1c2(README の表と bench/*.md の突合)",
+    "version": null,
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase6-eval-cde1c2)",
+    "commit": "899664d"
+  },
+  "evidence_refs": [
+    "bench/bench-20261025-175710.md",
+    "bench/ctx-vram-20261025-175920.md",
+    "README.md#ベンチマーク",
+    "README.md#ctx-size-と-vram"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "writer セッション自身の diff-review(self-check)。数値は bench/*.md から手で転記したので、owner は 2 ファイルと README の表を見比べれば照合できる",
+    "計測中は前のセッションの llama-server / llm-web が残り、起動前 VRAM が 1.7〜3.4 GB あった。速度には影響しないが空き VRAM の絶対値は本来より小さい",
+    "bench/ の README 表のコミットは本 verification の後(docs コミット)に入る"
+  ],
+  "verified_at": "2026-10-25T09:15:00+00:00"
+}

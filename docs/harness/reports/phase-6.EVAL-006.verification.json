@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-6",
+  "contract_id": "contract:local-llm:phase-6",
+  "contract_version": 1,
+  "contract_hash": "sha256:10203f9f6a484d347932e40bf92f845ad0772e9e75ae67ef5e791e95de62c51e",
+  "result_id": "vr:phase-6:EVAL-006:899664d",
+  "criterion_id": "EVAL-006",
+  "assertion": "docs/journal/phase-6.md がテンプレートの全節を満たし、評価の限界(件数、採点の主観性)が書かれている",
+  "status": "not_run",
+  "verifier": {
+    "type": "human-review",
+    "name": "owner Moro-1025(docs/journal/phase-6.md のレビュー)",
+    "version": null,
+    "independent_from_writer": true
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase6-eval-cde1c2)",
+    "commit": "899664d"
+  },
+  "evidence_refs": [
+    "docs/journal/phase-6.md",
+    "docs/journal/README.md#各-phase-のテンプレート"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "human-review は未実施(writer セッションは pass を付けない)。diff-review 側の自己確認: テンプレートの節(作ったもの / なぜ必要か / 用語 / 流れ / 動かし方 / 確かめ方 / 限界 / うまくいかなかったこと / 引き継ぎ / 参考リンク)がそろい、「評価の限界」節に件数(147 問)、LLM 採点の主観性、採点モデルと回答モデルの関係、データセットが学習データと同じ合成元であることを表で書いている"
+  ],
+  "verified_at": "2026-10-25T09:10:00+00:00"
+}

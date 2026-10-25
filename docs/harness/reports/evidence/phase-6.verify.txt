@@ -1,0 +1,63 @@
+
+=== contracts schema ===
+OK docs\harness\contracts\phase-3.json (task-contract)
+OK docs\harness\contracts\phase-4.json (task-contract)
+OK docs\harness\contracts\phase-5.json (task-contract)
+OK docs\harness\contracts\phase-6.json (task-contract)
+OK agent\contracts\summarize-docs.json (task-contract)
+OK docs\harness\reports\phase-3.decision.json (completion-decision)
+OK docs\harness\reports\phase-4.decision.json (completion-decision)
+OK docs\harness\reports\phase-5.decision.json (completion-decision)
+OK docs\harness\reports\phase-6.decision.json (completion-decision)
+OK docs\harness\reports\phase-3.RAG-001.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-002.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-003.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-004.verification.json (verification-result)
+OK docs\harness\reports\phase-3.RAG-005.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-001.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-002.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-003.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-004.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-005.verification.json (verification-result)
+OK docs\harness\reports\phase-4.AGT-006.verification.json (verification-result)
+OK docs\harness\reports\phase-6.EVAL-001.verification.json (verification-result)
+OK docs\harness\reports\phase-6.EVAL-002.verification.json (verification-result)
+OK docs\harness\reports\phase-6.EVAL-003.verification.json (verification-result)
+OK docs\harness\reports\phase-6.EVAL-004.verification.json (verification-result)
+OK docs\harness\reports\phase-6.EVAL-005.verification.json (verification-result)
+OK docs\harness\reports\phase-6.EVAL-006.verification.json (verification-result)
+--> OK: contracts schema
+
+=== eval results schema ===
+OK eval\results\20261025-171641-qa-A.json (grader != answer)
+OK eval\results\20261025-173634-qa-B.json (grader != answer)
+OK eval\results\20261025-174748-qa-C.json (grader != answer)
+OK eval\results\20261025-175007-qa-D.json (grader != answer)
+OK eval\results\20261025-175230-qa-E.json (grader != answer)
+--> OK: eval results schema
+
+=== git diff --check ===
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/journal/phase-6.md', LF will be replaced by CRLF the next time Git touches it
+--> OK: git diff --check
+
+=== pytest ===
+........................................................................ [ 67%]
+...................................                                      [100%]
+107 passed in 3.50s
+--> OK: pytest
+
+=== vitest (agent/harness) ===
+
+ RUN  v5.0.5 C:/dev/local_llm/.claude/worktrees/phase6-eval-cde1c2/agent/harness
+
+
+ Test Files  4 passed (4)
+      Tests  35 passed (35)
+   Start at  18:06:23
+   Duration  374ms (import 75%, tests 14%, transform 8%, worker 3%)
+
+--> OK: vitest (agent/harness)
+
+commit: 899664d
+ALL OK
