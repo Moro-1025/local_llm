@@ -1,4 +1,4 @@
-# 内部仕様書(Phase 1 / Phase 2)
+# 内部仕様書(Phase 1〜3)
 
 実装の構造、モジュールの責務、データの流れを定義する。利用者から見た振る舞いは
 [external-spec.md](external-spec.md) を参照。用語(llama-server、SSE、thinking など)は
@@ -106,7 +106,8 @@ flowchart TD
 | 設定 | python-dotenv | `.env` の読み込み |
 | CLI 表示 | rich | 色付き出力と入力プロンプト |
 | Web | FastAPI + uvicorn | REST、SSE、静的配信 |
-| DB | sqlite3(標準ライブラリ) | 会話の永続化 |
+| DB | sqlite3(標準ライブラリ) | 会話の永続化、RAG の索引(Phase 3) |
+| 数値計算 | numpy | 埋め込みベクトルの保存(float32)とコサイン類似度(Phase 3) |
 | フロント | 素の HTML/CSS/JS + marked(CDN) | ビルドなし |
 | テスト | pytest, pytest-asyncio, respx | llama-server をモック |
 
@@ -120,6 +121,14 @@ src/local_llm/
 ├─ client.py          LlamaClient, LlamaClientError, ThinkTagSplitter, iter_sse_data
 ├─ history.py         ChatLogger(JSONL), read_log()
 ├─ cli.py             ChatSession, parse_args(), main()
+├─ rag/               RAG(Phase 3。11 章)
+│  ├─ loader.py       Document, load_documents()
+│  ├─ chunker.py      Chunk, chunk_text()
+│  ├─ embedder.py     Embedder(LlamaClient.embed のバッチ呼び出しと正規化)
+│  ├─ store.py        RagStore(documents / chunks 表)
+│  ├─ retriever.py    Retriever, RetrievedChunk
+│  ├─ prompt.py       RAG_SYSTEM_PROMPT, build_rag_messages()
+│  └─ indexer.py      index_corpus(), main()(llm-index)
 └─ web/
    ├─ app.py          create_app(), app, main()
    ├─ db.py           Database(SQLite)
@@ -131,7 +140,12 @@ tests/
 ├─ test_client.py     SSE パース、think 分離、エラー変換
 ├─ test_cli.py        コマンド処理、ask()、起動時チェック
 ├─ test_history.py    JSONL ロガー
-└─ test_web.py        DB CRUD、API、SSE 配信、部分保存
+├─ test_web.py        DB CRUD、API、SSE 配信、部分保存
+└─ rag/               Phase 3(conftest で /v1/embeddings を疑似ベクトルでモック)
+   ├─ test_chunker_loader.py   見出し分割、サイズと重なり、front matter
+   ├─ test_store_retriever.py  embed()、store、indexer の差分スキップ、検索、プロンプト
+   ├─ test_rag_api_cli.py      /api/rag/*、use_rag の SSE、CLI の /rag
+   └─ eval_retrieval.jsonl     検索精度の評価セット(scripts/agent/eval_retrieval.py が使う)
 ```
 
 ## 3. モジュール間の依存
@@ -701,9 +715,77 @@ sequenceDiagram
 
 | 拡張 | 変更箇所 |
 | --- | --- |
-| RAG(検索結果の差し込み) | `service.build_prompt()` に system メッセージと引用を足す。`routes_chat` と `client` は変更不要 |
-| 文書の登録・インデックス | `web/db.py` に表を追加するか、別モジュールでベクトル DB を持つ |
-| 回答の根拠表示 | `done` イベントに `sources` を足し、`app.js` のメタ行で描画 |
+| RAG(検索結果の差し込み) | Phase 3 で実装済み(11 章)。`build_prompt(history, retrieved)` と `sources` イベント |
+| ベクトル DB への移行 | `rag/store.py` の `load_embeddings()` / `get_chunks()` と `retriever.py` を差し替える。他は変更不要 |
 | ツール呼び出し | `client.chat()` に `tools` 引数と `tool_calls` の delta 解釈を追加 |
 | サンプリング設定 | `SendMessageRequest` に項目を足し `client.chat(temperature=...)` へ渡す |
 | 認証 / LAN 公開 | `app.py` にミドルウェア。`app.js` の `innerHTML` に sanitizer |
+
+## 11. RAG 層(rag/、Phase 3)
+
+### 11.1 責務の分割
+
+| モジュール | 入力 → 出力 | 外部依存 |
+| --- | --- | --- |
+| `loader.py` | ディレクトリ → `Document(path, title, text, sha256)` の列。`**/*.md` をパス順に読み、front matter の `title` か最初の `#` をタイトルにする | なし |
+| `chunker.py` | 本文 → `Chunk(ordinal, heading, text)` の列。見出しで節に分け、800 文字超は段落境界で切り 100 文字重ねる。コードフェンス内の `#` は無視。40 文字未満の節は次に繰り込む | なし |
+| `embedder.py` | テキスト列 → `np.ndarray(float32, L2 正規化)`。`LlamaClient.embed()` を 8 件ずつ呼ぶ | `client.py` |
+| `store.py` | `documents` / `chunks` 表の CRUD。埋め込みは `float32.tobytes()` の BLOB | sqlite3, numpy |
+| `retriever.py` | 質問 → `RetrievedChunk(n, path, heading, text, score)` の列。全チャンク行列との内積で上位 k | store, embedder |
+| `prompt.py` | 履歴 + 検索結果 → system メッセージを先頭に置いた `Message` 列 | types |
+| `indexer.py` | コーパス → store の更新(sha256 一致はスキップ、消えた文書は削除)。`llm-index` の入口 | 上記すべて |
+
+llama-server への HTTP は引き続き `LlamaClient` だけが持つ(`embed()` を追加)。`rag/` の中に httpx は出てこない。
+
+### 11.2 DB スキーマ(チャット DB と同じファイル)
+
+```sql
+documents(id, path UNIQUE, title, sha256, indexed_at)
+chunks(id, document_id → documents.id ON DELETE CASCADE, ordinal, heading, text,
+       embedding BLOB, embedding_model, token_count)
+```
+
+- `token_count` は文字数(トークナイザに依存しないため)。
+- `embedding_model` で絞って読むので、モデルを替えて `--force` で作り直すまで、別モデルのチャンクは検索に混ざらない。
+- 文書の更新は `DELETE documents WHERE path` → `INSERT` で丸ごと入れ替える(チャンクは CASCADE で消える)。
+
+### 11.3 検索
+
+1. `store.load_embeddings(model)` で全チャンクの id 列と行列 `(N, D)` を読む(433 × 1024 で約 1.7 MB)。
+2. 質問を埋め込み、`scores = matrix @ q`(両方正規化済みなのでコサイン類似度)。
+3. `argsort` の上位 k 件(1〜20)を `get_chunks()` で本文つきにし、`n` を 1 から振る。
+
+全件総当たりで十分な理由: N が数千なら行列積はミリ秒。数万を超えたら `store` と `retriever` を sqlite-vec や FAISS に差し替える(10 章)。
+
+### 11.4 データフロー(use_rag=true)
+
+```mermaid
+sequenceDiagram
+    participant UI as app.js / CLI
+    participant R as routes_chat
+    participant S as ChatService
+    participant RT as Retriever
+    participant E as LlamaClient(embed)
+    participant L as LlamaClient(chat)
+    UI->>R: POST /messages {content, use_rag: true, top_k}
+    R->>S: stream_reply(use_rag=True)
+    S->>RT: search(content, top_k)
+    RT->>E: POST /v1/embeddings
+    E-->>RT: ベクトル
+    RT-->>S: RetrievedChunk × k
+    S-->>UI: data: {"type":"sources", ...}
+    S->>L: POST /v1/chat/completions(system に資料)
+    L-->>S: SSE
+    S-->>UI: content / done(rag: {used, sources})
+```
+
+- 検索に使うのは最新のユーザー発言だけ(履歴は使わない)。
+- `app.state.retriever` は lifespan で 1 つ作る。`LLAMA_EMBED_BASE_URL` が `LLAMA_BASE_URL` と違うときだけ埋め込み用の `LlamaClient` を別に持ち、終了時に閉じる。
+- CLI は `ChatSession(retriever=...)` に同じ `Retriever` を渡し、`ask()` の最初で検索して出典を表示する。
+
+### 11.5 テスト戦略(RAG)
+
+- `/v1/embeddings` は `tests/rag/conftest.py` の `embeddings_side_effect` でモックする。単語ごとに hash で 1 次元を立てる 32 次元の疑似ベクトルなので、同じ語を含む質問とチャンクが近くなり、順位の検証ができる。
+- `index_corpus()` は tmp のコーパスで 2 回呼び、2 回目に埋め込み API が呼ばれないこと(差分スキップ)を `route.call_count` で確認する。
+- API は `seed_index()` で索引済みの DB を作ってから `TestClient` を起動し、SSE の最初のイベントが `sources` であること、llama-server に送った `messages[0]` が system で資料を含むこと、DB に system が保存されないことを見る。
+- 検索精度(RAG-002)は実サーバが要るので pytest ではなく `scripts/agent/eval_retrieval.py` で測り、結果 JSON を `docs/harness/reports/evidence/` に残す。

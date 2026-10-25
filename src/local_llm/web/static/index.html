@@ -31,6 +31,11 @@
           <input type="checkbox" id="thinking-toggle" checked>
           <span>thinking</span>
         </label>
+        <label class="field toggle" title="data/corpus の資料を検索して回答の根拠にする">
+          <input type="checkbox" id="rag-toggle">
+          <span>RAG</span>
+        </label>
+        <span id="rag-status" class="rag-status"></span>
         <span id="conversation-title" class="title"></span>
       </header>
 
@@ -58,6 +63,7 @@
         <pre class="thinking-text"></pre>
       </details>
       <div class="content"></div>
+      <ol class="sources hidden"></ol>
       <div class="meta"></div>
     </article>
   </template>

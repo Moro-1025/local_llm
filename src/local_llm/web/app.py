@@ -15,6 +15,9 @@ from fastapi.staticfiles import StaticFiles
 
 from local_llm.client import LlamaClient
 from local_llm.config import Settings, load_settings
+from local_llm.rag.embedder import Embedder
+from local_llm.rag.retriever import Retriever
+from local_llm.rag.store import RagStore
 from local_llm.web.db import Database
 from local_llm.web.routes_chat import router
 
@@ -37,9 +40,20 @@ def create_app(
         app.state.db = db
         app.state.client = client or LlamaClient(settings.base_url, timeout=settings.timeout)
         db.init_schema()
+        # RAG のインデックスはチャットと同じ SQLite ファイルに別テーブルで持つ
+        app.state.rag_store = RagStore(settings.db_path)
+        app.state.rag_store.init_schema()
+        # 埋め込みサーバが別 URL のときだけ専用の LlamaClient を持つ
+        embed_client = app.state.client
+        if settings.effective_embed_base_url != app.state.client.base_url:
+            embed_client = LlamaClient(settings.effective_embed_base_url, timeout=settings.timeout)
+        app.state.embed_client = embed_client
+        app.state.retriever = Retriever(app.state.rag_store, Embedder(embed_client, settings.embed_model))
         try:
             yield
         finally:
+            if embed_client is not app.state.client:
+                await embed_client.aclose()
             if own_client:
                 await app.state.client.aclose()
 

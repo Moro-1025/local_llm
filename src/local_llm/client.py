@@ -165,6 +165,36 @@ class LlamaClient:
         data = await self._get_json("/v1/models")
         return [m["id"] for m in data.get("data", []) if "id" in m]
 
+    async def embed(self, texts: list[str], model: str) -> list[list[float]]:
+        """`POST /v1/embeddings` でテキスト列をベクトル化する。
+
+        入力と同じ順序・同じ個数のベクトルを返す。llama-server は `data[].index` で
+        順序を示すので、それで並べ直す。空リストは API を呼ばずに空リストを返す。
+        """
+        if not texts:
+            return []
+        payload = {"model": model, "input": texts}
+        try:
+            response = await self._http.post("/v1/embeddings", json=payload)
+        except httpx.HTTPError as exc:
+            raise self._wrap_transport_error(exc) from exc
+        self._raise_for_status(response, response.text)
+        data = response.json()
+        items = data.get("data")
+        if not isinstance(items, list) or len(items) != len(texts):
+            got = len(items) if isinstance(items, list) else "なし"
+            raise LlamaClientError(
+                f"/v1/embeddings の応答件数が入力と一致しません(入力 {len(texts)} 件、応答 {got} 件)"
+            )
+        ordered = sorted(items, key=lambda item: item.get("index", 0))
+        vectors: list[list[float]] = []
+        for item in ordered:
+            vec = item.get("embedding")
+            if not isinstance(vec, list):
+                raise LlamaClientError("/v1/embeddings の応答に embedding がありません")
+            vectors.append([float(x) for x in vec])
+        return vectors
+
     def _build_payload(
         self,
         messages: list[Message],

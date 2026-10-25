@@ -15,6 +15,8 @@
     health: $("#health"),
     modelSelect: $("#model-select"),
     thinking: $("#thinking-toggle"),
+    rag: $("#rag-toggle"),
+    ragStatus: $("#rag-status"),
     title: $("#conversation-title"),
     banner: $("#banner"),
     messages: $("#messages"),
@@ -92,6 +94,7 @@
     const thinking = node.querySelector(".thinking");
     const thinkingText = node.querySelector(".thinking-text");
     const contentEl = node.querySelector(".content");
+    const sources = node.querySelector(".sources");
     const meta = node.querySelector(".meta");
 
     if (reasoning) {
@@ -106,7 +109,47 @@
 
     el.messages.appendChild(node);
     scrollToBottom();
-    return { node, thinking, thinkingText, contentEl, meta };
+    return { node, thinking, thinkingText, contentEl, sources, meta };
+  }
+
+  /** sources イベント({n, path, heading, score})を出典リストとして描く */
+  function renderSources(listEl, items) {
+    listEl.innerHTML = "";
+    if (!items || items.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "該当する資料がありません(インデックスは作成済みですか?)";
+      listEl.appendChild(li);
+    }
+    for (const it of items || []) {
+      const li = document.createElement("li");
+      li.value = it.n;
+      const path = document.createElement("span");
+      path.className = "source-path";
+      path.textContent = it.path;
+      li.appendChild(path);
+      if (it.heading) {
+        const h = document.createElement("span");
+        h.className = "source-heading";
+        h.textContent = " › " + it.heading;
+        li.appendChild(h);
+      }
+      const score = document.createElement("span");
+      score.className = "source-score";
+      score.textContent = ` (${Number(it.score).toFixed(3)})`;
+      li.appendChild(score);
+      listEl.appendChild(li);
+    }
+    listEl.classList.remove("hidden");
+  }
+
+  async function loadRagStatus() {
+    try {
+      const st = await api("/api/rag/status");
+      el.ragStatus.textContent = `資料 ${st.documents} 件 / ${st.chunks} チャンク`;
+      el.ragStatus.title = `埋め込みモデル: ${st.embedding_model}\nコーパス: ${st.corpus_dir}`;
+    } catch (err) {
+      el.ragStatus.textContent = "";
+    }
   }
 
   // ---------------------------------------------------------------- 会話一覧
@@ -285,6 +328,7 @@
           content: text,
           enable_thinking: el.thinking.checked,
           model: el.modelSelect.value || null,
+          use_rag: el.rag.checked,
         }),
       });
       if (!res.ok) {
@@ -296,7 +340,9 @@
       }
 
       await readSse(res, (ev) => {
-        if (ev.type === "reasoning") {
+        if (ev.type === "sources") {
+          renderSources(assistant.sources, ev.items);
+        } else if (ev.type === "reasoning") {
           reasoning += ev.text;
           assistant.thinking.classList.remove("hidden");
           assistant.thinking.open = content === ""; // 本文が始まるまでは開いておく
@@ -359,6 +405,7 @@
   async function init() {
     await checkHealth();
     await loadConversations();
+    await loadRagStatus();
     setInterval(checkHealth, 15000);
     el.input.focus();
   }

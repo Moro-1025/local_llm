@@ -18,6 +18,9 @@ DEFAULT_BASE_URL = "http://127.0.0.1:8080"
 DEFAULT_MODEL = "unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M"
 DEFAULT_DB_PATH = "data/chat.db"
 DEFAULT_TIMEOUT = 600.0
+# Phase 3(RAG)の埋め込みモデル。models.ini の同名セクションに embeddings = true を付けてある
+DEFAULT_EMBED_MODEL = "Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0"
+DEFAULT_CORPUS_DIR = "data/corpus"
 
 
 @dataclass(frozen=True)
@@ -28,6 +31,14 @@ class Settings:
     default_model: str = DEFAULT_MODEL
     db_path: Path = Path(DEFAULT_DB_PATH)
     timeout: float = DEFAULT_TIMEOUT
+    embed_model: str = DEFAULT_EMBED_MODEL
+    corpus_dir: Path = Path(DEFAULT_CORPUS_DIR)
+    # 埋め込みを別の llama-server で動かすときだけ指定する(未指定なら base_url と同じ)
+    embed_base_url: str | None = None
+
+    @property
+    def effective_embed_base_url(self) -> str:
+        return (self.embed_base_url or self.base_url).rstrip("/")
 
 
 def load_settings(env_file: str | os.PathLike[str] | None = None) -> Settings:
@@ -44,4 +55,7 @@ def load_settings(env_file: str | os.PathLike[str] | None = None) -> Settings:
         default_model=os.environ.get("LLM_DEFAULT_MODEL", DEFAULT_MODEL),
         db_path=Path(os.environ.get("CHAT_DB_PATH", DEFAULT_DB_PATH)),
         timeout=float(os.environ.get("LLAMA_TIMEOUT", DEFAULT_TIMEOUT)),
+        embed_model=os.environ.get("LLM_EMBED_MODEL", DEFAULT_EMBED_MODEL),
+        embed_base_url=os.environ.get("LLAMA_EMBED_BASE_URL") or None,
+        corpus_dir=Path(os.environ.get("RAG_CORPUS_DIR", DEFAULT_CORPUS_DIR)),
     )

@@ -1,0 +1,279 @@
+{
+  "evaluated_at": "2026-10-25T02:37:17+00:00",
+  "embedding_model": "Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0",
+  "top_k": 3,
+  "hits": 10,
+  "total": 10,
+  "threshold": 8,
+  "verdict": "PASS",
+  "index_status": {
+    "documents": 19,
+    "chunks": 433,
+    "embedding_models": [
+      "Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0"
+    ],
+    "last_indexed_at": "2026-10-25T02:36:25+00:00"
+  },
+  "cases": [
+    {
+      "id": "Q01",
+      "hit": true,
+      "rank": 2,
+      "question": "Fencing Token とは何ですか? Lease と Worker の関係で説明してください",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/reference/agent-development-handbook.md",
+          "heading": "13. Distributed Execution > 13.2 LeaseとFencing Token",
+          "score": 0.7039
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/profiles/distributed-execution.md",
+          "heading": "Profile: 分散・長時間・複数Worker実行 > Fencing Token > 限界",
+          "score": 0.6977
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/profiles/distributed-execution.md",
+          "heading": "Profile: 分散・長時間・複数Worker実行 > Fencing Token",
+          "score": 0.6836
+        }
+      ]
+    },
+    {
+      "id": "Q02",
+      "hit": true,
+      "rank": 1,
+      "question": "Tool Result Envelope の共通形式にはどんなフィールドがありますか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/learning/intermediate/agent-runtime.md",
+          "heading": "AIエージェント・ランタイムの設計 > 7. Tool Result Envelope",
+          "score": 0.6267
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/core/decision-model.md",
+          "heading": "AI Harness 統合判定モデル > 3. Data Classificationと情報フローを判定する",
+          "score": 0.6093
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/reference/agent-development-handbook.md",
+          "heading": "11. Multi-Agent > 11.2 Handoff Contract",
+          "score": 0.597
+        }
+      ]
+    },
+    {
+      "id": "Q03",
+      "hit": true,
+      "rank": 1,
+      "question": "Evidence の 8 軸(関連性・独立性・鮮度など)を教えてください",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/learning/intermediate/evidence-and-policy.md",
+          "heading": "証拠・Policy・Human Gateを統合する > 3. Evidenceの8軸",
+          "score": 0.7038
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/core/decision-model.md",
+          "heading": "AI Harness 統合判定モデル > 7. CriterionごとにVerificationを作る > Evidenceの評価軸",
+          "score": 0.6103
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/reference/agent-development-handbook.md",
+          "heading": "7. Verification、Evidence、Completion > 7.3 Evidence Quality",
+          "score": 0.5995
+        }
+      ]
+    },
+    {
+      "id": "Q04",
+      "hit": true,
+      "rank": 1,
+      "question": "Execution Budget の例と No Progress の Signal にはどんなものがありますか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/core/decision-model.md",
+          "heading": "AI Harness 統合判定モデル > 6. Executionを制御する > 実行予算",
+          "score": 0.7485
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/learning/intermediate/agent-runtime.md",
+          "heading": "AIエージェント・ランタイムの設計 > 9. Execution BudgetとNo Progress",
+          "score": 0.7406
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/learning/beginner/simple-agent-tutorial.md",
+          "heading": "読取り専用の単一エージェントを作る > 5. 失敗を試す > 予算不足",
+          "score": 0.6507
+        }
+      ]
+    },
+    {
+      "id": "Q05",
+      "hit": true,
+      "rank": 1,
+      "question": "Completion Decision の accepted / rejected / blocked / needs_human はそれぞれ何を意味しますか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/core/decision-model.md",
+          "heading": "AI Harness 統合判定モデル > 8. Completion Decisionを機械的に作る",
+          "score": 0.744
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/core/decision-model.md",
+          "heading": "AI Harness 統合判定モデル > 6. Executionを制御する > 状態",
+          "score": 0.7114
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/reference/agent-development-handbook.md",
+          "heading": "7. Verification、Evidence、Completion > 7.4 Completion",
+          "score": 0.702
+        }
+      ]
+    },
+    {
+      "id": "Q06",
+      "hit": true,
+      "rank": 1,
+      "question": "LLM は提案し、決定論的コードが許可するという原則は何番の CORE 原則ですか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/core/principles.md",
+          "heading": "AI Harness 中核設計原則 > CORE-02 LLMは提案し、決定論的コードが許可する",
+          "score": 0.7525
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/README.md",
+          "heading": "ドキュメントマップ > 1. Normative Core",
+          "score": 0.5903
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/learning/beginner/coding-agent-tutorial.md",
+          "heading": "AIコーディングエージェントで小さなBugを安全に修正する > 参照",
+          "score": 0.5724
+        }
+      ]
+    },
+    {
+      "id": "Q07",
+      "hit": true,
+      "rank": 1,
+      "question": "最小ハーネスの 7 要素とは何ですか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/learning/beginner/harness-basics.md",
+          "heading": "AIエージェント・ハーネスの基礎 > 3. 最小ハーネスの7要素 > 3.5 状態",
+          "score": 0.5858
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/learning/beginner/harness-basics.md",
+          "heading": "AIエージェント・ハーネスの基礎 > 3. 最小ハーネスの7要素 > 3.2 最小権限",
+          "score": 0.5531
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/learning/beginner/harness-basics.md",
+          "heading": "AIエージェント・ハーネスの基礎 > 3. 最小ハーネスの7要素 > 3.7 停止条件",
+          "score": 0.5486
+        }
+      ]
+    },
+    {
+      "id": "Q08",
+      "hit": true,
+      "rank": 1,
+      "question": "Codex で Sandbox と Approval を分けるとはどういうことですか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/profiles/codex.md",
+          "heading": "Product Profile: Codex > 3. SandboxとApprovalを分ける > 調査Profile例",
+          "score": 0.8404
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/profiles/codex.md",
+          "heading": "Product Profile: Codex > 3. SandboxとApprovalを分ける > 非対話",
+          "score": 0.7813
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/profiles/codex.md",
+          "heading": "Product Profile: Codex > 3. SandboxとApprovalを分ける > 通常実装Profile例",
+          "score": 0.7535
+        }
+      ]
+    },
+    {
+      "id": "Q09",
+      "hit": true,
+      "rank": 1,
+      "question": "Trusted CI に求められる要件は何ですか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/profiles/team-ci.md",
+          "heading": "Profile: チーム・Pull Request・Trusted CI > Trusted CI > 必須原則",
+          "score": 0.7558
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/profiles/team-ci.md",
+          "heading": "Profile: チーム・Pull Request・Trusted CI > Stop Conditions",
+          "score": 0.7201
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/profiles/team-ci.md",
+          "heading": "Profile: チーム・Pull Request・Trusted CI > 目的",
+          "score": 0.668
+        }
+      ]
+    },
+    {
+      "id": "Q10",
+      "hit": true,
+      "rank": 1,
+      "question": "コーディングエージェントのチュートリアルで Completion Report に書く項目(Not Run, Residual Risk, Rollback など)は何ですか",
+      "top": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/learning/beginner/coding-agent-tutorial.md",
+          "heading": "AIコーディングエージェントで小さなBugを安全に修正する > 9. Completion Reportを作る",
+          "score": 0.6457
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/profiles/codex.md",
+          "heading": "Product Profile: Codex > 関連文書",
+          "score": 0.6294
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/profiles/codex.md",
+          "heading": "Product Profile: Codex > 12. Completion",
+          "score": 0.6274
+        }
+      ]
+    }
+  ]
+}

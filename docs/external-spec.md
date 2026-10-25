@@ -1,4 +1,4 @@
-# 外部仕様書(Phase 1 / Phase 2)
+# 外部仕様書(Phase 1〜3)
 
 利用者から見た振る舞いを定義する。内部構造は [internal-spec.md](internal-spec.md)、
 開発時の決定経緯は [spec-phase1-2.md](spec-phase1-2.md) を参照。
@@ -410,10 +410,106 @@ from local_llm import LlamaClient, LlamaClientError, Message, ChatChunk, Usage
 | 応答中の中断 | Ctrl+C。途中までを履歴に残す | ブラウザを閉じる等。途中までを DB に保存 |
 | 空入力 | 無視 | 送信しない(API 直叩きは 422) |
 
-## 9. 範囲外(Phase 3 以降)
+## 9. 範囲外(Phase 4 以降)
 
-- 文書検索と根拠付き回答(RAG)
-- ツール呼び出し、エージェント
+- ツール呼び出し、エージェント(Phase 4)
 - 認証、LAN 公開、複数ユーザー
 - 会話のエクスポート、検索、タイトルの手動変更
 - temperature などのサンプリング設定 UI
+
+## 10. RAG: 資料を根拠に答える(Phase 3)
+
+### 10.1 何ができるか
+
+`data/corpus/` 配下の Markdown を索引しておくと、質問に近い部分(チャンク)を上位 k 件選び、
+「以下の資料だけを根拠に答え、使った資料を [n] で示す」という指示とともにモデルへ渡す。
+回答には `[1]` のような引用番号が付き、どの資料のどの見出しを使ったかが CLI / Web UI に表示される。
+
+### 10.2 コーパスの取得と索引
+
+```powershell
+.\scripts\fetch-corpus.ps1          # ai_harness の Markdown 19 本を data/corpus/ai_harness/ に取得
+uv run llm-index                     # 索引を作成・更新(llama-server が起動していること)
+uv run llm-index --force             # 変更の有無に関わらず作り直す(埋め込みモデルを替えたとき)
+```
+
+- `llm-index` は `RAG_CORPUS_DIR`(既定 `data/corpus`)配下の `**/*.md` を読む。文書ごとに sha256 を記録し、変わっていない文書は読み飛ばす。コーパスから消えた文書は索引からも消える。
+- 出力例: `更新 19 文書 / 変更なし 0 文書 / 削除 0 文書 / 新規チャンク 433 件`
+- 索引はチャット DB(`CHAT_DB_PATH`、既定 `data/chat.db`)の `documents` / `chunks` 表に入る。
+
+### 10.3 設定
+
+| 環境変数 | 既定 | 内容 |
+| --- | --- | --- |
+| `LLM_EMBED_MODEL` | `Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0` | 埋め込みモデル id。`models.ini` の同名セクションから配信される |
+| `LLAMA_EMBED_BASE_URL` | (`LLAMA_BASE_URL` と同じ) | 埋め込みだけ別の llama-server で動かすときの URL |
+| `RAG_CORPUS_DIR` | `data/corpus` | 索引する Markdown の置き場 |
+
+### 10.4 CLI(`llm-chat`)
+
+| 操作 | 内容 |
+| --- | --- |
+| `--rag` | 起動時から RAG を有効にする |
+| `--top-k N` | 差し込む資料の件数(既定 5、最大 20) |
+| `/rag` | 現在の状態と索引の文書数・チャンク数を表示 |
+| `/rag on` / `/rag off` | RAG の有無を切り替える |
+
+RAG が有効なとき、発言を送るとまず出典が薄い色で `[1] path › 見出し  (0.721)` の形で並び、続けて本文が流れる。
+索引が空なら「インデックスが空です」と案内する。資料の検索に失敗した(埋め込みサーバに届かない)場合はエラーを表示して送信を中止し、発言は履歴に積まない。
+
+### 10.5 Web UI
+
+- ツールバーの「RAG」チェックで有効化。右隣に「資料 19 件 / 433 チャンク」のように索引の状態が出る。
+- 応答の下に出典リスト(番号、パス、見出し、類似度)が本文より先に表示される。
+- 該当資料が無い(索引が空)ときは、その旨をリストに表示する。
+
+### 10.6 HTTP API の追加・変更
+
+| メソッド | パス | 成功 | 説明 |
+| --- | --- | --- | --- |
+| GET | `/api/rag/status` | 200 | 索引の文書数・チャンク数・埋め込みモデル・コーパスの場所 |
+| GET | `/api/rag/search?q=...&top_k=5` | 200 | 質問に近いチャンクを本文つきで返す(Phase 4 のツールが使う) |
+| POST | `/api/conversations/{id}/messages` | 200 (SSE) | 本文に `use_rag`(既定 false)と `top_k`(既定 5、1〜20)を追加 |
+
+**GET /api/rag/status**
+
+```json
+{"documents": 19, "chunks": 433, "embedding_models": ["Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0"],
+ "last_indexed_at": "2026-10-25T02:36:25+00:00",
+ "embedding_model": "Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0", "corpus_dir": "data/corpus"}
+```
+
+**GET /api/rag/search**
+
+```json
+{"query": "Fencing Token とは",
+ "results": [{"n": 1, "chunk_id": 311, "path": "ai_harness/docs/profiles/distributed-execution.md",
+              "title": "Profile: 分散・長時間・複数Worker実行", "heading": "... > Fencing Token",
+              "text": "Lease取得ごとに単調増加Tokenを発行します。...", "score": 0.7212}]}
+```
+
+`q` が空なら 422、`top_k` が範囲外なら 422。埋め込みサーバに届かなければ 502。
+索引と検索で埋め込みモデルの次元が合わないときは 409(`llm-index --force` で作り直す)。
+
+**POST /api/conversations/{id}/messages(use_rag=true)**
+
+SSE のイベント列は `sources` → (`reasoning`)* → `content`* → `done`。
+
+```
+data: {"type": "sources", "items": [{"n": 1, "path": "...", "title": "...", "heading": "...", "score": 0.72}, ...]}
+data: {"type": "content", "text": "Lease取得ごとに..."}
+data: {"type": "done", "model": "...", "usage": {...}, "tokens_per_second": 42.7, "elapsed_seconds": 9.11,
+       "rag": {"used": true, "sources": 3}}
+```
+
+- `sources` は検索が終わった直後、モデルを呼ぶ前に 1 回だけ届く。`use_rag=false` のときは届かず、`done.rag` は null。
+- 検索に失敗した場合は `error` イベントのみ届き、モデルは呼ばれない(ユーザー発言は保存済み)。
+- 資料は system メッセージとして毎回差し込むだけで、DB の会話には保存しない。
+
+### 10.7 エラー時の振る舞い(RAG 固有)
+
+| 状況 | CLI | Web UI / API |
+| --- | --- | --- |
+| 索引が空 | 「資料が見つかりませんでした」を表示し、資料なしで送信 | `sources.items` が空。UI は「該当する資料がありません」 |
+| 埋め込みサーバ停止 | エラー表示、送信中止、履歴に積まない | `error` イベント(messages)、502(search) |
+| 埋め込みモデルの次元不一致 | エラー表示、送信中止 | `error` イベント(messages)、409(search) |
