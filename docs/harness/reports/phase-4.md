@@ -4,7 +4,7 @@
 | --- | --- |
 | 契約 | `docs/harness/contracts/phase-4.json`(version 1、`sha256:9f5a5054...`) |
 | 対象コミット | `34ff262`(ブランチ `claude/phase3-4-rag-agent-4c2343`、Phase 3 の `b6a1dce` の上) |
-| 判定 | **needs_human**(`phase-4.decision.json`)。AGT-001〜005 pass、AGT-006 は人のレビュー待ち |
+| 判定 | **accepted**(`phase-4.decision.json`)。AGT-001〜005 pass、AGT-006 は owner のレビュー(2026-10-25)で pass |
 | 作業者 | Claude Code セッション(writer)。検証も同セッションが実行(self-check) |
 | 日付 | 2026-10-25 |
 
@@ -26,9 +26,9 @@ Contract の criterion ごとに決定論的な検査を行って `decision.json
 | AGT-003 | `max_steps=2` で停止し `stop_reason=budget_exceeded` が decision に残る | e2e | **pass** | 実機 `evidence/e2e-budget/`: events.jsonl seq 16 `stop budget_exceeded "max_steps=2 exceeded (step 3)"`、decision.json `status=blocked`、`unresolved_errors[0].code=budget_exceeded`。pytest `test_execute_budget_exceeded_is_blocked`(偽 pi) |
 | AGT-004 | サンプル Contract の実行で decision が生成され、必須 criterion が全部 pass のときだけ accepted | integration-test, e2e | **pass** | 実機 `evidence/e2e-summarize/decision.json` = `accepted`(7 必須 criterion すべて pass、SUMMARY_QUALITY は not_run だが非必須)。pytest `test_verify_report.py::test_decide_status_*`(fail → rejected、required not_run → needs_human、異常停止 → blocked) |
 | AGT-005 | `uv run pytest` と `agent/harness` の `npm test` が通る | unit-test | **pass** | `evidence/phase-4.verify.txt`: pytest 87 passed、vitest 35 passed(4 files) |
-| AGT-006 | `docs/journal/phase-4.md` がテンプレート全節を満たし、Pi の設定手順が再現可能 | diff-review, human-review | **not_run**(人のレビュー待ち) | `docs/journal/phase-4.md`(全 9 節、models.json と `PI_CODING_AGENT_DIR` の手順を「動かし方」に記載) |
+| AGT-006 | `docs/journal/phase-4.md` がテンプレート全節を満たし、Pi の設定手順が再現可能 | diff-review, human-review | **pass**(owner レビュー 2026-10-25) | `docs/journal/phase-4.md`(全 9 節、models.json と `PI_CODING_AGENT_DIR` の手順を「動かし方」に記載) |
 
-`not_run` は `pass` にしない(harness/README 運用ルール 4)。owner が journal をレビューして AGT-006 を pass にすれば decision を `accepted` に更新できる。
+AGT-006 は当初 `not_run`(人のレビュー待ち)で decision は `needs_human` だった。owner が `docs/journal/phase-4.md` をレビューして pass とし、decision を `accepted` に更新した(`phase-4.AGT-006.verification.json` の `verified_at` 参照)。
 
 ## Commands
 
@@ -78,7 +78,6 @@ decision: accepted
 
 ## Not Run
 
-- AGT-006 の human-review(owner のレビュー)。
 - 同一エラー反復(`same_error_limit=2`)の実機 e2e。vitest(`policy.test.ts`)でのみ確認。実機の `e2e-summarize` では「出力予算切れ」エラーが 3 回続いたが、
   エラーの同一性判定に引数(query / path)を含めているため別エラーと数えられ、停止しなかった(意図した挙動だが、引数を無視する設計も考えられる。残存リスク参照)。
 - `max_wall_time_seconds`(契約 900 秒)の超過時の挙動。runner の `--timeout` で pi を kill する経路は pytest で `agent_settled` 待ちのタイムアウト文言のみ確認。

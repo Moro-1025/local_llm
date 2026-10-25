@@ -94,7 +94,7 @@ Completion Report は [../harness/reports/phase-3.md](../harness/reports/phase-3
 | RAG-002 検索精度 | `scripts/agent/eval_retrieval.py` 実機 | 10/10 が top-3 に入る(閾値 8)。`reports/evidence/phase-3.eval_retrieval.json` |
 | RAG-003 sources → 本文 → [n] | pytest(API, CLI)+ 実機 2 問 | 最初のイベントが `sources`、本文に `[1]` `[2]` `[3]` の引用。`reports/evidence/phase-3.e2e_rag.json` |
 | RAG-004 全テスト | `.\scripts\agent\verify.ps1` | 70 件通過(Phase 1/2 の 40 件 + RAG 30 件) |
-| RAG-005 文書 | このジャーナル、external-spec 10 章、internal-spec 11 章 | 人のレビュー待ち |
+| RAG-005 文書 | このジャーナル、external-spec 10 章、internal-spec 11 章 | owner がレビューして pass(2026-10-25) |
 
 実機の数値(2026-10-25、RTX 5070):
 

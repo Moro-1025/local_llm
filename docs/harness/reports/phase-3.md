@@ -4,7 +4,7 @@
 | --- | --- |
 | 契約 | `docs/harness/contracts/phase-3.json`(version 1、`sha256:281acc7d...`) |
 | 対象コミット | `e864855`(ブランチ `claude/phase3-4-rag-agent-4c2343`、ベース `df8c706`) |
-| 判定 | **needs_human**(`phase-3.decision.json`)。RAG-001〜004 pass、RAG-005 は人のレビュー待ち |
+| 判定 | **accepted**(`phase-3.decision.json`)。RAG-001〜004 pass、RAG-005 は owner のレビュー(2026-10-25)で pass |
 | 作業者 | Claude Code セッション(writer)。検証も同セッションが実行(self-check) |
 | 日付 | 2026-10-25 |
 
@@ -22,9 +22,9 @@ CLI(`/rag`)、Web UI(トグルと出典リスト)、API(`use_rag` / `top_k`、`s
 | RAG-002 | 評価 10 問で正解文書が top-3 に 8 問以上 | e2e | **pass** (10/10) | `evidence/phase-3.eval_retrieval.json` |
 | RAG-003 | `use_rag=true` で `sources` が本文の前に届き、本文に `[n]` 引用 | integration-test, e2e | **pass** | pytest `test_send_message_with_rag_emits_sources_first`、`test_cli_rag_toggle_and_ask`。実機: `evidence/phase-3.e2e_rag.json`(API 2 問 + CLI 1 問) |
 | RAG-004 | 既存テスト込みで `uv run pytest` が全部通る | unit-test | **pass** (70 passed) | `evidence/phase-3.verify.txt` |
-| RAG-005 | journal がテンプレート全節を満たし、external/internal-spec に RAG の節 | diff-review, human-review | **not_run**(人のレビュー待ち) | `docs/journal/phase-3.md`、`docs/external-spec.md` 10 章、`docs/internal-spec.md` 11 章 |
+| RAG-005 | journal がテンプレート全節を満たし、external/internal-spec に RAG の節 | diff-review, human-review | **pass**(owner レビュー 2026-10-25) | `docs/journal/phase-3.md`、`docs/external-spec.md` 10 章、`docs/internal-spec.md` 11 章 |
 
-`not_run` は `pass` にしない(harness/README 運用ルール 4)。owner がレビューして RAG-005 を pass にすれば decision を `accepted` に更新できる。
+RAG-005 は当初 `not_run`(人のレビュー待ち)で decision は `needs_human` だった。owner が `docs/journal/phase-3.md` をレビューして pass とし、decision を `accepted` に更新した(`phase-3.RAG-005.verification.json` の `verified_at` 参照)。
 
 ## Commands
 
@@ -84,7 +84,6 @@ e2e(`evidence/phase-3.e2e_rag.json` の要点):
 
 ## Not Run
 
-- RAG-005 の human-review(owner のレビュー)。
 - 評価セット(RAG-002)の独立した再評価(別の人が作った質問での測定)。
 - Web UI のブラウザ操作による確認(RAG トグル、出典リストの描画)。SSE の内容は API 経由で確認したが、`app.js` の描画は目視していない。
 - `scripts/fetch-corpus.ps1` を別 PC で実行する再現確認。

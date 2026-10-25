@@ -137,7 +137,7 @@ Completion Report は [../harness/reports/phase-4.md](../harness/reports/phase-4
 | AGT-003 予算超過 | 実機 `evidence/e2e-budget`(`--max-steps 2`) | 3 turn 目の `turn_start` で `stop budget_exceeded`、decision blocked、`unresolved_errors[0].code=budget_exceeded` |
 | AGT-004 decision の生成と accepted の条件 | 実機 `evidence/e2e-summarize`、pytest `test_verify_report.py` | 7 必須 criterion pass で accepted。`decide_status` は fail → rejected、not_run → needs_human、異常停止 → blocked |
 | AGT-005 テスト | `.\scripts\agent\verify.ps1 -Agent` | pytest 87 passed(Phase 3 までの 70 + agent 17)、vitest 35 passed。`reports/evidence/phase-4.verify.txt` |
-| AGT-006 このジャーナル | 人のレビュー | 未実施(not_run) |
+| AGT-006 このジャーナル | 人のレビュー | owner がレビューして pass(2026-10-25) |
 
 実機の数値(2026-10-25、RTX 5070、Qwen3.6-35B-A3B Q4_K_M、ctx 8192、thinking off):
 

@@ -11,7 +11,7 @@
     "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
     "commit": "34ff262"
   },
-  "status": "needs_human",
+  "status": "accepted",
   "criterion_results": [
     {
       "criterion_id": "AGT-001",
@@ -61,14 +61,14 @@
     {
       "criterion_id": "AGT-006",
       "required": true,
-      "status": "not_run",
+      "status": "pass",
       "verification_result_refs": [
         "docs/harness/reports/phase-4.AGT-006.verification.json"
       ],
-      "notes": "文書は作成済み。human-review が未実施のため not_run"
+      "notes": "owner Moro-1025 がレビューして pass(2026-10-25T05:50:00+00:00)"
     }
   ],
-  "required_criteria_complete": false,
+  "required_criteria_complete": true,
   "evidence_binding_check": "pass",
   "scope_check": "pass",
   "policy_check": "pass",
@@ -128,16 +128,16 @@
     }
   ],
   "decided_by": {
-    "type": "runtime",
-    "identifier": "claude-code session phase3-4-rag-agent-4c2343 (writer self-check)",
-    "version": "Claude Fable 5.1"
+    "type": "human",
+    "identifier": "owner Moro-1025(journal レビュー)+ claude-code session phase3-4-rag-agent-4c2343(自動検証の self-check)",
+    "version": null
   },
-  "decided_at": "2026-10-25T03:45:00+00:00",
+  "decided_at": "2026-10-25T05:50:00+00:00",
   "reasons": [
     "AGT-001〜005 は pass(pytest 87 件、vitest 35 件、実機 e2e 4 run: summarize accepted / bash-block accepted / budget blocked / scope blocked)。",
-    "AGT-006 は human-review が未実施のため not_run。required なので required_criteria_complete=false となり accepted にできない。",
+    "AGT-006 は owner Moro-1025 が docs/journal/phase-4.md をレビューして pass(2026-10-25T05:50:00+00:00)。required 6 件すべて pass で required_criteria_complete=true。",
     "scope: 変更ファイルはすべて contract.scope.write 内(src/local_llm/**, tests/**, agent/**, scripts/agent/**, pyproject.toml, README.md, docs/**, .gitignore, evidence/**)。models.ini と ~/.pi は触っていない。",
     "policy: push・公開・外部送信なし。接続先は 127.0.0.1(llama-server、llm-web)と registry.npmjs.org(agent/harness の npm install)のみ。秘密情報の記載なし(models.json の apiKey はダミー \"none\")。",
-    "owner が journal をレビューし AGT-006 を pass にすれば accepted に更新できる。"
+    "AGT-001〜005 の自動検証は writer セッションの self-check のまま(独立検証は行っていない)。残存リスクの accepted_by は未記入。"
   ]
 }
