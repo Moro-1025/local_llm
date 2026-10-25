@@ -3,7 +3,7 @@
 - 契約: [contracts/phase-5.json](../contracts/phase-5.json)(`contract:local-llm:phase-5`、version 1、hash `sha256:99cc64d9...`)
 - 判定: [phase-5.decision.json](phase-5.decision.json)
 - ジャーナル: [docs/journal/phase-5.md](../../journal/phase-5.md)
-- ブランチ: `claude/phase5-lora-35367e`(Baseline コミット `df8c706`、成果コミットは末尾)
+- ブランチ: `claude/phase5-lora-35367e`(Baseline コミット `df8c706`、成果コミット `6b357cd`)
 - 実行環境: Windows 11 + WSL2 Ubuntu 24.04、RTX 5070 12 GB、llama.cpp b11146(Windows)、unsloth 2026.10.8 / torch 2.14.1+cu130(WSL)
 
 ## Baseline(実装前)
@@ -102,4 +102,5 @@ uv run python training/eval_quick.py --base-url http://127.0.0.1:8081 --unload-b
 
 ## コミット
 
-COMMIT-PLACEHOLDER
+- 成果コミット: `6b357cd`(Phase 5: WSL + unsloth で Qwen3-4B に QLoRA、GGUF 変換と models.ini 登録、35 files changed)
+- 本 Report の hash 追記コミット: 直後の 1 コミット(`git log -2`)
