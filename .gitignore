@@ -25,9 +25,9 @@ Thumbs.db
 # init-repo.ps1 が退避した zip
 _archive/
 
-# Python パッケージ関連(Phase 1 以降)
+# Python パッケージ関連(Phase 1 以降)。data/ は先頭に / を付けてルート直下だけを除外する(training/data/ は git に入れる)
 .env
-data/
+/data/
 *.egg-info/
 .pytest_cache/
 
@@ -36,3 +36,6 @@ agent/pi/auth.json
 agent/pi/models-store.json
 agent/pi/sessions/
 agent/pi/bin/
+
+# Phase 5: unsloth が実行時に作るコンパイルキャッシュ
+unsloth_compiled_cache/

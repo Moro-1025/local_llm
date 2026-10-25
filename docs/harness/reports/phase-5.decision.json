@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "decision_id": "decision:local-llm:phase-5:v1",
+  "task_id": "PHASE-5",
+  "contract_id": "contract:local-llm:phase-5",
+  "contract_version": 1,
+  "contract_hash": "sha256:99cc64d9665c89bc3eac0b68d129b31d656997a94247a9a984fdff27b3d283e9",
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase5-lora-35367e)",
+    "commit": "df8c706e05994ee0ae6596bf6514cdd3465fe45a"
+  },
+  "status": "accepted",
+  "criterion_results": [
+    {
+      "criterion_id": "LORA-001",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": ["docs/harness/reports/phase-5.md#criterion-ごとの結果", "training/setup-wsl.sh (出力: torch.cuda.is_available(): True, torch 2.14.1+cu130, RTX 5070 11.94 GiB sm_120)"],
+      "notes": "WSL Ubuntu 24.04、uv 管理 Python 3.12.15、venv ~/venvs/local_llm-training。gcc は wsl -u root で apt から導入"
+    },
+    {
+      "criterion_id": "LORA-002",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": ["training/run_tests.sh (9 passed)", "training/data/qa.meta.json (kept 1471 / raw 1482)"],
+      "notes": "qa.jsonl 1471 組(閾値 300)。合成モデル unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M、2026-10-25T02:13Z〜03:14Z、494 チャンク、エラー 0"
+    },
+    {
+      "criterion_id": "LORA-003",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": ["training/runs/20261025-121533/summary.json", "training/runs/20261025-121533/loss.md"],
+      "notes": "eval loss 3.906 → 1.678、166 step / 2 epoch / 290 s、VRAM peak reserved 5.91 GiB、OOM 0 回"
+    },
+    {
+      "criterion_id": "LORA-004",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": ["models.ini [local/qwen3-4b-localllm-lora]", "logs/chat-20261025-123429.jsonl (git 管理外、Report に要点を転記)"],
+      "notes": "GGUF Q4_K_M 2,497,280,832 byte。start-server.ps1 -Port 8081 で起動し llm-chat で 1 往復(127 tok, 96.6 tok/s)。8080 は Phase 3/4 セッションが使用中だったため 8081"
+    },
+    {
+      "criterion_id": "LORA-005",
+      "required": false,
+      "status": "fail",
+      "verification_result_refs": ["training/runs/eval-20261025-124722.json", "docs/harness/reports/phase-5.md#lora-005-の結果暫定"],
+      "notes": "簡易正答率(キーワード一致)は LoRA 4/20 = 素の 4B 4/20 で同率。再現率平均 0.36 vs 0.30。『上回る』を満たさないため fail。Phase 6 の採点器で再評価"
+    },
+    {
+      "criterion_id": "LORA-006",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": ["docs/journal/phase-5.md"],
+      "notes": "テンプレート 9 節すべてあり。VRAM 見積もり 4.03 GiB / 実測 4.14 (allocated) 5.91 (reserved) GiB、Qwen3-4B 選定理由を記載。human-review は owner に依頼"
+    }
+  ],
+  "required_criteria_complete": true,
+  "evidence_binding_check": "pass",
+  "scope_check": "pass",
+  "policy_check": "pass",
+  "critical_unresolved_errors": 0,
+  "unresolved_errors": [
+    {
+      "severity": "medium",
+      "code": "LORA_ACCURACY_NOT_IMPROVED",
+      "description": "暫定評価で LoRA モデルの正答率が素のモデルと同率(20%)。文書の語彙は学ぶが事実の定着が弱い。Phase 6 で RAG と比較し、データの多様化(同一事実の言い換え)や epoch 増を検討",
+      "evidence_refs": ["training/runs/eval-20261025-124722.json"]
+    },
+    {
+      "severity": "low",
+      "code": "XFORMERS_MISMATCH",
+      "description": "PyPI の xformers 0.0.35 が torch 2.14.1 と不整合で読み込めず、unsloth は SDPA にフォールバック。学習は完走",
+      "evidence_refs": ["docs/journal/phase-5.md#うまくいかなかったことやり直したこと"]
+    }
+  ],
+  "uncertain_actions": [],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "residual_risks": [
+    {"risk": "LoRA モデルの回答が事実と異なる(ハルシネーション)。用途は Phase 6 の比較で決める", "severity": "medium", "accepted_by": null},
+    {"risk": "合成 Q&A の正確さは合成モデル依存で全件の人手確認はしていない", "severity": "low", "accepted_by": null},
+    {"risk": "models.ini の GGUF パスが C:\\dev\\local_llm\\models\\ 固定", "severity": "low", "accepted_by": null},
+    {"risk": "scope.destinations に無い raw.githubusercontent.com / github.com から ai_harness と llama.cpp を取得(Report の Amendment 案 1)", "severity": "low", "accepted_by": null},
+    {"risk": "WSL に build-essential を root で導入(リポジトリ外のシステム変更、Amendment 案 4)", "severity": "low", "accepted_by": null}
+  ],
+  "decided_by": {
+    "type": "runtime",
+    "identifier": "agent:claude-fable-5.1 (session phase5-lora; LORA-006 の human-review は owner に依頼)",
+    "version": "claude-fable-5-1"
+  },
+  "decided_at": "2026-10-25T04:00:00Z",
+  "reasons": [
+    "required な 5 criterion(LORA-001/002/003/004/006)がすべて pass し、証拠はコマンド出力と version-controlled なファイルに結びついている",
+    "LORA-005(required=false)は fail。暫定採点であり Phase 6 で再評価する前提で accepted とする",
+    "scope.write 外の変更なし。push / 外部アップロードなし(Human Gate 未発動)",
+    "same_error_limit(2)に達した失敗なし。verify.ps1 の WSL パス変換は 2 回目の修正で通った"
+  ]
+}

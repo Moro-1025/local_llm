@@ -1,0 +1,35 @@
+# Phase 5: QLoRA のハイパーパラメータ(train_lora.py が読む)。
+# 根拠は docs/spec-phase3-6.md 4.3 と docs/journal/phase-5.md。VRAM 12 GB を超える構成は書かない。
+
+model:
+  name: unsloth/Qwen3-4B          # 第一候補。OOM が 2 回出たら unsloth/Qwen3-1.7B に切り替える(journal に理由を書く)
+  load_in_4bit: true              # QLoRA: 本体を 4bit(NF4)で読み、LoRA だけ学習する
+  max_seq_length: 2048
+
+lora:
+  r: 16
+  alpha: 16
+  dropout: 0.0
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+train:
+  epochs: 2
+  learning_rate: 2.0e-4
+  per_device_batch_size: 4
+  gradient_accumulation_steps: 4   # 実効バッチ 16
+  warmup_steps: 5
+  weight_decay: 0.01
+  lr_scheduler_type: linear
+  optim: adamw_8bit
+  seed: 3407
+  logging_steps: 5
+  eval_steps: 10
+  eval_on_start: true              # 最初の eval loss を記録する(LORA-003 の比較元)
+  train_on_responses_only: true    # user 側のトークンは loss に入れない(答えだけを学ぶ)
+
+data:
+  train: data/train.jsonl
+  eval: data/eval.jsonl
+  system_prompt: "あなたは local_llm プロジェクトと ai_harness のドキュメントに詳しいアシスタントです。日本語で簡潔に答えてください。"
+  # Qwen3 の thinking 無しの出力形(空の <think></think>)に合わせる。llama-server は reasoning として分離して返す
+  prepend_empty_think: true

@@ -1,0 +1,7 @@
+# WSL(bash)で実行するファイルは常に LF にする(Windows の autocrlf で CRLF になると bash が壊れる)
+*.sh text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.jsonl text eol=lf
+*.in text eol=lf
+*.txt text eol=lf
