@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-4",
+  "contract_id": "contract:local-llm:phase-4",
+  "contract_version": 1,
+  "contract_hash": "sha256:9f5a505429bba208cc05668d1c15ab059ffc677a3e2713a224f542c19cc5e9af",
+  "result_id": "vr:phase-4:AGT-003:34ff262",
+  "criterion_id": "AGT-003",
+  "assertion": "execution_budget.max_steps=2 で実行すると停止し stop_reason=budget_exceeded が decision に記録される",
+  "status": "pass",
+  "verifier": {
+    "type": "e2e",
+    "name": "実機 llm-agent --max-steps 2 + pytest tests/agent/test_runner.py::test_execute_budget_exceeded_is_blocked",
+    "version": "pi 1.0.0 / pytest 9.x",
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "34ff262"
+  },
+  "evidence_refs": [
+    "evidence/e2e-budget/events.jsonl",
+    "evidence/e2e-budget/decision.json"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "ハーネスの ctx.abort() を Pi が stopReason=error として返すため、runner は errorMessage に aborted を含む turn を自分の停止として扱う(Pi 1.0 の挙動に依存)"
+  ],
+  "verified_at": "2026-10-25T03:45:00+00:00"
+}

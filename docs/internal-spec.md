@@ -1,4 +1,4 @@
-# 内部仕様書(Phase 1〜3)
+# 内部仕様書(Phase 1〜4)
 
 実装の構造、モジュールの責務、データの流れを定義する。利用者から見た振る舞いは
 [external-spec.md](external-spec.md) を参照。用語(llama-server、SSE、thinking など)は
@@ -789,3 +789,97 @@ sequenceDiagram
 - `index_corpus()` は tmp のコーパスで 2 回呼び、2 回目に埋め込み API が呼ばれないこと(差分スキップ)を `route.call_count` で確認する。
 - API は `seed_index()` で索引済みの DB を作ってから `TestClient` を起動し、SSE の最初のイベントが `sources` であること、llama-server に送った `messages[0]` が system で資料を含むこと、DB に system が保存されないことを見る。
 - 検索精度(RAG-002)は実サーバが要るので pytest ではなく `scripts/agent/eval_retrieval.py` で測り、結果 JSON を `docs/harness/reports/evidence/` に残す。
+
+## 12. エージェント層(agent/、src/local_llm/agent/、Phase 4)
+
+### 12.1 2 つのプロセスと責務
+
+```mermaid
+flowchart TB
+    subgraph py["Python: uv run llm-agent(src/local_llm/agent/)"]
+        runner["runner.py<br>PiRunner / execute()"] --> contract["contract.py<br>load_contract / canonical_hash"]
+        runner --> verify["verify.py<br>CHECKS(criterion_id → 検査)"]
+        verify --> report["report.py<br>decide_status / write_outputs"]
+        verify --> scope_py["scope.py<br>グロブ(TS と同じ規則)"]
+    end
+    subgraph node["Node: pi --mode rpc(子プロセス)"]
+        index["agent/harness/index.ts<br>フックの配線"] --> policy["src/policy.ts<br>HarnessPolicy(純粋)"]
+        index --> tools["src/tools.ts<br>rag_search / read_file / list_files / finish"]
+        index --> evidence["src/evidence.ts<br>EvidenceLog(JSONL)"]
+        policy --> glob["src/glob.ts"]
+    end
+    runner -- "stdin: {type: prompt}" --> index
+    index -- "stdout: RPC イベント" --> runner
+    evidence -. "events.jsonl / result.json" .-> verify
+```
+
+| 層 | 責務 | 持たないもの |
+| --- | --- | --- |
+| extension(TS) | Contract をその場で強制する(block / stop)、証拠を書く、ツールを実装する | 判定(accepted かどうか)。Pi のモデル呼び出し自体にも触らない(`before_provider_request` で thinking を切るだけ) |
+| runner(Python) | Pi を起動して待つ、Contract の Schema / hash 検証、criterion ごとの検証、decision / report の生成 | ツールの実装、モデルとの対話 |
+
+モデルは extension の `registerTool` で登録されたツールしか見えない(`--no-builtin-tools`)。
+見えたとしても `tool_call` フックが `allowed_tools` で block する(`--expose-builtin-tools` はその確認用)。
+
+### 12.2 policy.ts(Pi に依存しない)
+
+| メンバ | 内容 |
+| --- | --- |
+| `canonicalJson` / `contractHash` | `contract_hash` を除いてキーをソート、区切り無し、非 ASCII をそのまま → sha256。Python の `canonical_hash` と同じ値になる(pytest が node を呼んで照合) |
+| `argsHash(tool, input)` | tool_call の引数の正規化 hash。`same_error_limit` の同一性判定にも使う |
+| `PATH_ARGS` | ツール名 → (引数名, read か write)。`read_file` / `read` / `grep` / `find` / `ls` は read、`edit` / `write` は write。`list_files` は入れない(結果をフィルタする) |
+| `checkPath(input, mode)` | workspace 相対に正規化し、`scope.forbidden` → `scope.read` / `scope.write` の順に判定。forbidden が勝つ。`..` や絶対パスで外に出るものも block |
+| `onTurnStart()` | `steps` を増やし `max_steps` を超えたら `budget_exceeded` |
+| `decideToolCall(tool, input)` | 判定順: run 停止済み(`run_stopped`)→ finish 済み(`already_finished`)→ 許可外(`tool_not_allowed`)→ `max_tool_calls`(`budget_exceeded`)→ パス(`scope_boundary_exceeded`、`stopReason = scope_violation`) |
+| `recordResult(tool, input, isError, errorText)` | 連続する同一エラー(ツール + 引数 + エラー文先頭 200 字の hash)を数え、`same_error_limit` で `same_error_repeated` |
+| `mustStop()` / `summary()` | `stopReason` が finished 以外なら true / `run_end` に書く集計 |
+
+グロブ(`glob.ts`、`scope.py` も同じ規則): `**/` は任意の深さ、末尾 `/**` は配下すべて、`*` は `/` 以外、`?` は 1 文字。
+パターン `docs/**` は `docs` そのものにも一致する。
+
+### 12.3 index.ts のフック
+
+| Pi のフック | すること |
+| --- | --- |
+| 起動時 | `HARNESS_CONTRACT` を読み、`contract_hash` を計算して `run_start`(hash が Contract の記載と一致するかも記録) |
+| `before_provider_request` | `HARNESS_THINKING=off` のとき `payload.chat_template_kwargs.enable_thinking = false` |
+| `turn_start` | `policy.onTurnStart()`。超過なら `stop` を記録し `ctx.abort()` |
+| `tool_call` | `policy.decideToolCall()`。block なら `block` を記録し `{block: true, reason, terminate: mustStop()}` を返す(ツールは実行されない)。許可なら `tool_call` を記録 |
+| `tool_result` | `tool_result`(is_error、先頭 500 字、文字数)を記録し `policy.recordResult()`。同一エラー反復なら `stop` |
+| `agent_before_settle` | `mustStop()` なら `{continue: false}`(Pi に次 turn を続けさせない) |
+| `agent_end` | `run_end`(steps / tool_calls / blocks / finished / stop_reason / budget) |
+
+### 12.4 tools.ts
+
+- 4 ツールは `makeTools(policy, log, options)` が返す。`read_file` は policy の `checkPath` を自分でも呼ぶ(フックが外れても守る)。
+- 共有の出力予算 `charge(body, tool)`: 残りが 200 字未満なら `output_budget_exhausted` を記録して「finish せよ」のエラー文を返し、足りる分だけ切って返す。
+  上限は `maxTotalOutputChars`(6000)、`maxFileChars`(3000)、`ragTextChars`(350)、`ragMaxTopK`(3)。すべて環境変数で変えられる(`HARNESS_*`)。
+- `finish` は `result.json` を書き `policy.markFinished()`。2 回目以降は policy が `already_finished` で block する。
+
+### 12.5 runner.py
+
+1. `load_contract()`: JSON を読み、`docs/harness/schemas/task-contract.schema.json` で検証(jsonschema が入っていれば)、`contract_hash` を照合。どちらかが失敗なら `SystemExit`。
+2. `PiRunner.build_command()`: `pi --mode rpc --no-session --no-extensions --no-skills --no-prompt-templates --no-context-files --no-themes [--no-builtin-tools] -e agent/harness/index.ts --model ... --thinking ... --system-prompt ...`。
+   `build_env()`: `PI_CODING_AGENT_DIR=agent/pi` と `HARNESS_*`。
+3. `run()`: 子プロセスを起動し、stdout / stderr をスレッドで読む。stdin に `{"type":"prompt","message":<task>}` を 1 行書いて閉じる。
+   stdout の各行を `pi_events.jsonl` に保存しつつ `turn_start`(turn 数)と `message_end`(本文、`errorMessage`)を見る。
+   `agent_settled` が来たら終了。`--timeout` 超過は kill して `error` に残す。
+   ハーネスの `ctx.abort()` を Pi は `stopReason: "error"` / `"This operation was aborted"` で返すので、runner はこれを `aborted_turns` に数え `error` にはしない。
+4. `verify_all()` → `write_outputs()`: 12.6。
+
+### 12.6 verify.py / report.py
+
+- `VerifyContext` は `events.jsonl`、`result.json`、runner の `RunOutcome`、Contract を持つ。`stop_reason` は `run_end` から、`abnormal_stop` は `budget_exceeded` / `same_error_repeated` / `scope_violation` のとき。
+- `CHECKS` は `criterion_id → 関数` の辞書(`@check("FINISH_CALLED")` で登録)。Contract の `completion_criteria` を順に見て、無い id は `not_run` + `limitations: ["人のレビューが必要"]`。
+- `decide_status()`: `abnormal_stop` → `blocked`、必須に `fail` → `rejected`、必須に `not_run` / 無し → `needs_human`、それ以外 → `accepted`。
+- `build_outputs()`: decision(`subject` は `events.jsonl` の sha256、`unresolved_errors` は stop_reason、`reasons`)、verification の配列、Markdown。
+  書き出し後に decision / verification を Schema で検証し、失敗したら decision の `unresolved_errors` に `SCHEMA_ERRORS` を足す。
+
+### 12.7 テスト戦略(エージェント)
+
+| 対象 | 方法 |
+| --- | --- |
+| policy / glob / evidence / tools(TS) | vitest 35 件。Pi を import しない(`index.ts` だけが Pi に依存) |
+| hash の一致 | pytest が `node --experimental-strip-types` で `contractHash` を呼び、`canonical_hash` と比較 |
+| runner → verify → report | `tests/agent/fake_pi.py`。環境変数 `FAKE_PI_SCENARIO`(finish / budget / bash)で events.jsonl と RPC イベントを再現し、decision が accepted / blocked になることを見る |
+| 実機 | `evidence/e2e-*` の 4 run(Completion Report)。モデルの挙動に依存するので pytest には含めない |

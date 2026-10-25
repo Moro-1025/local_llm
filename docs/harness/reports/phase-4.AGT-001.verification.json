@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-4",
+  "contract_id": "contract:local-llm:phase-4",
+  "contract_version": 1,
+  "contract_hash": "sha256:9f5a505429bba208cc05668d1c15ab059ffc677a3e2713a224f542c19cc5e9af",
+  "result_id": "vr:phase-4:AGT-001:34ff262",
+  "criterion_id": "AGT-001",
+  "assertion": "allowed_tools に無いツール(bash)の呼び出しが block され、events.jsonl に block レコードが残る",
+  "status": "pass",
+  "verifier": {
+    "type": "e2e",
+    "name": "vitest policy.test.ts + pytest tests/agent/test_runner.py::test_execute_blocked_bash_recorded + 実機 llm-agent --expose-builtin-tools",
+    "version": "vitest 5.0.5 / pytest 9.x / pi 1.0.0 / llama.cpp b11146",
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "34ff262"
+  },
+  "evidence_refs": [
+    "evidence/e2e-bash-block/events.jsonl",
+    "evidence/e2e-bash-block/decision.json",
+    "docs/harness/reports/evidence/phase-4.verify.txt"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "実機の block(bash, read)はモデルが実際に許可外ツールを呼んだ 1 run の観測。決定論的な部分は vitest / pytest で固定"
+  ],
+  "verified_at": "2026-10-25T03:45:00+00:00"
+}

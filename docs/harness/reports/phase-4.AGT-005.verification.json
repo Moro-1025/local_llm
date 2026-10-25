@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-4",
+  "contract_id": "contract:local-llm:phase-4",
+  "contract_version": 1,
+  "contract_hash": "sha256:9f5a505429bba208cc05668d1c15ab059ffc677a3e2713a224f542c19cc5e9af",
+  "result_id": "vr:phase-4:AGT-005:34ff262",
+  "criterion_id": "AGT-005",
+  "assertion": "uv run pytest と agent/harness の npm test が通る",
+  "status": "pass",
+  "verifier": {
+    "type": "unit-test",
+    "name": ".\\scripts\\agent\\verify.ps1 -Agent",
+    "version": "pytest 9.x / vitest 5.0.5",
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "34ff262"
+  },
+  "evidence_refs": [
+    "docs/harness/reports/evidence/phase-4.verify.txt"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "verify.ps1 の出力に記録されたコミットは実装コミット直前の b6a1dce(作業ツリーは 34ff262 と同じ内容)"
+  ],
+  "verified_at": "2026-10-25T03:45:00+00:00"
+}
