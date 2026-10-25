@@ -1,0 +1,573 @@
+{
+  "dataset": "C:\\dev\\local_llm\\.claude\\worktrees\\phase5-lora-35367e\\eval\\datasets\\qa-v1.jsonl",
+  "n": 20,
+  "threshold": 0.5,
+  "summary": {
+    "local/qwen3-4b-localllm-lora": {
+      "n": 20,
+      "correct": 4,
+      "accuracy": 0.2,
+      "mean_keyword_recall": 0.357
+    },
+    "unsloth/Qwen3-4B-GGUF:Q4_K_M": {
+      "n": 20,
+      "correct": 4,
+      "accuracy": 0.2,
+      "mean_keyword_recall": 0.302
+    }
+  },
+  "results": {
+    "local/qwen3-4b-localllm-lora": [
+      {
+        "question": "llama-server のテストを GPU なしで実行するために使用するコマンドは何ですか。",
+        "expected": "llama-server は respx でモックするため GPU なしでテストが通ります。GPU なしでテストを実行するには、コマンドラインで「uv run pytest」を実行します。これにより Web API は FastAPI の TestClient を使用して処理されます。",
+        "response": "llama-server のテストを GPU なしで実行するには、`--no-gpu` オプションを使用します。具体的には、`llama-server --no-gpu --test` というコマンドが使用されます。",
+        "score": 0.231,
+        "hit": [
+          "gpu",
+          "llama-server",
+          "テスト"
+        ],
+        "correct": false,
+        "sec": 0.7
+      },
+      {
+        "question": "ctx-size と VRAM の関係性を計測するために使用されるスクリプトファイル名は何ですか？",
+        "expected": "計測には .\\scripts\\ctx-vram.ps1 という PowerShell スクリプトが使用されます。",
+        "response": "ctx-size と VRAM の関係性を計測するために使用されるスクリプトは、scripts/eval/ctx_size_vram.py です。このスクリプトは、モデルの最大文脈長と使用メモリの関係を評価するために設計されています。",
+        "score": 0.6,
+        "hit": [
+          "scripts",
+          "スクリプト",
+          "計測"
+        ],
+        "correct": true,
+        "sec": 0.8
+      },
+      {
+        "question": "Web UI のバックエンドとして採用されているフレームワークは何ですか。",
+        "expected": "Web UI のバックエンドには、Python の Web フレームワークである FastAPI が採用されています。これは他のツールとは異なり、Webインターフェースの処理を担当します。",
+        "response": "Web UI のバックエンドとして採用されているフレームワークは FastAPI です。",
+        "score": 0.5,
+        "hit": [
+          "fastapi",
+          "web",
+          "バックエンド",
+          "フレームワーク",
+          "採用"
+        ],
+        "correct": true,
+        "sec": 0.3
+      },
+      {
+        "question": "systemというroleを持つメッセージは、会話APIにおいてどのような意味を持ち、配置位置に制限はありますか？",
+        "expected": "systemはモデルへの指示、具体的には口調や制約を指定するために使用されます。このメッセージは会話の先頭に1つだけ置く必要があり、省略することも可能です。",
+        "response": "systemというroleを持つメッセージは、会話APIにおいて指示やルールを定義する役割を果たします。ただし、このメッセージは会話の開始時にのみ配置されることが推奨されています。",
+        "score": 0.4,
+        "hit": [
+          "system",
+          "メッセージ",
+          "会話",
+          "指示"
+        ],
+        "correct": false,
+        "sec": 0.6
+      },
+      {
+        "question": "会話ログの保存先ディレクトリを指定する際、既定値として使用される名称は何ですか？",
+        "expected": "会話ログの保存先ディレクトリを指定する --log-dir オプションの既定値は logs です。この値が指定されていない場合、デフォルトで logs ディレクトリが使用されます。",
+        "response": "会話ログの保存先ディレクトリは、`logs`という既定値で指定されます。",
+        "score": 0.625,
+        "hit": [
+          "logs",
+          "ディレクトリ",
+          "会話ログ",
+          "保存先ディレクトリ",
+          "既定値"
+        ],
+        "correct": true,
+        "sec": 0.3
+      },
+      {
+        "question": "発言を送信して応答をストリーミングで受け取るための API パスとメソッドは何ですか？",
+        "expected": "発言を送信し、その応答をストリーミング形式で受け取るには、POST メソッドで `/api/conversations/{id}/messages` にアクセスします。成功時には HTTP ステータスコード 200 と SSE が返されます。",
+        "response": "発言を送信して応答をストリーミングで受け取るための API パスは /api/v1/chat/completions で、HTTP メソッドは POST です。",
+        "score": 0.429,
+        "hit": [
+          "http",
+          "post",
+          "メソッド",
+          "応答",
+          "発言",
+          "送信"
+        ],
+        "correct": false,
+        "sec": 0.7
+      },
+      {
+        "question": "契約書における `scope.read`、`scope.write`、`scope.forbidden` の項目はそれぞれどのような意味を持ちますか？",
+        "expected": "これらの項目は、対象となるリソースに対するアクセス権限や操作の範囲を定義します。具体的には、`scope.read` は読んでよい場所、`scope.write` は書いてよい場所、`scope.forbidden` は触ってはいけない場所（グロブ）をそれぞれ示しています。",
+        "response": "契約書の scope セクションでは、`scope.read` は読み取り専用の意味、`scope.write` は書き込み可能、`scope.forbidden` は禁止されていることを示します。",
+        "score": 0.231,
+        "hit": [
+          "scope.forbidden",
+          "scope.read",
+          "scope.write"
+        ],
+        "correct": false,
+        "sec": 0.6
+      },
+      {
+        "question": "llm-webプロセス内で利用されるデータベースファイルとログファイルの形式は何ですか？",
+        "expected": "llm-webプロセスでは、db.py内のDatabaseクラスがsqlite形式のdata/chat.dbファイルを使用します。また、ターミナル用プロセスであるllm-chatでは、history.py内のChatSessionがJSONLログ形式のlogs/chat-*.jsonlファイルを扱います。",
+        "response": "llm-webプロセスでは、SQLite形式のデータベースファイルと、ログファイルを用いてデータを保存・記録します。",
+        "score": 0.312,
+        "hit": [
+          "llm-web",
+          "sqlite",
+          "ファイル",
+          "プロセス",
+          "形式"
+        ],
+        "correct": false,
+        "sec": 0.4
+      },
+      {
+        "question": "app.js において、reasoning と content はそれぞれどのように画面に表示されますか？",
+        "expected": "app.js は readSse() で SSE データを受信し、reasoning は折りたたみ表示、content は Markdown として描画されます。また、通信完了後にはメタ行に tok/s を表示し、会話一覧を更新する処理が行われます。",
+        "response": "app.js では、reasoning は <div class=\"reasoning\"> タグ内に、content は <div class=\"content\"> タグ内にそれぞれ表示されます。",
+        "score": 0.25,
+        "hit": [
+          "app.js",
+          "content",
+          "reasoning",
+          "表示"
+        ],
+        "correct": false,
+        "sec": 0.5
+      },
+      {
+        "question": "Web UIとCLIで、履歴の管理方法としてそれぞれどのような構造やファイルが使用されていますか？",
+        "expected": "Web UIではSQLiteデータベース、具体的にはdb.pyファイルが履歴の置き場として使用されます。一方、CLIではメモリ上のlist[Message]型、ChatSession.historyが履歴として扱われます。",
+        "response": "Web UIでは、`web/app/app.py`というファイルが履歴の管理に使用されています。一方、CLIでは`cli/harness.py`というファイルが履歴の管理に使用されています。",
+        "score": 0.385,
+        "hit": [
+          "cli",
+          "web",
+          "ファイル",
+          "一方",
+          "履歴"
+        ],
+        "correct": false,
+        "sec": 0.5
+      },
+      {
+        "question": "コードを読む順番として、最初に確認すべきtypes.pyにはどのような情報が含まれていますか？",
+        "expected": "types.pyは50行程度で構成されており、MessageとChatChunkという2つのクラスの形状や構造を押さえるために最初に読むべきファイルです。これらはストリーミング処理における基本的なデータ単位となります。",
+        "response": "types.pyには、各モジュールで使用される型の定義が含まれています。これは、モジュール間で共有される型の定義を提供する役割を果たします。",
+        "score": 0.077,
+        "hit": [
+          "types.py"
+        ],
+        "correct": false,
+        "sec": 0.5
+      },
+      {
+        "question": "web/app.py から llama-server への HTTP 通信はどのように行うべきですか？",
+        "expected": "web/app.py から llama-server への HTTP 通信は、必ず LlamaClient 経由で行う必要があります。これにより、routes_chat.py に httpx が直接登場しないように制御されています。",
+        "response": "web/app.py から llama-server への HTTP 通信は、uvicorn で起動された web サーバーが http://127.0.0.1:8000 にアクセスできるように設定されています。具体的には、uvicorn web/app:app --host 0.0.0.0 --port 8000 と実行することで、外部からアクセス可能な状態になります。",
+        "score": 0.4,
+        "hit": [
+          "http",
+          "llama-server",
+          "web/app.py",
+          "通信"
+        ],
+        "correct": false,
+        "sec": 1.0
+      },
+      {
+        "question": "settingsオブジェクトのbase_urlフィールドは、値が設定される際にどのような処理が行われますか？",
+        "expected": "base_urlフィールドは文字列型であり、値が設定される際に末尾のスラッシュ（/）が自動的に取り除かれます。",
+        "response": "base_urlフィールドは、値が設定される際に、URLの形式を確認し、必要に応じて修正を行います。具体的には、http://またはhttps://で始まる文字列を確認し、不足している場合は補完します。",
+        "score": 0.333,
+        "hit": [
+          "base_url",
+          "フィールド"
+        ],
+        "correct": false,
+        "sec": 0.6
+      },
+      {
+        "question": "chat()メソッドのストリーミング処理において、LlamaClientErrorが発生する具体的なケースを2つ挙げてください。",
+        "expected": "LlamaClientErrorは、httpx.AsyncClient.stream()で4xxまたは5xxのステータスコードを受け取った場合、およびストリームイベントでJSONが壊れていないものの、{\"error\": ...}形式でありchoicesフィールドが存在しない場合に発生します。",
+        "response": "chat()メソッドのストリーミング処理において、LlamaClientErrorが発生する具体的なケースとしては、400 Bad Requestと503 Service Unavailableがあります。これらはAPI呼び出し中に発生するエラーを示しています。",
+        "score": 0.25,
+        "hit": [
+          "error",
+          "llamaclienterror",
+          "発生"
+        ],
+        "correct": false,
+        "sec": 0.7
+      },
+      {
+        "question": "app.pyにおいて、clientのaclose処理はいつ行われますか？",
+        "expected": "app.pyでは、`client`を外から渡さなかった場合のみ、終了時に`aclose()`が呼び出されます。テストなどでは外部から差し替えるため、この条件が適用されます。",
+        "response": "app.pyのmain関数内では、client = ai_harness.client()でClientインスタンスを生成し、その後aclose()メソッドを呼び出して閉じています。",
+        "score": 0.375,
+        "hit": [
+          "aclose",
+          "app.py",
+          "client"
+        ],
+        "correct": false,
+        "sec": 0.5
+      },
+      {
+        "question": "DELETE 実行時に messages も同時に削除されるのはどちらの状態ですか？",
+        "expected": "「会話中」状態にある会話に対して DELETE を実行した場合、メッセージ（messages）も CASCADE で同時に削除されます。これにより、関連するデータも全てクリーンアップされます。",
+        "response": "DELETE 実行時に messages も同時に削除されるのは、state が deleted または deleted_transition である場合です。",
+        "score": 0.333,
+        "hit": [
+          "delete",
+          "messages",
+          "削除",
+          "同時"
+        ],
+        "correct": false,
+        "sec": 0.3
+      },
+      {
+        "question": "build_prompt関数の主な処理内容と、Phase 3での役割は何ですか？",
+        "expected": "build_prompt関数は、データベースの行からMessageオブジェクトを作成します。ただしreasoningは含めず、contentが空の行は除外されます。さらにPhase 3では、検索結果やsystemメッセージをここで差し込む役割を持ちます。",
+        "response": "build_prompt関数は、現在のPhaseと現在のTaskを組み合わせて、実行するCommandを生成します。Phase 3では、このbuild_prompt関数を用いて、実行するCommandを構築し、その結果を確認するプロンプトを生成します。",
+        "score": 0.214,
+        "hit": [
+          "build_prompt",
+          "phase",
+          "関数"
+        ],
+        "correct": false,
+        "sec": 0.7
+      },
+      {
+        "question": "stream_reply関数において、LlamaClientErrorが発生した場合の処理フローを説明してください。",
+        "expected": "stream_reply処理中にLlamaClientErrorが発生した場合、まずデータの保存が行われます。その後、errorイベントが1つ出力され、関数はreturnによって終了します。これは正常終了や切断時のfinallyブロックとは異なるエラー処理パスです。",
+        "response": "stream_reply関数では、LlamaClientErrorが発生した場合、そのエラーをtraceback付きでprintし、その後、exit(1)でプログラムを終了します。これにより、エラーの原因を確認しつつ、正常な処理を中断させずに終了します。",
+        "score": 0.353,
+        "hit": [
+          "error",
+          "llamaclienterror",
+          "stream_reply",
+          "発生",
+          "終了",
+          "関数"
+        ],
+        "correct": false,
+        "sec": 0.7
+      },
+      {
+        "question": "RAGによる検索結果の差し込み機能を実装する場合、どの関数にsystemメッセージと引用を追加する必要がありますか？",
+        "expected": "RAGの拡張ポイントでは、service.build_prompt()関数に対してsystemメッセージと引用を追加します。この際、routes_chatとclientのコードは変更不要です。",
+        "response": "RAGによる検索結果の差し込み機能を実装する場合、`agent_executor`関数にsystemメッセージと引用を追加する必要があります。これにより、検索結果を自然に会話に組み込むことができます。",
+        "score": 0.5,
+        "hit": [
+          "rag",
+          "system",
+          "メッセージ",
+          "引用",
+          "追加",
+          "関数"
+        ],
+        "correct": true,
+        "sec": 0.7
+      },
+      {
+        "question": "Phaseのテンプレートにある「どう確かめたか(証拠)」のセクションでは、どのような形式で検証結果を記載すべきですか？",
+        "expected": "Completion Reportへの参照と要点の抜粋を含め、「テストが通った」という抽象的な表現ではなく、「このコマンドを打つとこう出る」という具体的な出力結果の形で記載します。",
+        "response": "「どう確かめたか(証拠)」のセクションでは、検証の方法と結果を記載します。具体的には、実行したコマンドやテスト、人間の確認、ログ、スクリーンショット、スナップショット、スクリプト、APIレスポンス、差分、比較、証拠の保存先などを示します。",
+        "score": 0.333,
+        "hit": [
+          "コマンド",
+          "テスト",
+          "具体的",
+          "記載"
+        ],
+        "correct": false,
+        "sec": 1.0
+      }
+    ],
+    "unsloth/Qwen3-4B-GGUF:Q4_K_M": [
+      {
+        "question": "llama-server のテストを GPU なしで実行するために使用するコマンドは何ですか。",
+        "expected": "llama-server は respx でモックするため GPU なしでテストが通ります。GPU なしでテストを実行するには、コマンドラインで「uv run pytest」を実行します。これにより Web API は FastAPI の TestClient を使用して処理されます。",
+        "response": "`llama-server` のテストを GPU なしで実行するには、以下のようにコマンドを実行します：\n\n```bash\nmake test CPU_ONLY=1\n```",
+        "score": 0.231,
+        "hit": [
+          "gpu",
+          "llama-server",
+          "テスト"
+        ],
+        "correct": false,
+        "sec": 0.6
+      },
+      {
+        "question": "ctx-size と VRAM の関係性を計測するために使用されるスクリプトファイル名は何ですか？",
+        "expected": "計測には .\\scripts\\ctx-vram.ps1 という PowerShell スクリプトが使用されます。",
+        "response": "`memory_usage.py`",
+        "score": 0.0,
+        "hit": [],
+        "correct": false,
+        "sec": 0.1
+      },
+      {
+        "question": "Web UI のバックエンドとして採用されているフレームワークは何ですか。",
+        "expected": "Web UI のバックエンドには、Python の Web フレームワークである FastAPI が採用されています。これは他のツールとは異なり、Webインターフェースの処理を担当します。",
+        "response": "Web UI のバックエンドとして採用されているフレームワークは、プロジェクトによって異なりますが、一般的には **Node.js** または **Python (Django/Flask)** が使われることが多いです。具体的なフレームワークはプロジェクトの設定に依存します。",
+        "score": 0.5,
+        "hit": [
+          "python",
+          "web",
+          "バックエンド",
+          "フレームワーク",
+          "採用"
+        ],
+        "correct": true,
+        "sec": 0.8
+      },
+      {
+        "question": "systemというroleを持つメッセージは、会話APIにおいてどのような意味を持ち、配置位置に制限はありますか？",
+        "expected": "systemはモデルへの指示、具体的には口調や制約を指定するために使用されます。このメッセージは会話の先頭に1つだけ置く必要があり、省略することも可能です。",
+        "response": "`system` role のメッセージは、会話APIにおいて「システムメッセージ」として機能し、モデルの振る舞いやルールを定義します。内容はモデルがユーザーとやり取りする際の基本的な指示や設定を含みます。\n\n配置位置に関しては、通常、会話の最初に配置されます。これにより、モデルがユーザーのメッセージを処理する前に、システムメッセージに基づいた行動を取ることができます。ただし、APIの実装によっては、特定の位置に配置する必要がある場合もあります。一般的には、最初のメッセージとして配置するのが-standardです。",
+        "score": 0.5,
+        "hit": [
+          "system",
+          "メッセージ",
+          "モデル",
+          "会話",
+          "指示"
+        ],
+        "correct": true,
+        "sec": 1.6
+      },
+      {
+        "question": "会話ログの保存先ディレクトリを指定する際、既定値として使用される名称は何ですか？",
+        "expected": "会話ログの保存先ディレクトリを指定する --log-dir オプションの既定値は logs です。この値が指定されていない場合、デフォルトで logs ディレクトリが使用されます。",
+        "response": "既定値は `./logs` です。",
+        "score": 0.25,
+        "hit": [
+          "logs",
+          "既定値"
+        ],
+        "correct": false,
+        "sec": 0.2
+      },
+      {
+        "question": "発言を送信して応答をストリーミングで受け取るための API パスとメソッドは何ですか？",
+        "expected": "発言を送信し、その応答をストリーミング形式で受け取るには、POST メソッドで `/api/conversations/{id}/messages` にアクセスします。成功時には HTTP ステータスコード 200 と SSE が返されます。",
+        "response": "APIパス: /v1/chat/completions  \nメソッド: POST",
+        "score": 0.143,
+        "hit": [
+          "post",
+          "メソッド"
+        ],
+        "correct": false,
+        "sec": 0.2
+      },
+      {
+        "question": "契約書における `scope.read`、`scope.write`、`scope.forbidden` の項目はそれぞれどのような意味を持ちますか？",
+        "expected": "これらの項目は、対象となるリソースに対するアクセス権限や操作の範囲を定義します。具体的には、`scope.read` は読んでよい場所、`scope.write` は書いてよい場所、`scope.forbidden` は触ってはいけない場所（グロブ）をそれぞれ示しています。",
+        "response": "`scope.read` は読み取り専用アクセスを、`scope.write` は書き込みアクセスを、`scope.forbidden` はアクセスを禁止する意味です。",
+        "score": 0.231,
+        "hit": [
+          "scope.forbidden",
+          "scope.read",
+          "scope.write"
+        ],
+        "correct": false,
+        "sec": 0.5
+      },
+      {
+        "question": "llm-webプロセス内で利用されるデータベースファイルとログファイルの形式は何ですか？",
+        "expected": "llm-webプロセスでは、db.py内のDatabaseクラスがsqlite形式のdata/chat.dbファイルを使用します。また、ターミナル用プロセスであるllm-chatでは、history.py内のChatSessionがJSONLログ形式のlogs/chat-*.jsonlファイルを扱います。",
+        "response": "llm-webプロセス内で利用されるデータベースファイルは通常 **SQLite** ファイル（例: `llm_web.db`）であり、ログファイルは通常 **テキスト形式**（例: `llm_web.log`）です。",
+        "score": 0.312,
+        "hit": [
+          "llm-web",
+          "sqlite",
+          "ファイル",
+          "プロセス",
+          "形式"
+        ],
+        "correct": false,
+        "sec": 0.7
+      },
+      {
+        "question": "app.js において、reasoning と content はそれぞれどのように画面に表示されますか？",
+        "expected": "app.js は readSse() で SSE データを受信し、reasoning は折りたたみ表示、content は Markdown として描画されます。また、通信完了後にはメタ行に tok/s を表示し、会話一覧を更新する処理が行われます。",
+        "response": "app.js において、`reasoning` と `content` はそれぞれ、HTML の要素に直接埋め込まれて画面に表示されます。`reasoning` は通常、`<div>` や `<p>` タグに埋め込まれて論理的な説明として表示され、`content` は主にユーザーの入力や応答内容として `<div>` や `<pre>` タグに埋め込まれて表示されます。",
+        "score": 0.25,
+        "hit": [
+          "app.js",
+          "content",
+          "reasoning",
+          "表示"
+        ],
+        "correct": false,
+        "sec": 1.3
+      },
+      {
+        "question": "Web UIとCLIで、履歴の管理方法としてそれぞれどのような構造やファイルが使用されていますか？",
+        "expected": "Web UIではSQLiteデータベース、具体的にはdb.pyファイルが履歴の置き場として使用されます。一方、CLIではメモリ上のlist[Message]型、ChatSession.historyが履歴として扱われます。",
+        "response": "Web UIとCLIでの履歴管理方法は、プロジェクトによって異なりますが、一般的な構造やファイルは以下の通りです：\n\n### Web UI\n- **履歴管理**: 通常、Web UIはバックエンド（例: Node.js、Python）で履歴を管理し、フロントエンド（例: React、Vue.js）で表示します。\n- **データストレージ**: データベース（例: MongoDB、PostgreSQL）やファイルシステム（JSON、CSV）に履歴を保存します。\n- **ファイル例**: `history.json`、`history.db` など。\n\n### CLI\n- **履歴管理**: CLIは通常、コマンドラインで履歴を記録し、ファイル（例: `history.log`）に保存します。\n- **データ形式**: テキストファイルやJSONファイルに履歴を保存します。\n- **ファイル例**: `history.log`、`history.json` など。\n\n具体的な構造はプロジェクトによって異なります。",
+        "score": 0.462,
+        "hit": [
+          "cli",
+          "web",
+          "データベース",
+          "ファイル",
+          "具体的",
+          "履歴"
+        ],
+        "correct": false,
+        "sec": 3.1
+      },
+      {
+        "question": "コードを読む順番として、最初に確認すべきtypes.pyにはどのような情報が含まれていますか？",
+        "expected": "types.pyは50行程度で構成されており、MessageとChatChunkという2つのクラスの形状や構造を押さえるために最初に読むべきファイルです。これらはストリーミング処理における基本的なデータ単位となります。",
+        "response": "types.py には、プロジェクトで使用するデータ型の定義や、関数・クラスの戻り値・引数の型ヒントが含まれています。",
+        "score": 0.154,
+        "hit": [
+          "types.py",
+          "クラス"
+        ],
+        "correct": false,
+        "sec": 0.5
+      },
+      {
+        "question": "web/app.py から llama-server への HTTP 通信はどのように行うべきですか？",
+        "expected": "web/app.py から llama-server への HTTP 通信は、必ず LlamaClient 経由で行う必要があります。これにより、routes_chat.py に httpx が直接登場しないように制御されています。",
+        "response": "web/app.py から llama-server への HTTP 通信は、requests ライブラリを使用して行います。llama-server が提供するAPIエンドポイントにPOSTリクエストを送り、応答を受信します。具体的な実装は、llama-serverのドキュメントを参照して適切なURLとパラメータを指定します。",
+        "score": 0.4,
+        "hit": [
+          "http",
+          "llama-server",
+          "web/app.py",
+          "通信"
+        ],
+        "correct": false,
+        "sec": 1.0
+      },
+      {
+        "question": "settingsオブジェクトのbase_urlフィールドは、値が設定される際にどのような処理が行われますか？",
+        "expected": "base_urlフィールドは文字列型であり、値が設定される際に末尾のスラッシュ（/）が自動的に取り除かれます。",
+        "response": "`settings`オブジェクトの`base_url`フィールドは、値が設定される際に自動的にURLエンコードされます。",
+        "score": 0.5,
+        "hit": [
+          "base_url",
+          "フィールド",
+          "自動的"
+        ],
+        "correct": true,
+        "sec": 0.4
+      },
+      {
+        "question": "chat()メソッドのストリーミング処理において、LlamaClientErrorが発生する具体的なケースを2つ挙げてください。",
+        "expected": "LlamaClientErrorは、httpx.AsyncClient.stream()で4xxまたは5xxのステータスコードを受け取った場合、およびストリームイベントでJSONが壊れていないものの、{\"error\": ...}形式でありchoicesフィールドが存在しない場合に発生します。",
+        "response": "1. モデルのロードに失敗した場合  \n2. APIリクエストにタイムアウトが発生した場合",
+        "score": 0.083,
+        "hit": [
+          "発生"
+        ],
+        "correct": false,
+        "sec": 0.4
+      },
+      {
+        "question": "app.pyにおいて、clientのaclose処理はいつ行われますか？",
+        "expected": "app.pyでは、`client`を外から渡さなかった場合のみ、終了時に`aclose()`が呼び出されます。テストなどでは外部から差し替えるため、この条件が適用されます。",
+        "response": "`app.py` において、`client` の `aclose` 処理は、通常、`client` インスタンスが使用が終了したときに自動的に呼び出されます。具体的には、`client` が `close` メソッドを明示的に呼び出されたときや、`client` が自動的にクローズされるタイミング（例: 通信が終了したとき）に実行されます。",
+        "score": 0.375,
+        "hit": [
+          "aclose",
+          "app.py",
+          "client"
+        ],
+        "correct": false,
+        "sec": 1.3
+      },
+      {
+        "question": "DELETE 実行時に messages も同時に削除されるのはどちらの状態ですか？",
+        "expected": "「会話中」状態にある会話に対して DELETE を実行した場合、メッセージ（messages）も CASCADE で同時に削除されます。これにより、関連するデータも全てクリーンアップされます。",
+        "response": "DELETE 実行時に messages も同時に削除されるのは **「soft delete」状態** です。",
+        "score": 0.417,
+        "hit": [
+          "delete",
+          "messages",
+          "削除",
+          "同時",
+          "状態"
+        ],
+        "correct": false,
+        "sec": 0.3
+      },
+      {
+        "question": "build_prompt関数の主な処理内容と、Phase 3での役割は何ですか？",
+        "expected": "build_prompt関数は、データベースの行からMessageオブジェクトを作成します。ただしreasoningは含めず、contentが空の行は除外されます。さらにPhase 3では、検索結果やsystemメッセージをここで差し込む役割を持ちます。",
+        "response": "`build_prompt`関数の主な処理内容は、入力データを基にプロンプトを構築することです。Phase 3では、このプロンプトをもとに生成された出力データを処理・出力します。",
+        "score": 0.214,
+        "hit": [
+          "build_prompt",
+          "phase",
+          "関数"
+        ],
+        "correct": false,
+        "sec": 0.8
+      },
+      {
+        "question": "stream_reply関数において、LlamaClientErrorが発生した場合の処理フローを説明してください。",
+        "expected": "stream_reply処理中にLlamaClientErrorが発生した場合、まずデータの保存が行われます。その後、errorイベントが1つ出力され、関数はreturnによって終了します。これは正常終了や切断時のfinallyブロックとは異なるエラー処理パスです。",
+        "response": "stream_reply関数において、LlamaClientErrorが発生した場合、エラーメッセージを出力し、生成を中止します。その後、関数は例外を投げ、呼び出し元にエラーを通知します。",
+        "score": 0.353,
+        "hit": [
+          "error",
+          "llamaclienterror",
+          "stream_reply",
+          "出力",
+          "発生",
+          "関数"
+        ],
+        "correct": false,
+        "sec": 0.7
+      },
+      {
+        "question": "RAGによる検索結果の差し込み機能を実装する場合、どの関数にsystemメッセージと引用を追加する必要がありますか？",
+        "expected": "RAGの拡張ポイントでは、service.build_prompt()関数に対してsystemメッセージと引用を追加します。この際、routes_chatとclientのコードは変更不要です。",
+        "response": "RAGによる検索結果の差し込み機能を実装する場合、**chat completion**関数にsystemメッセージと引用を追加します。",
+        "score": 0.5,
+        "hit": [
+          "rag",
+          "system",
+          "メッセージ",
+          "引用",
+          "追加",
+          "関数"
+        ],
+        "correct": true,
+        "sec": 0.5
+      },
+      {
+        "question": "Phaseのテンプレートにある「どう確かめたか(証拠)」のセクションでは、どのような形式で検証結果を記載すべきですか？",
+        "expected": "Completion Reportへの参照と要点の抜粋を含め、「テストが通った」という抽象的な表現ではなく、「このコマンドを打つとこう出る」という具体的な出力結果の形で記載します。",
+        "response": "「どう確かめたか(証拠)」のセクションでは、具体的な検証方法や根拠を簡潔に記載します。例：「アンケート調査で100名が回答し、85%が肯定的回答をした。」または「過去のデータを分析し、一致した結果を得た。」など、数値や事実に基づいた記述が適切です。",
+        "score": 0.167,
+        "hit": [
+          "具体的",
+          "記載"
+        ],
+        "correct": false,
+        "sec": 1.1
+      }
+    ]
+  }
+}

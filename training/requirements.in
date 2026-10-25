@@ -1,0 +1,20 @@
+# Phase 5 (LoRA) の学習環境。WSL Ubuntu の venv にだけ入れる(Windows 側の uv 環境には入れない)。
+# 固定版は requirements.lock.txt(setup-wsl.sh が `uv pip freeze` で生成)を見る。
+# torch は PyPI の Linux ホイール(CUDA 同梱)を使う。RTX 5070(sm_120)は CUDA 12.8 以降が必要。
+torch
+unsloth==2026.10.8
+unsloth_zoo==2026.10.8
+trl<=1.15.0
+transformers<=5.17.0
+datasets
+peft
+accelerate
+bitsandbytes
+# データ合成・テスト・設定
+httpx
+pyyaml
+pytest
+# GGUF 変換(llama.cpp の convert_hf_to_gguf.py が使う)
+gguf
+sentencepiece
+protobuf

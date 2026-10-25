@@ -1,0 +1,14 @@
+# 学習の成果物・中間生成物(大きいもの)。loss の表はジャーナルに転記する
+runs/*/checkpoint-*/
+runs/*/adapter/
+runs/*/merged/
+export/**/*.safetensors
+export/**/*.gguf
+export/merged/
+# 取得したコーパス(fetch_corpus.sh で再取得できる)
+data/corpus/
+# 合成途中のキャッシュ
+data/cache/
+.venv/
+__pycache__/
+.pytest_cache/

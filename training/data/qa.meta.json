@@ -1,0 +1,85 @@
+{
+  "dataset": "qa.jsonl",
+  "prompt_version": "v1",
+  "system_prompt": "あなたは技術文書から学習用の Q&A データを作る係です。与えられた文章だけを根拠にして、日本語で質問と答えを作ります。文章に無いことは書きません。",
+  "user_prompt_template": "次の文章だけから答えられる「質問と答え」を 3 組作ってください。\n\n条件:\n- 質問には、文章に出てくる固有の語(ファイル名、コマンド、設定名、用語など)を必ず 1 つ以上含める\n- 答えは 30 字以上 200 字以内。文章に書かれていることだけを、自然な日本語の文で書く\n- 3 組は互いに違う内容を問う\n- 出力は JSON 配列のみ: [{{\"question\": \"...\", \"answer\": \"...\"}}, ...]\n\n出典: {source}\n\n文章:\n<<<\n{chunk}\n>>>",
+  "response_schema": {
+    "type": "array",
+    "minItems": 3,
+    "maxItems": 3,
+    "items": {
+      "type": "object",
+      "properties": {
+        "question": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ]
+    }
+  },
+  "model": "unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M",
+  "base_url": "http://127.0.0.1:8080",
+  "temperature": 0.7,
+  "enable_thinking": false,
+  "started_at": "2026-10-25T02:13:52.025157+00:00",
+  "finished_at": "2026-10-25T03:14:29.446118+00:00",
+  "sources": [
+    "README.md",
+    "data/corpus/ai_harness/AI_Agent_Development_Handbook_JA.md",
+    "data/corpus/ai_harness/AI_Coding_Agent_Usage_Harness_Handbook_JA.md",
+    "data/corpus/ai_harness/README.md",
+    "data/corpus/ai_harness/docs/README.md",
+    "data/corpus/ai_harness/docs/core/decision-model.md",
+    "data/corpus/ai_harness/docs/core/glossary.md",
+    "data/corpus/ai_harness/docs/core/principles.md",
+    "data/corpus/ai_harness/docs/learning/beginner/coding-agent-tutorial.md",
+    "data/corpus/ai_harness/docs/learning/beginner/harness-basics.md",
+    "data/corpus/ai_harness/docs/learning/beginner/simple-agent-tutorial.md",
+    "data/corpus/ai_harness/docs/learning/intermediate/agent-runtime.md",
+    "data/corpus/ai_harness/docs/learning/intermediate/ci-review-and-evaluation.md",
+    "data/corpus/ai_harness/docs/learning/intermediate/evidence-and-policy.md",
+    "data/corpus/ai_harness/docs/learning/intermediate/team-harness.md",
+    "data/corpus/ai_harness/docs/profiles/codex.md",
+    "data/corpus/ai_harness/docs/profiles/distributed-execution.md",
+    "data/corpus/ai_harness/docs/profiles/personal-local.md",
+    "data/corpus/ai_harness/docs/profiles/production-high-risk.md",
+    "data/corpus/ai_harness/docs/profiles/team-ci.md",
+    "data/corpus/ai_harness/docs/reference/agent-development-handbook.md",
+    "data/corpus/ai_harness/docs/reference/coding-agent-usage-handbook.md",
+    "docs/README.md",
+    "docs/external-spec.md",
+    "docs/harness/README.md",
+    "docs/internal-spec.md",
+    "docs/journal/README.md",
+    "docs/journal/phase-0-2.md",
+    "docs/spec-phase1-2.md",
+    "docs/spec-phase3-6.md"
+  ],
+  "chunking": {
+    "min_chars": 400,
+    "max_chars": 1800,
+    "chunks": 494
+  },
+  "counts": {
+    "raw": 1482,
+    "kept": 1471,
+    "chunk_errors": 0,
+    "dropped": {
+      "short_answer": 1,
+      "short_question": 0,
+      "no_source_term": 8,
+      "duplicate": 2
+    }
+  },
+  "filters": {
+    "min_answer_chars": 20,
+    "min_question_chars": 10,
+    "source_term": "質問中の英数字 3 字以上の語、またはカタカナ/漢字 2 字以上の連続が、チャンク本文に含まれること"
+  }
+}

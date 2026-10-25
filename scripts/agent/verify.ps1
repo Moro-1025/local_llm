@@ -60,7 +60,10 @@ if ($Agent) {
 
 if ($Training) {
     if (Test-Path (Join-Path $root "training\run_tests.sh")) {
-        Step "training tests (WSL)" { wsl -d Ubuntu -- bash -lc "cd /mnt/c/dev/local_llm/training && ./run_tests.sh" }
+        # worktree でも動くように、リポジトリのパスを WSL 側のパスに変換して渡す
+        # バックスラッシュは WSL 側の bash に食われるので / に直してから渡す
+        $wslRoot = (wsl -d Ubuntu -- wslpath -u ($root -replace '\\', '/')).Trim()
+        Step "training tests (WSL)" { wsl -d Ubuntu -- bash -lc "cd '$wslRoot/training' && ./run_tests.sh" }
     } else {
         Write-Host "training/run_tests.sh が無いためスキップ" -ForegroundColor Yellow
     }

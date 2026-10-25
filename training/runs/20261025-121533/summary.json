@@ -1,0 +1,30 @@
+{
+  "run": "20261025-121533",
+  "model": "unsloth/Qwen3-4B",
+  "train_rows": 1324,
+  "eval_rows": 147,
+  "steps": 166,
+  "epochs": 2,
+  "elapsed_sec": 290.5,
+  "train_loss_first": 3.6021278381347654,
+  "train_loss_last": 1.5838644981384278,
+  "eval_loss_first": 3.9062459468841553,
+  "eval_loss_last": 1.6779670715332031,
+  "eval_loss_decreased": true,
+  "vram_peak_allocated_gib": 4.14,
+  "vram_peak_reserved_gib": 5.91,
+  "vram_estimate_gib": {
+    "weights": 2.46,
+    "activations": 0.26,
+    "lora_optimizer": 0.3,
+    "total": 4.03
+  },
+  "train_runtime_metrics": {
+    "train_runtime": 289.1288,
+    "train_samples_per_second": 9.159,
+    "train_steps_per_second": 0.574,
+    "total_flos": 7529112165765120.0,
+    "train_loss": 1.7718065158430352,
+    "epoch": 2.0
+  }
+}

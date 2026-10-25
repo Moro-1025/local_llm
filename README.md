@@ -155,6 +155,8 @@ asyncio.run(main())
 | `unsloth/Qwen3.8-27B-GGUF:UD-Q4_K_M` | dense 27B | 約 15 GB | 39/65 層のみ GPU(残り CPU) | 品質重視・速度は遅い |
 | `unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_M` | MoE 35B(アクティブ 3B) | 約 20 GB | エキスパートは CPU、他は GPU(`cpu-moe`) | 速度と品質のバランス |
 | `unsloth/Qwen3-8B-GGUF:Q4_K_M` | dense 8B | 約 5 GB | 全層 GPU | 速度重視・比較用 |
+| `unsloth/Qwen3-4B-GGUF:Q4_K_M` | dense 4B | 約 2.5 GB | 全層 GPU | LoRA との比較用(Phase 5) |
+| `local/qwen3-4b-localllm-lora` | dense 4B + LoRA マージ | 約 2.5 GB | 全層 GPU | docs/ と ai_harness の Q&A で学習(Phase 5、`training/export_gguf.sh` で生成) |
 
 ## ベンチマーク
 
@@ -214,6 +216,8 @@ local_llm/
 │       ├─ routes_chat.py    /api/* のエンドポイント
 │       └─ static/           index.html / app.js / style.css(ビルドなし)
 ├─ tests/            pytest + respx
+├─ training/         Phase 5: LoRA 学習(WSL で実行。データ合成・学習・GGUF 変換)
+├─ eval/datasets/    評価用 Q&A(版番号付き、学習には使わない)
 ├─ data/             会話 DB(git 管理外)
 └─ logs/             サーバログ・チャットログ(git 管理外)
 ```
@@ -227,7 +231,7 @@ local_llm/
 | 2 | Web チャット UI(FastAPI + フロント) | 完了 |
 | 3 | RAG(文書を根拠付きで答える) | 進行中 |
 | 4 | ツール呼び出しとエージェント | |
-| 5 | LoRA ファインチューニング | 進行中 |
+| 5 | LoRA ファインチューニング(WSL + unsloth、[training/](training/README.md)、[journal](docs/journal/phase-5.md)) | 完了 |
 | 6 | 評価・計測・公開 | |
 
 ## 学んだこと
