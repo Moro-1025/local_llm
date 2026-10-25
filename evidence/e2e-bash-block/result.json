@@ -1,0 +1,6 @@
+{
+  "summary": "## docs/README.md の要約（3 点）\n\n1. **プロジェクト概要**: 自宅 PC の GPU でローカル LLM(llama.cpp / llama-server) を動かし、CLI チャットおよびブラウザ上の Web UI で会話するためのリポジトリ。Python コードは llama-server に対して HTTP でリクエストを送り、結果を表示・保存する役目を持つ。\n\n2. **ドキュメントの読み方**: 全体像を掴む順番として、外部仕様 (external-spec.md) → 内部仕様 (internal-spec.md) → 実装方針 (spec-phase1-2.md) → 設定・起動情報 (ルート README.md) の順で読むことを推奨。目的別に最短ルートも案内されている（例：API 利用者は external-spec 6〜7 章、コード読解者は internal-spec の全体像→データフロー）。\n\n3. **主要用語**: llama-server（推論サーバー）、OpenAI 互換 API、SSE（逐次ストリーミング）、thinking（Qwen3 系の推論前テキスト）、モデル id の 5 用語を最低限の用語解説として提示。詳細は external-spec 0 章を参照。",
+  "sources": [
+    "docs/README.md"
+  ]
+}

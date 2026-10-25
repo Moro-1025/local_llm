@@ -20,6 +20,7 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_DIR = ROOT / "docs" / "harness" / "schemas"
 CONTRACT_DIR = ROOT / "docs" / "harness" / "contracts"
+AGENT_CONTRACT_DIR = ROOT / "agent" / "contracts"  # Phase 4: エージェントに渡す Task Contract
 REPORT_DIR = ROOT / "docs" / "harness" / "reports"
 
 
@@ -62,6 +63,7 @@ def main(argv: list[str] | None = None) -> int:
 
     targets: list[tuple[Path, str]] = []
     targets += [(p, "task-contract") for p in sorted(CONTRACT_DIR.glob("*.json"))]
+    targets += [(p, "task-contract") for p in sorted(AGENT_CONTRACT_DIR.glob("*.json"))]
     targets += [(p, "completion-decision") for p in sorted(REPORT_DIR.glob("*.decision.json"))]
     targets += [(p, "verification-result") for p in sorted(REPORT_DIR.glob("*.verification.json"))]
     if not targets:

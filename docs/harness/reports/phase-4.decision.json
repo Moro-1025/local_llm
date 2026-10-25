@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-4",
+  "contract_id": "contract:local-llm:phase-4",
+  "contract_version": 1,
+  "contract_hash": "sha256:9f5a505429bba208cc05668d1c15ab059ffc677a3e2713a224f542c19cc5e9af",
+  "decision_id": "cd:phase-4:34ff262",
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "34ff262"
+  },
+  "status": "accepted",
+  "criterion_results": [
+    {
+      "criterion_id": "AGT-001",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-4.AGT-001.verification.json"
+      ],
+      "notes": "実機 seq 3: bash {\"command\":\"ls docs\"} → tool_not_allowed、seq 4: read → tool_not_allowed。decision は accepted(許可外ツールは実行されていない)"
+    },
+    {
+      "criterion_id": "AGT-002",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-4.AGT-002.verification.json"
+      ],
+      "notes": "実機 seq 3: read_file .env → scope_boundary_exceeded、stop_reason=scope_violation、decision blocked(2.8 s、1 turn)"
+    },
+    {
+      "criterion_id": "AGT-003",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-4.AGT-003.verification.json"
+      ],
+      "notes": "events.jsonl seq 16: stop budget_exceeded \"max_steps=2 exceeded (step 3)\"、decision.status=blocked、unresolved_errors[0].code=budget_exceeded"
+    },
+    {
+      "criterion_id": "AGT-004",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-4.AGT-004.verification.json"
+      ],
+      "notes": "e2e-summarize: 7 必須 criterion pass、SUMMARY_QUALITY(非必須)not_run → accepted。66.3 s、8 turns、9 tool_calls"
+    },
+    {
+      "criterion_id": "AGT-005",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-4.AGT-005.verification.json"
+      ],
+      "notes": "pytest 87 passed(Phase 3 までの 70 + agent 17)、vitest 35 passed(4 files)"
+    },
+    {
+      "criterion_id": "AGT-006",
+      "required": true,
+      "status": "pass",
+      "verification_result_refs": [
+        "docs/harness/reports/phase-4.AGT-006.verification.json"
+      ],
+      "notes": "owner Moro-1025 がレビューして pass(2026-10-25T05:50:00+00:00)"
+    }
+  ],
+  "required_criteria_complete": true,
+  "evidence_binding_check": "pass",
+  "scope_check": "pass",
+  "policy_check": "pass",
+  "critical_unresolved_errors": 0,
+  "unresolved_errors": [
+    {
+      "severity": "low",
+      "code": "STRAY_PROCESSES",
+      "description": "検証用に起動した llama-server ルーター(:8080、ラッパー PID 12096)と llm-web(:8010)、Phase 3 検証時の古い llm-web(:8000、PID 11164)の停止操作が実行環境のポリシーで拒否され、セッション終了時点で残っている。人の手で停止が必要",
+      "evidence_refs": [
+        "docs/harness/reports/phase-4.md#残っているプロセス人の手で停止が必要"
+      ]
+    },
+    {
+      "severity": "low",
+      "code": "MODELS_INI_CTX_SIZE_LIMITS_AGENT",
+      "description": "models.ini の ctx-size 8192 がエージェントの手数と読める量を制限している。models.ini は Phase 4 の scope.write に無いため変更せず、Amendment 候補として Report に記載",
+      "evidence_refs": [
+        "docs/harness/reports/phase-4.md#amendment-候補契約の変更は行っていない",
+        "docs/journal/phase-4.md#うまくいかなかったことやり直したこと"
+      ]
+    }
+  ],
+  "uncertain_actions": [],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "residual_risks": [
+    {
+      "risk": "agent/pi/models.json の contextWindow を実サーバ(8192)より大きい 16384 にしている。Pi が固定 4096 トークンの安全マージンで max_tokens を切り詰めるのを避けるためで、Pi の自動 compaction は実オーバーフロー前に動かない。ハーネスのツール出力予算(6000 字)で実コンテキストを 8k 以内に抑えている",
+      "severity": "medium",
+      "accepted_by": null
+    },
+    {
+      "risk": "実機 e2e(accepted 2 run、blocked 2 run)はモデルの挙動に依存し再現性が無い。決定論的な規則は pytest / vitest で固定",
+      "severity": "medium",
+      "accepted_by": null
+    },
+    {
+      "risk": "同一エラーの判定に引数を含めるため、別の引数で同じ失敗を繰り返しても same_error_repeated にならない",
+      "severity": "low",
+      "accepted_by": null
+    },
+    {
+      "risk": "decision.json の subject.artifact_hash は作業コピー(LF)の events.jsonl から計算。autocrlf 環境のチェックアウトでは照合がずれる",
+      "severity": "low",
+      "accepted_by": null
+    },
+    {
+      "risk": "GATE_NEW_DEPENDENCY: agent/harness の devDependencies に vitest 5.0.5(仕様が要求)と typebox 1.3.27(ツールのスキーマ定義、Pi 同梱と同一ライブラリ)を追加。実行時依存は増えていない",
+      "severity": "low",
+      "accepted_by": null
+    },
+    {
+      "risk": "thinking off は Pi の before_provider_request フックで chat_template_kwargs.enable_thinking=false を足して実現しており、Pi の内部 API に依存",
+      "severity": "low",
+      "accepted_by": null
+    }
+  ],
+  "decided_by": {
+    "type": "human",
+    "identifier": "owner Moro-1025(journal レビュー)+ claude-code session phase3-4-rag-agent-4c2343(自動検証の self-check)",
+    "version": null
+  },
+  "decided_at": "2026-10-25T05:50:00+00:00",
+  "reasons": [
+    "AGT-001〜005 は pass(pytest 87 件、vitest 35 件、実機 e2e 4 run: summarize accepted / bash-block accepted / budget blocked / scope blocked)。",
+    "AGT-006 は owner Moro-1025 が docs/journal/phase-4.md をレビューして pass(2026-10-25T05:50:00+00:00)。required 6 件すべて pass で required_criteria_complete=true。",
+    "scope: 変更ファイルはすべて contract.scope.write 内(src/local_llm/**, tests/**, agent/**, scripts/agent/**, pyproject.toml, README.md, docs/**, .gitignore, evidence/**)。models.ini と ~/.pi は触っていない。",
+    "policy: push・公開・外部送信なし。接続先は 127.0.0.1(llama-server、llm-web)と registry.npmjs.org(agent/harness の npm install)のみ。秘密情報の記載なし(models.json の apiKey はダミー \"none\")。",
+    "AGT-001〜005 の自動検証は writer セッションの self-check のまま(独立検証は行っていない)。残存リスクの accepted_by は未記入。"
+  ]
+}

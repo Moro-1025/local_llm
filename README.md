@@ -4,7 +4,7 @@ llama.cpp を使って自宅 PC(RTX 5070 / 12 GB)でローカル LLM を動か�
 API クライアント → チャット UI → RAG → エージェント → ファインチューニングと
 段階的に積み上げていく学習・ポートフォリオ用プロジェクト。
 
-> 現在のフェーズ: **Phase 2 完了**(Web チャット UI)。次は Phase 3 の RAG。Phase 0 のベンチ計測は別途進める
+> 現在のフェーズ: **Phase 4 完了**(Pi + ハーネスでエージェント、decision accepted)。次は Phase 6 の評価・公開(Phase 5 は別ブランチで進行中)。Phase 0 のベンチ計測は別途進める
 
 ## ハードウェア
 
@@ -59,6 +59,11 @@ Copy-Item .env.example .env   # 必要なら値を書き換える
 | `LLM_DEFAULT_MODEL` | `unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M` | 既定モデル(`/v1/models` が返す id) |
 | `CHAT_DB_PATH` | `data/chat.db` | Web UI の会話 DB(Phase 2) |
 | `LLAMA_TIMEOUT` | `600` | HTTP タイムアウト(秒) |
+| `LLM_EMBED_MODEL` | `Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0` | RAG の埋め込みモデル(Phase 3) |
+| `LLAMA_EMBED_BASE_URL` | (`LLAMA_BASE_URL` と同じ) | 埋め込みだけ別の llama-server で動かすとき(Phase 3) |
+| `RAG_CORPUS_DIR` | `data/corpus` | RAG で索引する Markdown の置き場(Phase 3) |
+| `LLM_AGENT_MODEL` | `llama-local/unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M` | エージェントが使う Pi の `provider/model-id`(Phase 4、`llm-agent` が読む) |
+| `HARNESS_RAG_URL` | `http://127.0.0.1:8000` | エージェントの `rag_search` が叩く `llm-web` の URL(Phase 4、`--rag-url` でも指定可) |
 
 ### CLI チャット(Phase 1)
 
@@ -83,6 +88,7 @@ uv run llm-chat --no-think --system "日本語で簡潔に答えて"
 | `/clear` | 会話履歴を消す |
 | `/system <text>` | system prompt を差し替える |
 | `/think on\|off` | thinking の有無を切り替える |
+| `/rag on\|off` | 資料検索(RAG)の有無を切り替える(Phase 3) |
 | `/quit` | 終了(Ctrl+D / Ctrl+Z でも終了) |
 
 ### Web チャット UI(Phase 2)
@@ -117,17 +123,54 @@ API(すべて `/api` 配下、認証なし・127.0.0.1 前提):
 | POST | `/api/conversations` | 新規作成 `{"model": "..."}` |
 | GET | `/api/conversations/{id}` | メッセージ込みで取得 |
 | DELETE | `/api/conversations/{id}` | 削除 |
-| POST | `/api/conversations/{id}/messages` | `{"content", "enable_thinking", "model"?}` を受け、SSE で応答を流す |
+| POST | `/api/conversations/{id}/messages` | `{"content", "enable_thinking", "model"?, "use_rag"?, "top_k"?}` を受け、SSE で応答を流す |
+| GET | `/api/rag/status` | RAG 索引の文書数・チャンク数・埋め込みモデル(Phase 3) |
+| GET | `/api/rag/search?q=&top_k=` | 質問に近いチャンクを本文つきで返す(Phase 3、Phase 4 のツールが使う) |
 
-SSE のイベントは `data: {"type": "reasoning"|"content"|"done"|"error", ...}`。
+SSE のイベントは `data: {"type": "sources"|"reasoning"|"content"|"done"|"error", ...}`。
 `done` に usage と tok/s が入る。FastAPI の自動ドキュメントは http://127.0.0.1:8000/docs で見られる。
+
+### RAG: 資料を根拠に答える(Phase 3)
+
+```powershell
+.\scripts\fetch-corpus.ps1      # ai_harness の Markdown 19 本を data/corpus/ に取得(初回のみ)
+uv run llm-index                 # 索引を作る(llama-server 起動中。埋め込みモデルは初回に約 640 MB を取得)
+uv run llm-chat --rag            # CLI で RAG を使う(/rag on|off で切り替え)
+uv run llm-web                   # Web UI は上部の「RAG」チェック
+```
+
+- 質問に近い資料を上位 k 件(既定 5)選び、「以下の資料だけを根拠に答え、使った資料を [n] で示す」と指示して回答させる
+- 出典(パス、見出し、類似度)は本文より先に `sources` イベントで届き、UI では応答の下に並ぶ
+- 埋め込みモデルは `models.ini` の `[Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0]` セクション(`embeddings = true`、`pooling = last`、`hf-repo` 必須)から、同じルーターモードの llama-server が配信する
+- 検索精度の評価: `uv run python scripts/agent/eval_retrieval.py`(10 問、top-3 で 10/10)
+- 仕組みの説明は [docs/journal/phase-3.md](docs/journal/phase-3.md)
+
+### エージェント: ツール呼び出しをコードで許可する(Phase 4)
+
+[Pi](https://github.com/earendil-works/pi-coding-agent) を RPC モードで子プロセスにし、llama-server に function calling でツールを使わせる。
+何を使ってよいか・どこを読んでよいか・いつ止まるかは **Task Contract(JSON)** に書き、Pi の extension(`agent/harness/`)がコードで強制する。
+
+```powershell
+npm install -g @earendil-works/pi-coding-agent          # 初回のみ(Node.js が必要)。~/.pi の設定は使わない
+cd agent\harness; npm install; npm test; cd ..\..        # extension の依存とテスト(vitest 35 件)
+.\scripts\start-server.ps1                               # llama-server(別ターミナル)
+uv run llm-web                                            # rag_search が叩く /api/rag/search(別ターミナル、索引済みであること)
+uv run llm-agent --contract agent/contracts/summarize-docs.json --task "RAG の設計方針を 3 点にまとめて"
+```
+
+- 結果は `evidence/<run_id>/` に `events.jsonl`(全ツール呼び出しと block の記録)、`result.json`(エージェントの finish)、
+  `decision.json` / `verification.json` / `report.md`(runner が criterion ごとに検証した判定)。終了コードは判定が `accepted` のときだけ 0
+- サンプル Contract `agent/contracts/summarize-docs.json` は読み取り専用: `rag_search` / `read_file` / `list_files` / `finish` だけ許可、`docs/**` と `data/corpus/**` と `README.md` だけ読める
+- 確認用オプション: `--max-steps 2`(予算超過で `blocked` になる)、`--expose-builtin-tools`(Pi の bash などを見せても block されることの確認)、`--rag-url`、`--model`
+- Pi の設定は `agent/pi/models.json`(`PI_CODING_AGENT_DIR` で渡す)。`contextWindow` を 16384 にしている理由と落とし穴は [docs/journal/phase-4.md](docs/journal/phase-4.md)
 
 ### テスト
 
-llama-server は respx でモックするので GPU なしで通る(Web API は FastAPI の TestClient):
+llama-server は respx でモックするので GPU なしで通る(Web API は FastAPI の TestClient)。エージェントは偽の pi(`tests/agent/fake_pi.py`)で通す:
 
 ```powershell
-uv run pytest
+uv run pytest                    # 87 件
+.\scripts\agent\verify.ps1 -Agent  # 契約 Schema + diff --check + pytest + agent/harness の vitest
 ```
 
 ### API クライアントを自分のコードから使う
@@ -189,9 +232,15 @@ local_llm/
 ├─ models.ini        モデルプリセット(llama-server のルーターモード設定)
 ├─ scripts/
 │   ├─ start-server.ps1   サーバ起動
+│   ├─ fetch-corpus.ps1   RAG のコーパス(ai_harness の Markdown)を取得
 │   ├─ bench.ps1          llama-bench で速度計測
 │   └─ ctx-vram.ps1       ctx-size ごとの VRAM 使用量計測
-│   └─ agent/             verify.ps1(検証の単一入口)、check_contracts.py
+│   └─ agent/             verify.ps1(検証の単一入口)、check_contracts.py、eval_retrieval.py(RAG の精度評価)
+├─ agent/            Phase 4 のエージェント
+│   ├─ harness/          Pi extension(TypeScript): Contract の強制、証拠の記録、rag_search などのツール、vitest
+│   ├─ pi/               Pi の設定(models.json = llama-local プロバイダ、settings.json)。auth.json などの実行時ファイルは git 管理外
+│   └─ contracts/        エージェント用 Task Contract(summarize-docs.json)
+├─ evidence/         エージェント実行の証拠(run_id ごとに events.jsonl、decision.json、report.md)
 ├─ bench/            計測結果(Markdown)
 ├─ docs/             仕様書(初めての人は docs/README.md から)
 │   ├─ README.md         読み方ガイドと用語の最低限
@@ -207,14 +256,16 @@ local_llm/
 │   ├─ client.py         LlamaClient(httpx、SSE 自前パース、thinking 分離)
 │   ├─ history.py        CLI の JSONL ログ
 │   ├─ cli.py            CLI チャット(llm-chat)
+│   ├─ rag/              RAG(llm-index、loader / chunker / embedder / store / retriever / prompt)
+│   ├─ agent/            エージェント runner(llm-agent、contract / scope / runner / verify / report)
 │   └─ web/              Web チャット UI(llm-web)
 │       ├─ app.py            FastAPI アプリ
 │       ├─ db.py             SQLite のスキーマとクエリ
-│       ├─ service.py        DB ↔ LlamaClient のオーケストレーション(Phase 3 で RAG を挟む場所)
+│       ├─ service.py        DB ↔ LlamaClient のオーケストレーション(RAG の差し込みはここ)
 │       ├─ routes_chat.py    /api/* のエンドポイント
 │       └─ static/           index.html / app.js / style.css(ビルドなし)
-├─ tests/            pytest + respx
-├─ data/             会話 DB(git 管理外)
+├─ tests/            pytest + respx(tests/agent は偽の pi で runner を通す)
+├─ data/             会話 DB と RAG 索引、コーパス(git 管理外)
 └─ logs/             サーバログ・チャットログ(git 管理外)
 ```
 
@@ -225,8 +276,8 @@ local_llm/
 | 0 | 土台づくり(git 化、起動スクリプト、ベンチでモデル選定) | 進行中(ベンチ計測待ち) |
 | 1 | API クライアントと CLI チャット | 完了 |
 | 2 | Web チャット UI(FastAPI + フロント) | 完了 |
-| 3 | RAG(文書を根拠付きで答える) | 進行中 |
-| 4 | ツール呼び出しとエージェント | |
+| 3 | RAG(文書を根拠付きで答える) | 完了 |
+| 4 | ツール呼び出しとエージェント(Pi + ハーネス) | 完了(人のレビュー待ち) |
 | 5 | LoRA ファインチューニング | 進行中 |
 | 6 | 評価・計測・公開 | |
 
@@ -238,4 +289,9 @@ local_llm/
 - SSE は「`data:` 行が空行で区切られる」だけの単純な形式で、`[DONE]` が終端。httpx の `aiter_lines()` で十分にパースできる
 - FastAPI の `StreamingResponse` に async generator を渡すと、ブラウザが切断したときに generator が閉じられる(`GeneratorExit` / `CancelledError`)。`finally` でそこまでの本文を保存すれば「途中まで」を失わない
 - 過去ターンの thinking は llama-server に送らない(Qwen3 の推奨)。DB には残すので UI では見返せる
+- llama-server のルーターモードは、Hugging Face のキャッシュに無いモデルには `--hf-repo` を自動で付けない。`models.ini` のセクションに `hf-repo = <repo:tag>` を明示しないと、子プロセスがモデル無しで起動して `loading` のまま戻らない(Phase 3 で判明)
+- RAG の検索は 433 チャンク程度ならベクトル DB なしで足りる。numpy の行列積 1 回(433 × 1024)で全件のコサイン類似度が出る
+- Pi は `max_tokens = min(maxTokens, contextWindow − 推定使用量 − 4096)` で出力長を切り詰める。`contextWindow` を実サーバと同じ 8192 にすると、使用量 4k で max_tokens が 1 になりモデルが何も言えなくなる。`models.json` では 16384 と申告し、ハーネス側のツール出力予算で実コンテキストを 8k 以内に抑えた(Phase 4 で判明)
+- Pi の `--thinking off` は llama-server には伝わらない。`before_provider_request` フックでリクエストに `chat_template_kwargs.enable_thinking=false` を足すと Qwen3 の thinking が止まる
+- 「モデルは提案し、コードが許可する」は小さく実装できる。Pi の `tool_call` フックで `{block: true}` を返すだけで許可外ツールは実行されず、記録も残る。system prompt の「使わないで」は不要ではないが、それだけに頼らない
 - (ベンチ後に追記)

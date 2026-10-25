@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "core_version": "1.0",
+  "task_id": "PHASE-3",
+  "contract_id": "contract:local-llm:phase-3",
+  "contract_version": 1,
+  "contract_hash": "sha256:281acc7df27b16bbd694104b4df1a3af02b3a1c33c362123e3f7a858f30da4d8",
+  "result_id": "vr:phase-3:RAG-002:e864855",
+  "criterion_id": "RAG-002",
+  "assertion": "tests/rag/eval_retrieval.jsonl の質問 10 件で正解文書が top-3 に 8 件以上入る(実サーバ、結果を Report に記録)",
+  "status": "pass",
+  "verifier": {
+    "type": "e2e",
+    "name": "scripts/agent/eval_retrieval.py --top-k 3 --min-hits 8",
+    "version": "commit e864855",
+    "independent_from_writer": false
+  },
+  "subject": {
+    "type": "repository",
+    "repository": "local_llm (branch claude/phase3-4-rag-agent-4c2343)",
+    "commit": "e864855"
+  },
+  "evidence_refs": [
+    "docs/harness/reports/evidence/phase-3.eval_retrieval.json"
+  ],
+  "policy_decision_refs": [],
+  "approval_refs": [],
+  "limitations": [
+    "評価セット 10 問は実装者がコーパスを見て作成した(独立した評価ではない)",
+    "埋め込みサーバは :8082(自分で起動)、索引は data/chat.db。1 回のみ実行"
+  ],
+  "verified_at": "2026-10-25T03:05:00+00:00"
+}

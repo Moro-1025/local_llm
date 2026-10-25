@@ -17,6 +17,10 @@ from rich.text import Text
 from local_llm.client import LlamaClient, LlamaClientError
 from local_llm.config import load_settings
 from local_llm.history import ChatLogger
+from local_llm.rag.embedder import Embedder
+from local_llm.rag.prompt import build_rag_messages
+from local_llm.rag.retriever import DEFAULT_TOP_K, RetrievedChunk, Retriever
+from local_llm.rag.store import RagStore
 from local_llm.types import Message, Usage
 
 HELP_TEXT = """\
@@ -26,6 +30,7 @@ HELP_TEXT = """\
   /clear            会話履歴を消す
   /system <text>    system prompt を差し替える
   /think on|off     thinking の有無を切り替える
+  /rag on|off       資料検索(RAG)の有無を切り替える(/rag で状態表示)
   /help             このヘルプ
   /quit             終了(Ctrl+D / Ctrl+Z でも終了)
 """
@@ -43,6 +48,9 @@ class ChatSession:
         model: str,
         system_prompt: str | None = None,
         enable_thinking: bool = True,
+        retriever: Retriever | None = None,
+        use_rag: bool = False,
+        top_k: int = DEFAULT_TOP_K,
     ) -> None:
         self.client = client
         self.console = console
@@ -50,16 +58,21 @@ class ChatSession:
         self.model = model
         self.system_prompt = system_prompt
         self.enable_thinking = enable_thinking
+        self.retriever = retriever
+        self.use_rag = use_rag and retriever is not None
+        self.top_k = top_k
         self.history: list[Message] = []
 
     # ------------------------------------------------------------ メッセージ組み立て
 
-    def build_messages(self) -> list[Message]:
-        """送信用のメッセージ列(system prompt + 履歴)を作る。"""
+    def build_messages(self, retrieved: list[RetrievedChunk] | None = None) -> list[Message]:
+        """送信用のメッセージ列(system prompt + 履歴)を作る。retrieved があれば資料を差し込む。"""
         messages: list[Message] = []
         if self.system_prompt:
             messages.append(Message("system", self.system_prompt))
         messages.extend(self.history)
+        if retrieved:
+            return build_rag_messages(messages, retrieved)
         return messages
 
     # ------------------------------------------------------------ スラッシュコマンド
@@ -88,6 +101,8 @@ class ChatSession:
                 self.console.print("[red]使い方: /think on|off[/]")
         elif cmd == "/model":
             await self._command_model(arg)
+        elif cmd == "/rag":
+            await self._command_rag(arg)
         else:
             self.console.print(f"[red]不明なコマンドです: {cmd}[/]  (/help で一覧)")
         return True
@@ -107,10 +122,47 @@ class ChatSession:
             mark = "*" if m == self.model else " "
             self.console.print(f"  {mark} {m}", highlight=False)
 
+    async def _command_rag(self, arg: str) -> None:
+        if self.retriever is None:
+            self.console.print("[red]RAG は設定されていません[/]")
+            return
+        if arg.lower() in ("on", "off"):
+            self.use_rag = arg.lower() == "on"
+        elif arg:
+            self.console.print("[red]使い方: /rag on|off[/]")
+            return
+        status = self.retriever.store.status()
+        self.console.print(
+            f"[yellow]rag: {'on' if self.use_rag else 'off'}[/]  "
+            f"(文書 {status['documents']} 件 / チャンク {status['chunks']} 件, top_k={self.top_k})",
+            highlight=False,
+        )
+        if self.use_rag and status["chunks"] == 0:
+            self.console.print("[yellow]インデックスが空です。`uv run llm-index` で作成してください[/]")
+
+    async def _retrieve(self, query: str) -> list[RetrievedChunk] | None:
+        """RAG が有効なら検索して出典を表示する。失敗したら None(送信を中止)。"""
+        if not (self.use_rag and self.retriever):
+            return []
+        try:
+            retrieved = await self.retriever.search(query, top_k=self.top_k)
+        except (LlamaClientError, ValueError) as exc:
+            self.console.print(f"[red]資料の検索に失敗しました: {exc}[/]", highlight=False)
+            return None
+        if not retrieved:
+            self.console.print(Text("(資料が見つかりませんでした。インデックスは作成済みですか?)", style="dim"))
+        for c in retrieved:
+            where = c.path + (f" › {c.heading}" if c.heading else "")
+            self.console.print(Text(f"[{c.n}] {where}  ({c.score:.3f})", style="dim"))
+        return retrieved
+
     # ------------------------------------------------------------ 1 往復
 
     async def ask(self, user_text: str) -> None:
         """ユーザー発言を送り、応答をストリーミング表示して履歴に積む。"""
+        retrieved = await self._retrieve(user_text)
+        if retrieved is None:
+            return
         self.history.append(Message("user", user_text))
         self.logger.append("user", user_text, self.model)
 
@@ -124,7 +176,7 @@ class ChatSession:
 
         try:
             async for chunk in self.client.chat(
-                self.build_messages(), self.model, enable_thinking=self.enable_thinking
+                self.build_messages(retrieved), self.model, enable_thinking=self.enable_thinking
             ):
                 if chunk.reasoning:
                     if first_token_at is None:
@@ -211,7 +263,7 @@ class ChatSession:
     async def run(self) -> None:
         self.console.print(
             f"[bold]llm-chat[/]  model=[cyan]{self.model}[/]  thinking={'on' if self.enable_thinking else 'off'}"
-            "  (/help でコマンド一覧)",
+            f"  rag={'on' if self.use_rag else 'off'}  (/help でコマンド一覧)",
             highlight=False,
         )
         await self._check_server()
@@ -243,21 +295,39 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--base-url", default=settings.base_url, help="llama-server の URL")
     parser.add_argument("--timeout", type=float, default=settings.timeout, help="HTTP タイムアウト(秒)")
     parser.add_argument("--log-dir", default="logs", help="JSONL ログの保存先")
+    parser.add_argument("--rag", action="store_true", help="最初から資料検索(RAG)を有効にする")
+    parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K, help="RAG で差し込む資料の件数")
+    parser.add_argument("--db", default=str(settings.db_path), help="RAG インデックスの SQLite パス")
+    parser.add_argument("--embed-model", default=settings.embed_model, help="埋め込みモデル id")
+    parser.add_argument(
+        "--embed-base-url", default=settings.effective_embed_base_url, help="埋め込み用 llama-server の URL(既定は --base-url と同じ)"
+    )
     return parser.parse_args(argv)
 
 
 async def _amain(args: argparse.Namespace) -> None:
     console = Console()
     async with LlamaClient(args.base_url, timeout=args.timeout) as client:
-        session = ChatSession(
-            client,
-            console,
-            ChatLogger(args.log_dir),
-            model=args.model,
-            system_prompt=args.system,
-            enable_thinking=not args.no_think,
-        )
-        await session.run()
+        store = RagStore(args.db)
+        store.init_schema()
+        embed_url = (args.embed_base_url or args.base_url).rstrip("/")
+        embed_client = client if embed_url == client.base_url else LlamaClient(embed_url, timeout=args.timeout)
+        try:
+            session = ChatSession(
+                client,
+                console,
+                ChatLogger(args.log_dir),
+                model=args.model,
+                system_prompt=args.system,
+                enable_thinking=not args.no_think,
+                retriever=Retriever(store, Embedder(embed_client, args.embed_model)),
+                use_rag=args.rag,
+                top_k=args.top_k,
+            )
+            await session.run()
+        finally:
+            if embed_client is not client:
+                await embed_client.aclose()
 
 
 def main(argv: list[str] | None = None) -> None:

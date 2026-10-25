@@ -1,4 +1,4 @@
-# 外部仕様書(Phase 1 / Phase 2)
+# 外部仕様書(Phase 1〜4)
 
 利用者から見た振る舞いを定義する。内部構造は [internal-spec.md](internal-spec.md)、
 開発時の決定経緯は [spec-phase1-2.md](spec-phase1-2.md) を参照。
@@ -410,10 +410,224 @@ from local_llm import LlamaClient, LlamaClientError, Message, ChatChunk, Usage
 | 応答中の中断 | Ctrl+C。途中までを履歴に残す | ブラウザを閉じる等。途中までを DB に保存 |
 | 空入力 | 無視 | 送信しない(API 直叩きは 422) |
 
-## 9. 範囲外(Phase 3 以降)
+## 9. 範囲外(Phase 5 以降)
 
-- 文書検索と根拠付き回答(RAG)
-- ツール呼び出し、エージェント
+- 書き込み・コマンド実行を許可するエージェント、マルチエージェント(Phase 4 は読み取り専用のみ。11 章)
 - 認証、LAN 公開、複数ユーザー
 - 会話のエクスポート、検索、タイトルの手動変更
 - temperature などのサンプリング設定 UI
+
+## 10. RAG: 資料を根拠に答える(Phase 3)
+
+### 10.1 何ができるか
+
+`data/corpus/` 配下の Markdown を索引しておくと、質問に近い部分(チャンク)を上位 k 件選び、
+「以下の資料だけを根拠に答え、使った資料を [n] で示す」という指示とともにモデルへ渡す。
+回答には `[1]` のような引用番号が付き、どの資料のどの見出しを使ったかが CLI / Web UI に表示される。
+
+### 10.2 コーパスの取得と索引
+
+```powershell
+.\scripts\fetch-corpus.ps1          # ai_harness の Markdown 19 本を data/corpus/ai_harness/ に取得
+uv run llm-index                     # 索引を作成・更新(llama-server が起動していること)
+uv run llm-index --force             # 変更の有無に関わらず作り直す(埋め込みモデルを替えたとき)
+```
+
+- `llm-index` は `RAG_CORPUS_DIR`(既定 `data/corpus`)配下の `**/*.md` を読む。文書ごとに sha256 を記録し、変わっていない文書は読み飛ばす。コーパスから消えた文書は索引からも消える。
+- 出力例: `更新 19 文書 / 変更なし 0 文書 / 削除 0 文書 / 新規チャンク 433 件`
+- 索引はチャット DB(`CHAT_DB_PATH`、既定 `data/chat.db`)の `documents` / `chunks` 表に入る。
+
+### 10.3 設定
+
+| 環境変数 | 既定 | 内容 |
+| --- | --- | --- |
+| `LLM_EMBED_MODEL` | `Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0` | 埋め込みモデル id。`models.ini` の同名セクションから配信される |
+| `LLAMA_EMBED_BASE_URL` | (`LLAMA_BASE_URL` と同じ) | 埋め込みだけ別の llama-server で動かすときの URL |
+| `RAG_CORPUS_DIR` | `data/corpus` | 索引する Markdown の置き場 |
+
+### 10.4 CLI(`llm-chat`)
+
+| 操作 | 内容 |
+| --- | --- |
+| `--rag` | 起動時から RAG を有効にする |
+| `--top-k N` | 差し込む資料の件数(既定 5、最大 20) |
+| `/rag` | 現在の状態と索引の文書数・チャンク数を表示 |
+| `/rag on` / `/rag off` | RAG の有無を切り替える |
+
+RAG が有効なとき、発言を送るとまず出典が薄い色で `[1] path › 見出し  (0.721)` の形で並び、続けて本文が流れる。
+索引が空なら「インデックスが空です」と案内する。資料の検索に失敗した(埋め込みサーバに届かない)場合はエラーを表示して送信を中止し、発言は履歴に積まない。
+
+### 10.5 Web UI
+
+- ツールバーの「RAG」チェックで有効化。右隣に「資料 19 件 / 433 チャンク」のように索引の状態が出る。
+- 応答の下に出典リスト(番号、パス、見出し、類似度)が本文より先に表示される。
+- 該当資料が無い(索引が空)ときは、その旨をリストに表示する。
+
+### 10.6 HTTP API の追加・変更
+
+| メソッド | パス | 成功 | 説明 |
+| --- | --- | --- | --- |
+| GET | `/api/rag/status` | 200 | 索引の文書数・チャンク数・埋め込みモデル・コーパスの場所 |
+| GET | `/api/rag/search?q=...&top_k=5` | 200 | 質問に近いチャンクを本文つきで返す(Phase 4 のツールが使う) |
+| POST | `/api/conversations/{id}/messages` | 200 (SSE) | 本文に `use_rag`(既定 false)と `top_k`(既定 5、1〜20)を追加 |
+
+**GET /api/rag/status**
+
+```json
+{"documents": 19, "chunks": 433, "embedding_models": ["Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0"],
+ "last_indexed_at": "2026-10-25T02:36:25+00:00",
+ "embedding_model": "Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0", "corpus_dir": "data/corpus"}
+```
+
+**GET /api/rag/search**
+
+```json
+{"query": "Fencing Token とは",
+ "results": [{"n": 1, "chunk_id": 311, "path": "ai_harness/docs/profiles/distributed-execution.md",
+              "title": "Profile: 分散・長時間・複数Worker実行", "heading": "... > Fencing Token",
+              "text": "Lease取得ごとに単調増加Tokenを発行します。...", "score": 0.7212}]}
+```
+
+`q` が空なら 422、`top_k` が範囲外なら 422。埋め込みサーバに届かなければ 502。
+索引と検索で埋め込みモデルの次元が合わないときは 409(`llm-index --force` で作り直す)。
+
+**POST /api/conversations/{id}/messages(use_rag=true)**
+
+SSE のイベント列は `sources` → (`reasoning`)* → `content`* → `done`。
+
+```
+data: {"type": "sources", "items": [{"n": 1, "path": "...", "title": "...", "heading": "...", "score": 0.72}, ...]}
+data: {"type": "content", "text": "Lease取得ごとに..."}
+data: {"type": "done", "model": "...", "usage": {...}, "tokens_per_second": 42.7, "elapsed_seconds": 9.11,
+       "rag": {"used": true, "sources": 3}}
+```
+
+- `sources` は検索が終わった直後、モデルを呼ぶ前に 1 回だけ届く。`use_rag=false` のときは届かず、`done.rag` は null。
+- 検索に失敗した場合は `error` イベントのみ届き、モデルは呼ばれない(ユーザー発言は保存済み)。
+- 資料は system メッセージとして毎回差し込むだけで、DB の会話には保存しない。
+
+### 10.7 エラー時の振る舞い(RAG 固有)
+
+| 状況 | CLI | Web UI / API |
+| --- | --- | --- |
+| 索引が空 | 「資料が見つかりませんでした」を表示し、資料なしで送信 | `sources.items` が空。UI は「該当する資料がありません」 |
+| 埋め込みサーバ停止 | エラー表示、送信中止、履歴に積まない | `error` イベント(messages)、502(search) |
+| 埋め込みモデルの次元不一致 | エラー表示、送信中止 | `error` イベント(messages)、409(search) |
+
+## 11. エージェント `llm-agent`: ツール呼び出しをコードで許可する(Phase 4)
+
+### 11.1 何ができるか
+
+Task Contract(JSON)と指示文を渡すと、ローカルの Pi(pi-coding-agent)が llama-server のモデルにツールを使わせて作業し、
+結果を `evidence/<run_id>/` に残す。使えるツール、読める場所、手数の上限は Contract に書いてあるものだけで、
+モデルがそれ以外を要求しても extension が block して記録する。完了したかどうかはモデルの申告ではなく runner の検証で決まる。
+
+### 11.2 前提
+
+| 項目 | 内容 |
+| --- | --- |
+| Node.js と Pi | `npm install -g @earendil-works/pi-coding-agent`(1.0.0 で確認)。`~/.pi` の設定は使わず、`agent/pi/` を `PI_CODING_AGENT_DIR` で渡す |
+| extension の依存 | `cd agent/harness && npm install`(vitest、typebox の devDependencies。実行時は Pi 同梱のライブラリを使う) |
+| llama-server | ルーターモードで起動済み(`--jinja` が有効で function calling が通ること) |
+| llm-web | `rag_search` が `GET /api/rag/search` を叩く。索引済みであること(10 章) |
+
+### 11.3 起動
+
+```powershell
+uv run llm-agent --contract agent/contracts/summarize-docs.json --task "RAG の設計方針を 3 点にまとめて"
+```
+
+| オプション / 環境変数 | 既定 | 内容 |
+| --- | --- | --- |
+| `--contract PATH` | (必須) | Task Contract。`docs/harness/schemas/task-contract.schema.json` で検証し、`contract_hash` が内容と一致しなければ起動しない |
+| `--task TEXT` | (必須) | エージェントへの指示 |
+| `--run-id ID` | 日時 + 乱数 | `evidence/<run_id>/` の名前 |
+| `--evidence-dir DIR` | `evidence` | 証拠の置き場 |
+| `--rag-url URL` / `HARNESS_RAG_URL` | `http://127.0.0.1:8000` | `llm-web` の URL |
+| `--model` / `LLM_AGENT_MODEL` | `llama-local/unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M` | Pi の `provider/model-id`(`agent/pi/models.json` に定義があること) |
+| `--thinking` | `off` | `off` のとき llama-server へのリクエストに `enable_thinking=false` を付ける |
+| `--timeout SEC` | 900 | `agent_settled` を待つ秒数。超えたら pi を終了し `RUN_SETTLED` を fail にする |
+| `--max-steps N` / `--max-tool-calls N` | Contract の値 | 予算の上書き(動作確認用) |
+| `--expose-builtin-tools` | なし | Pi 組み込みの bash / read などをモデルに見せる(block されることの確認用。既定では見せない) |
+| `--pi CMD` | `pi` | pi コマンド(テストでは偽の pi に差し替える) |
+
+標準出力の例:
+
+```
+run_id: e2e-summarize  (66.3s, turns=8, settled=True, exit=0)
+decision: accepted
+  PASS FINISH_CALLED          finish が 1 回呼ばれ result.json がある
+  ...
+  ---- SUMMARY_QUALITY        この criterion_id に対応する決定論的な検査が runner に無い
+decision: ...\evidence\e2e-summarize\decision.json
+```
+
+終了コードは判定が `accepted` のときだけ 0。
+
+### 11.4 エージェントに見えるツール(読み取り専用プロファイル)
+
+| ツール | 引数 | 内容 | 制限 |
+| --- | --- | --- | --- |
+| `rag_search` | `query`, `top_k`(1〜3、既定 3) | `llm-web` の `/api/rag/search` を呼び `[n] path › 見出し (score)` と本文を返す | 本文は 1 件 350 字まで |
+| `read_file` | `path`(workspace 相対) | `scope.read` 内で `scope.forbidden` に当たらないファイルを読む | 3000 字まで。scope 外は block され、run は `scope_violation` で止まる |
+| `list_files` | `glob` | workspace を走査し、`scope.read` 内のパスだけ返す | 200 件まで。`node_modules` / `.git` / `.venv` は走査しない |
+| `finish` | `summary`, `sources[]` | 結果を提出する。`result.json` に保存され、以後のツール呼び出しは block | 1 回だけ |
+
+ツール出力は run 全体で 6000 字まで(`HARNESS_MAX_OUTPUT_CHARS`)。超えると読み取り系ツールはエラー文「出力予算切れ。今ある材料で finish せよ」を返す。
+これは ctx 8192 のモデルでコンテキスト溢れを起こさないための制限で、Contract ではなくハーネスの設定。
+
+### 11.5 Contract の読まれ方
+
+| Contract の項目 | extension / runner の動き |
+| --- | --- |
+| `capability_profile.allowed_tools` | これ以外の `tool_call` は `tool_not_allowed` で block(実行されない)。`denied_tools` は明示の記録用 |
+| `scope.read` / `scope.forbidden` | `read_file` のパスを検査。forbidden が勝つ。違反は `scope_boundary_exceeded` で block し、run を `scope_violation` で止める |
+| `execution_budget.max_steps` | turn 数。超えた turn の開始で `stop budget_exceeded` を記録し run を中断 |
+| `execution_budget.max_tool_calls` / `same_error_limit` | 呼び出し数の上限 / 同じツール・同じ引数・同じエラー文の連続回数。超えたら block して止める |
+| `completion_criteria[].criterion_id` | runner が同名の検査を持つものだけ pass / fail を付ける(11.6)。無いものは `not_run` |
+
+### 11.6 判定(`decision.json`)
+
+runner が持つ検査と、サンプル Contract での意味:
+
+| criterion_id | pass の条件 |
+| --- | --- |
+| `FINISH_CALLED` | `finish` が 1 回呼ばれ `result.json` がある |
+| `SUMMARY_NONEMPTY` | `result.summary` が空でない |
+| `SOURCES_IN_SCOPE` | `result.sources` が空でなく、すべて `scope.read` 内に実在する |
+| `ONLY_ALLOWED_TOOLS` | 実行されたツールがすべて `allowed_tools` 内(許可外の呼び出しは block されていれば可) |
+| `NO_SCOPE_VIOLATION` | `scope_boundary_exceeded` の block が 0 件 |
+| `WITHIN_BUDGET` | `stop_reason` が `budget_exceeded` / `same_error_repeated` / `scope_violation` でない |
+| `RUN_SETTLED` | `agent_settled` を受信し、runner 側のエラー(タイムアウト、pi の異常終了、モデルエラー)が無い |
+
+| 判定 | 条件 |
+| --- | --- |
+| `blocked` | 予算超過・同一エラー反復・scope 違反で run が止まった |
+| `rejected` | 必須 criterion に `fail` がある |
+| `needs_human` | 必須 criterion に `not_run`(runner が検査を持たない、human-review など)がある |
+| `accepted` | 必須 criterion がすべて `pass` |
+
+`report.md` にはエージェントの `finish` 本文も載るが「未検証の自己申告」と明記され、判定の根拠にはならない。
+
+### 11.7 出力ファイル(`evidence/<run_id>/`)
+
+| ファイル | 内容 |
+| --- | --- |
+| `events.jsonl` | 1 行 1 イベント。`run_start` / `turn_start` / `tool_call`(引数と正規化 hash)/ `tool_result`(先頭 500 字)/ `block` / `stop` / `finish` / `run_end`。全行に `run_id` と `contract_hash` |
+| `result.json` | `finish` の `summary` と `sources` |
+| `pi_events.jsonl` / `pi_stderr.txt` | Pi の RPC イベント全部と標準エラー |
+| `decision.json` | Completion Decision(`completion-decision.schema.json` 適合) |
+| `verification.json` | criterion ごとの Verification Result の配列 |
+| `report.md` | 人向けの要約(criterion 表、ツール呼び出し表、finish 本文) |
+
+### 11.8 エラー時の振る舞い(エージェント固有)
+
+| 状況 | 振る舞い |
+| --- | --- |
+| Contract が Schema に合わない / hash が合わない | 起動前に終了(終了コード 1)。evidence は作らない |
+| `pi` コマンドが無い | `RUN_SETTLED` fail、decision は `rejected` |
+| llama-server 停止 | モデルエラーとして `RUN_SETTLED` fail |
+| `llm-web` 停止 | `rag_search` がエラー文を返す(run は続く)。同じエラーが `same_error_limit` 回続けば停止 |
+| 許可外ツール要求 | block して記録、run は続く。`ONLY_ALLOWED_TOOLS` は pass のまま |
+| scope 外の `read_file` | block し `scope_violation` で停止、`blocked` |
+| 手数超過 | `budget_exceeded` で停止、`blocked` |

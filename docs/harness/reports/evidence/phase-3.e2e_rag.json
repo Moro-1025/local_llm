@@ -1,0 +1,131 @@
+{
+  "run_at": "2026-10-25T02:37:56+00:00",
+  "chat_base_url": "http://127.0.0.1:8080",
+  "embed_base_url": "http://127.0.0.1:8082",
+  "api": [
+    {
+      "question": "Fencing Token とは何ですか? Lease と Worker の関係で短く説明してください",
+      "event_types_first3": [
+        "sources",
+        "content",
+        "content"
+      ],
+      "first_event": "sources",
+      "sources": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/profiles/distributed-execution.md",
+          "title": "Profile: 分散・長時間・複数Worker実行",
+          "heading": "Profile: 分散・長時間・複数Worker実行 > Fencing Token > 限界",
+          "score": 0.7207
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/reference/agent-development-handbook.md",
+          "title": "AIエージェント開発リファレンス",
+          "heading": "13. Distributed Execution > 13.2 LeaseとFencing Token",
+          "score": 0.7147
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/profiles/distributed-execution.md",
+          "title": "Profile: 分散・長時間・複数Worker実行",
+          "heading": "Profile: 分散・長時間・複数Worker実行 > Fencing Token",
+          "score": 0.7044
+        }
+      ],
+      "answer": "Lease取得ごとに単調増加するトークンであり、失効した古いWorkerが実行を続けないように、State StoreやTool Gatewayが古いTokenを拒否する仕組みです [2]。WorkerがLeaseを取得するたびに新しいトークンが発行され、State Storeなどは最後に受理したトークンより小さいトークンを拒否することで、古いWorkerの処理を検証して排除します [3]。",
+      "citations_in_answer": [
+        2,
+        3
+      ],
+      "done": {
+        "type": "done",
+        "model": "unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M",
+        "usage": {
+          "prompt_tokens": 400,
+          "completion_tokens": 86,
+          "total_tokens": 486
+        },
+        "tokens_per_second": 42.7,
+        "elapsed_seconds": 9.11,
+        "rag": {
+          "used": true,
+          "sources": 3
+        }
+      },
+      "elapsed_s": 9.2
+    },
+    {
+      "question": "Completion Decision の 4 つの判定(accepted など)を一覧にしてください",
+      "event_types_first3": [
+        "sources",
+        "content",
+        "content"
+      ],
+      "first_event": "sources",
+      "sources": [
+        {
+          "n": 1,
+          "path": "ai_harness/docs/core/decision-model.md",
+          "title": "AI Harness 統合判定モデル",
+          "heading": "AI Harness 統合判定モデル > 8. Completion Decisionを機械的に作る",
+          "score": 0.7335
+        },
+        {
+          "n": 2,
+          "path": "ai_harness/docs/reference/agent-development-handbook.md",
+          "title": "AIエージェント開発リファレンス",
+          "heading": "7. Verification、Evidence、Completion > 7.4 Completion",
+          "score": 0.7214
+        },
+        {
+          "n": 3,
+          "path": "ai_harness/docs/core/decision-model.md",
+          "title": "AI Harness 統合判定モデル",
+          "heading": "AI Harness 統合判定モデル > 7. CriterionごとにVerificationを作る > Status",
+          "score": 0.7176
+        }
+      ],
+      "answer": "Completion Decisionの4つの判定は以下の通りです [1]。\n\n- `accepted`: 採用条件を満たした\n- `rejected`: 明確なFailureまたはPolicy違反がある\n- `blocked`: 必要な検証・Dependency・権限が不足している\n- `needs_human`: Risk Acceptance、仕様判断、Waiver等が必要",
+      "citations_in_answer": [
+        1
+      ],
+      "done": {
+        "type": "done",
+        "model": "unsloth/Qwen3.6-35B-A3B-GGUF:Q4_K_M",
+        "usage": {
+          "prompt_tokens": 647,
+          "completion_tokens": 71,
+          "total_tokens": 718
+        },
+        "tokens_per_second": 41.3,
+        "elapsed_seconds": 9.43,
+        "rag": {
+          "used": true,
+          "sources": 3
+        }
+      },
+      "elapsed_s": 9.5
+    }
+  ],
+  "cli": {
+    "transcript_head": "rag: on  (文書 19 件 / チャンク 433 件, top_k=3)\n[1] ai_harness/docs/learning/beginner/harness-basics.md › AIエージェント・ハーネスの基礎 > 3. 最小ハーネスの7要素 > 3.5 \n状態  (0.576)\n[2] ai_harness/docs/learning/beginner/harness-basics.md › AIエージェント・ハーネスの基礎 > 3. 最小ハーネスの7要素 > 3.1 \nTask Contract  (0.548)\n[3] ai_harness/docs/learning/beginner/harness-basics.md › AIエージェント・ハーネスの基礎 > 3. 最小ハーネスの7要素 > 3.2 \n最小権限  (0.534)\nassistant> 資料には最小ハーネスの7要素の全リストは記載されていませんが、記載されている要素は以下の通りです。\n\n*   状態 [1]\n*   Task Contract [2]\n*   最小権限 [3]\n\n（資料には7要素の完全なリストが含まれていないため、それ以上は提示できません）\n(prompt 500 tok / completion 73 tok, 42.0 tok/s, 9.8s)\n"
+  },
+  "rag_status": {
+    "documents": 19,
+    "chunks": 433,
+    "embedding_models": [
+      "Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0"
+    ],
+    "last_indexed_at": "2026-10-25T02:36:25+00:00",
+    "embedding_model": "Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0",
+    "corpus_dir": "data\\corpus"
+  },
+  "api_without_rag_event_types": [
+    "content",
+    "content",
+    "content",
+    "done"
+  ]
+}

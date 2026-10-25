@@ -10,11 +10,14 @@ dependencies = [
     "rich>=13.7",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
+    "numpy>=2.5.4",
 ]
 
 [project.scripts]
 llm-chat = "local_llm.cli:main"
 llm-web = "local_llm.web.app:main"
+llm-index = "local_llm.rag.indexer:main"
+llm-agent = "local_llm.agent.runner:main"
 
 [dependency-groups]
 dev = [

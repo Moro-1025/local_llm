@@ -1,0 +1,10 @@
+{"id": "Q01", "question": "Fencing Token とは何ですか? Lease と Worker の関係で説明してください", "expect_paths": ["docs/profiles/distributed-execution.md"], "expect_keywords": ["Fencing Token"]}
+{"id": "Q02", "question": "Tool Result Envelope の共通形式にはどんなフィールドがありますか", "expect_paths": ["docs/learning/intermediate/agent-runtime.md"], "expect_keywords": ["Tool Result Envelope", "retryable"]}
+{"id": "Q03", "question": "Evidence の 8 軸(関連性・独立性・鮮度など)を教えてください", "expect_paths": ["docs/learning/intermediate/evidence-and-policy.md"], "expect_keywords": ["8軸", "改ざん耐性"]}
+{"id": "Q04", "question": "Execution Budget の例と No Progress の Signal にはどんなものがありますか", "expect_paths": ["docs/learning/intermediate/agent-runtime.md", "docs/core/decision-model.md"], "expect_keywords": ["No Progress", "execution_budget", "実行予算"]}
+{"id": "Q05", "question": "Completion Decision の accepted / rejected / blocked / needs_human はそれぞれ何を意味しますか", "expect_paths": ["docs/core/decision-model.md", "docs/learning/intermediate/evidence-and-policy.md"], "expect_keywords": ["needs_human", "Completion Decision"]}
+{"id": "Q06", "question": "LLM は提案し、決定論的コードが許可するという原則は何番の CORE 原則ですか", "expect_paths": ["docs/core/principles.md"], "expect_keywords": ["CORE-02", "決定論的コードが許可"]}
+{"id": "Q07", "question": "最小ハーネスの 7 要素とは何ですか", "expect_paths": ["docs/learning/beginner/harness-basics.md"], "expect_keywords": ["7要素", "最小ハーネス"]}
+{"id": "Q08", "question": "Codex で Sandbox と Approval を分けるとはどういうことですか", "expect_paths": ["docs/profiles/codex.md"], "expect_keywords": ["Sandbox", "Approval"]}
+{"id": "Q09", "question": "Trusted CI に求められる要件は何ですか", "expect_paths": ["docs/profiles/team-ci.md", "docs/learning/intermediate/ci-review-and-evaluation.md"], "expect_keywords": ["Trusted CI"]}
+{"id": "Q10", "question": "コーディングエージェントのチュートリアルで Completion Report に書く項目(Not Run, Residual Risk, Rollback など)は何ですか", "expect_paths": ["docs/learning/beginner/coding-agent-tutorial.md"], "expect_keywords": ["Completion Report", "Residual Risk", "Not Run"]}

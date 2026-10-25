@@ -296,3 +296,31 @@ textarea#input:focus { border-color: var(--accent); }
   #app { grid-template-columns: 1fr; }
   #sidebar { display: none; }
 }
+
+/* ---------------------------------------------------------------- RAG(Phase 3) */
+
+.rag-status {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.sources {
+  margin: 0.4rem 0 0;
+  padding-left: 1.6rem;
+  padding-top: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  border-top: 1px dashed var(--border);
+}
+
+.sources li {
+  margin: 0.1rem 0;
+}
+
+.sources .source-path {
+  color: var(--accent);
+}
+
+.sources .source-score {
+  opacity: 0.7;
+}
