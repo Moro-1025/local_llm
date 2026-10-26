@@ -1,5 +1,8 @@
 # 外部仕様書(Phase 1〜4)
 
+> **初学者はまず [docs/guide/](guide/00-overview.md) を読む。** この文書は「使う側から見た正確な振る舞い」を引くためのリファレンスで、
+> 用語の説明や「なぜこの設計か」は guide の各章(00〜07)にまとめてある。0 章の用語表は guide 00〜02 章の「前提となる用語」と重なる。
+
 利用者から見た振る舞いを定義する。内部構造は [internal-spec.md](internal-spec.md)、
 開発時の決定経緯は [spec-phase1-2.md](spec-phase1-2.md) を参照。
 
@@ -8,6 +11,7 @@
 ## 0. 前提知識と用語
 
 この章は、ローカル LLM や llama.cpp を触ったことがない人向けの説明。知っている人は 1 章へ。
+初めての人は、図と流れで説明している [guide/00-overview.md](guide/00-overview.md) と [guide/01-llm-basics.md](guide/01-llm-basics.md) の方が読みやすい。ここは表で引くための版。
 
 ### 0.1 登場するソフトウェア
 
