@@ -1,5 +1,7 @@
 # local_llm
 
+> **初めて読む人へ**: 全体の構成と、各処理が何を・なぜ・どうやっているかは [docs/guide/00-overview.md](docs/guide/00-overview.md) から順に読む(00〜07 章、図は Mermaid)。
+
 llama.cpp を使って自宅 PC(RTX 5070 / 12 GB)でローカル LLM を動かし、
 API クライアント → チャット UI → RAG → エージェント → LoRA ファインチューニング → 評価・計測と
 段階的に積み上げた学習・ポートフォリオ用プロジェクト。

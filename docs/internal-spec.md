@@ -1,5 +1,8 @@
 # 内部仕様書(Phase 1〜4)
 
+> **初学者はまず [docs/guide/](guide/00-overview.md) を読む。** この文書はモジュールの責務と処理フローを正確に引くためのリファレンス。
+> 「各処理が何のために何をしているか」「どのアルゴリズムをなぜ選んだか」は guide の各章にあり、本書の章との対応表は [README.md](README.md) にある。
+
 実装の構造、モジュールの責務、データの流れを定義する。利用者から見た振る舞いは
 [external-spec.md](external-spec.md) を参照。用語(llama-server、SSE、thinking など)は
 external-spec の 0 章にある。
