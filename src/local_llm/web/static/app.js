@@ -406,6 +406,9 @@
     await checkHealth();
     await loadConversations();
     await loadRagStatus();
+    // URL が #c=<会話 id> なら、その会話を開いた状態で始める(共有・スクリーンショット用)
+    const hashId = Number((location.hash.match(/^#c=(\d+)$/) || [])[1]);
+    if (hashId) await openConversation(hashId);
     setInterval(checkHealth, 15000);
     el.input.focus();
   }

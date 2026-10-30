@@ -1,14 +1,45 @@
 # local_llm
 
-> **初めて読む人へ**: 全体の構成と、各処理が何を・なぜ・どうやっているかは [docs/guide/00-overview.md](docs/guide/00-overview.md) から順に読む(00〜07 章、図は Mermaid)。
+**自宅の GPU 1 枚(RTX 5070 / 12 GB)でローカル LLM を動かし、チャット UI → RAG → エージェント → LoRA → 評価 まで自分で積み上げたプロジェクト。**
+推論は llama.cpp の `llama-server` に任せ、その上のクライアント・検索・エージェント・学習・評価を Python と TypeScript で書いた。
+147 問の評価で「RAG は効く、LoRA 単体は効かない、両方使うと小型モデルが大型モデルを超える」ことを数字で確かめた。
 
-llama.cpp を使って自宅 PC(RTX 5070 / 12 GB)でローカル LLM を動かし、
-API クライアント → チャット UI → RAG → エージェント → LoRA ファインチューニング → 評価・計測と
-段階的に積み上げた学習・ポートフォリオ用プロジェクト。
+> Local LLM playground on a single RTX 5070 (12 GB): chat UI, RAG with citations, a contract-enforced agent, QLoRA fine-tuning and a 5-way evaluation harness, all on top of llama.cpp. Docs are in Japanese.
 
-> 現在のフェーズ: **Phase 6 完了**(評価・計測・公開準備)。Phase 0〜6 のロードマップは [下](#ロードマップ)。
-> 開発は [ai_harness](https://github.com/Moro-1025/ai_harness) の考え方(契約 → 実装 → 同じコマンドで検証 → 証拠付きの Completion Report)で進めた。
-> 各 Phase の「何を・なぜ・どう確かめたか」は [docs/journal/](docs/journal/README.md)、判定は [docs/harness/reports/](docs/harness/README.md)。
+![Web UI で RAG を使い、出典付きで答えている画面](docs/images/web-ui-rag.png)
+
+*Web UI。「RAG」を入れると資料を検索し、回答に `[n]` で出典を付け、下に根拠の文書・見出し・類似度と速度(tok/s)を出す。*
+
+## 結果を先に
+
+同じ 147 問を 5 つの構成で解かせ、キーワードによる決定論的な正答率と、別モデル(Qwen3-8B)による 5 段階採点で比べた。
+
+| 構成 | モデル | RAG | 正答率 | LLM 採点(1〜5) | 速度(tok/s) |
+| --- | --- | --- | --- | --- | --- |
+| A | Qwen3.6-35B(MoE) | なし | 36.0% | 2.72 | 37 |
+| B | Qwen3.6-35B(MoE) | **あり** | 53.7% | **3.82** | 17 |
+| C | Qwen3-4B | なし | 18.4% | 2.55 | 154 |
+| D | Qwen3-4B **+ LoRA** | なし | 21.8% | 2.58 | 153 |
+| E | Qwen3-4B **+ LoRA** | **あり** | **66.7%** | 3.77 | 117 |
+
+- **RAG の効果が最も大きい**: 35B で +17.7 pt、4B+LoRA で +44.9 pt
+- **LoRA 単体はほぼ効かない**: +3.4 pt で、147 問の誤差(±8 pt 程度)の中
+- **LoRA + RAG の 4B は、35B 単体より正答率が高く 3 倍速い**。12 GB の GPU では「小さいモデルに語彙を覚えさせ、事実は検索で渡す」組み合わせが一番効いた
+- 限界: 評価データは LoRA の学習データと同じ文書から合成しているので、LoRA 構成に有利な偏りがありうる。件数も 147 問で、数 pt の差は語れない。詳しくは [docs/journal/phase-6.md](docs/journal/phase-6.md)
+
+## 何を作ったか
+
+| 部品 | 内容 | 技術 | 詳しく |
+| --- | --- | --- | --- |
+| チャットクライアント | OpenAI 互換 API を叩く自作クライアント、SSE を自前でパース、thinking を分離 | Python / httpx | [guide 02](docs/guide/02-chat-client.md) |
+| Web UI | 会話を SQLite に保存し、ブラウザに逐次表示 | FastAPI / 素の HTML+JS | [guide 02](docs/guide/02-chat-client.md) |
+| RAG | Markdown を見出し単位でチャンク化 → 埋め込み → コサイン類似度で検索 → 出典 `[n]` 付きで回答 | Qwen3-Embedding / numpy / SQLite | [guide 03](docs/guide/03-rag.md) |
+| エージェント | Pi を子プロセスにし、「LLM が提案し、コードが許可する」ハーネスでツール・範囲・予算を強制 | Pi / TypeScript | [guide 04](docs/guide/04-agent.md) |
+| LoRA 学習 | docs から合成した 1,324 組の Q&A で Qwen3-4B を QLoRA、GGUF に変換してサーバに登録 | unsloth / WSL2 | [guide 05](docs/guide/05-lora.md) |
+| 評価 | 5 構成 × 147 問を決定論 + LLM の 2 段で採点、採点モデルは回答モデルと分離 | 自作ハーネス `llm-eval` | [guide 06](docs/guide/06-evaluation.md) |
+| 開発の進め方 | Phase ごとに契約 → 実装 → 同じコマンドで検証 → 証拠付きの Completion Report | [ai_harness](https://github.com/Moro-1025/ai_harness) の考え方 | [guide 07](docs/guide/07-dev-harness.md) |
+
+テスト: pytest 107 件 + vitest 35 件(GPU 不要、llama-server はモック)。
 
 ## 構成図
 
@@ -39,6 +70,27 @@ flowchart LR
     evalc --> big & small & grader & emb
     evalc --> results["eval/results/*.json"]
 ```
+
+## 3 コマンドで動かす
+
+```powershell
+uv sync                      # Python 3.12 + uv(llama.cpp のバイナリは llama-local/ に展開しておく。下の「セットアップ」)
+.\scripts\start-server.ps1   # llama-server。モデルは初回に Hugging Face から取得される
+uv run llm-web               # http://127.0.0.1:8000 でチャット。RAG は索引を作ってから(「再現手順」)
+```
+
+## ドキュメント
+
+| 読みたいこと | 場所 |
+| --- | --- |
+| 全体像と、各処理が何を・なぜ・どうやっているか(初学者向け、図付き) | [docs/guide/00-overview.md](docs/guide/00-overview.md) から 00〜07 章 |
+| 各 Phase で何をして、何がうまくいかなかったか | [docs/journal/](docs/journal/README.md) |
+| 正確な仕様(API、画面、モジュール構成) | [external-spec.md](docs/external-spec.md) / [internal-spec.md](docs/internal-spec.md) |
+| 契約と判定(Completion Report、検証の証拠) | [docs/harness/](docs/harness/README.md) |
+
+---
+
+以下は詳細。環境、Phase ごとの成果、再現手順、各機能の使い方、モデルとベンチマーク、学んだこと。
 
 ## ハードウェア
 
@@ -425,16 +477,12 @@ local_llm/
 - PowerShell 5.1 で `$ErrorActionPreference = "Stop"` のまま `& exe 2>&1` すると、exe が stderr に進行ログを書くだけで NativeCommandError になって止まる(llama-bench で再発)。外部コマンドの呼び出しだけ Continue にする
 <!-- learned-phase6:end -->
 
-## 公開(人間が行う手順)
+## 公開について
 
-このリポジトリの push とリポジトリの公開設定、Hugging Face へのアップロードは Human Gate(契約 `GATE_EXTERNAL_PUBLISH`)で、
-開発セッションは行わない。公開するときは:
-
-1. `git log` でブランチの内容を確認し、`.env`、`data/`、`logs/`、`*.gguf` が追跡されていないことを `git ls-files | Select-String "\.env|^data/|^logs/|\.gguf"` で確かめる(出力が空であること)
-2. `uv run pytest` と `.\scripts\agent\verify.ps1 -Agent` が通ることを確認する
-3. `git push origin main`、GitHub でリポジトリを public にする
-4. LoRA モデルを公開するなら `training/export/README.md`(モデルカード)の数値を確認して Hugging Face にアップロードする
-5. `docs/harness/reports/phase-6.decision.json` の human-review 待ち(EVAL-002 / 005 / 006)を確認し、判定を更新する
+このリポジトリは https://github.com/Moro-1025/local_llm で公開している。push と公開設定、Hugging Face へのアップロードは
+Human Gate(契約 `GATE_EXTERNAL_PUBLISH`)で、開発セッションではなく人間が行う。公開前の点検は、`.env`、`data/`、`logs/`、`*.gguf` が
+追跡されていないこと(`git ls-files | Select-String "\.env|^data/|^logs/|\.gguf"` が空)、`uv run pytest` と
+`.\scriptsgenterify.ps1 -Agent` が通ること、秘密情報・個人情報を grep で検索して無いこと。LoRA モデルは未公開(`training/export/README.md` がモデルカード)。
 
 ## ライセンス
 

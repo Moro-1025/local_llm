@@ -39,3 +39,6 @@ agent/pi/bin/
 
 # Phase 5: unsloth が実行時に作るコンパイルキャッシュ
 unsloth_compiled_cache/
+
+# Claude Code の起動設定(セッション固有)
+.claude/launch.json
